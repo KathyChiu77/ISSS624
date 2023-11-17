@@ -1,0 +1,125 @@
+---
+title: "Hands on Exercise 1: Data importing and wrangling"
+---
+
+# Overview
+
+In this hands-on exercise, you will learn how to handle geospatial data in R by using **sf** package.
+
+By the end of this hands-on exercise, you should acquire the following competencies:
+
+-   installing and loading [sf](https://r-spatial.github.io/sf/) and [tidyverse](https://www.tidyverse.org/) packages into R environment,
+
+-   importing geospatial data by using appropriate functions of **sf** package,
+
+-   importing aspatial data by using appropriate function of **readr** package,
+
+-   exploring the content of simple feature data frame by using appropriate **Base R** and **sf** functions,
+
+-   assigning or transforming coordinate systems by using using appropriate *sf* functions,
+
+-   converting an aspatial data into a sf data frame by using appropriate function of **sf** package,
+
+-   performing geoprocessing tasks by using appropriate functions of **sf** package,
+
+-   performing data wrangling tasks by using appropriate functions of **dplyr** package and
+
+-   performing Exploratory Data Analysis (EDA) by using appropriate functions from **ggplot2** package.
+
+# **Getting Started**
+
+```{r}
+pacman::p_load(sf, tidyverse)
+```
+
+# **Importing Geospatial Data**
+
+```{r}
+mpsz = st_read(dsn = "D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial", 
+                  layer = "MP14_SUBZONE_WEB_PL")
+cyclingpath = st_read(dsn = "D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial", 
+                         layer = "CyclingPathGazette")
+preschool = st_read("D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial/PreSchoolsLocation.kml")
+```
+
+# **Checking the Content of A Simple Feature Data Frame**
+
+```{r}
+st_geometry(mpsz)
+glimpse(mpsz)
+head(mpsz, n=5)  
+```
+
+# **Plotting the Geospatial Data**
+
+```{r}
+plot(mpsz)
+plot(st_geometry(mpsz))
+plot(mpsz["PLN_AREA_N"])
+```
+
+# **Working with Projection**
+
+```{r}
+st_crs(mpsz)
+mpsz3414 <- st_set_crs(mpsz, 3414)
+st_crs(mpsz3414)
+preschool3414 <- st_transform(preschool, 
+                              crs = 3414)
+```
+
+# **Importing and Converting An Aspatial Data**
+
+```{r}
+listings <- read_csv("D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/aspatial/listings.csv")
+list(listings) 
+```
+
+```{r}
+listings_sf <- st_as_sf(listings, 
+                       coords = c("longitude", "latitude"),
+                       crs=4326) %>%
+  st_transform(crs = 3414)
+glimpse(listings_sf)
+```
+
+# **Geoprocessing with sf package**
+
+```{r}
+buffer_cycling <- st_buffer(cyclingpath, 
+                               dist=5, nQuadSegs = 30)
+buffer_cycling$AREA <- st_area(buffer_cycling)
+sum(buffer_cycling$AREA)
+mpsz3414$`PreSch Count`<- lengths(st_intersects(mpsz3414, preschool3414))
+summary(mpsz3414$`PreSch Count`)
+top_n(mpsz3414, 1, `PreSch Count`)
+mpsz3414$Area <- mpsz3414 %>%
+  st_area()
+mpsz3414 <- mpsz3414 %>%
+  mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)
+```
+
+# **Explorotary Data Analysis (EDA)**
+
+```{r}
+hist(mpsz3414$`PreSch Density`)
+ggplot(data=mpsz3414, 
+       aes(x= as.numeric(`PreSch Density`)))+
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue") +
+  labs(title = "Are pre-school even distributed in Singapore?",
+       subtitle= "There are many planning sub-zones with a single pre-school, on the other hand, \nthere are two planning sub-zones with at least 20 pre-schools",
+      x = "Pre-school density (per km sq)",
+      y = "Frequency")
+ggplot(data=mpsz3414, 
+       aes(y = `PreSch Count`, 
+           x= as.numeric(`PreSch Density`)))+
+  geom_point(color="black", 
+             fill="light blue") +
+  xlim(0, 40) +
+  ylim(0, 40) +
+  labs(title = "",
+      x = "Pre-school density (per km sq)",
+      y = "Pre-school count")
+```
