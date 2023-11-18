@@ -18,6 +18,265 @@
     "href": "Hands-on Ex 1/Hands-on Exercise 1.html",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "",
-    "text": "Overview\nIn this hands-on exercise, you will learn how to handle geospatial data in R by using sf package.\nBy the end of this hands-on exercise, you should acquire the following competencies:\n\ninstalling and loading sf and tidyverse packages into R environment,\nimporting geospatial data by using appropriate functions of sf package,\nimporting aspatial data by using appropriate function of readr package,\nexploring the content of simple feature data frame by using appropriate Base R and sf functions,\nassigning or transforming coordinate systems by using using appropriate sf functions,\nconverting an aspatial data into a sf data frame by using appropriate function of sf package,\nperforming geoprocessing tasks by using appropriate functions of sf package,\nperforming data wrangling tasks by using appropriate functions of dplyr package and\nperforming Exploratory Data Analysis (EDA) by using appropriate functions from ggplot2 package.\n\n\n\nGetting Started\n\npacman::p_load(sf, tidyverse)\n\n\n\nImporting Geospatial Data\n\nmpsz = st_read(dsn = \"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial\", \n                  layer = \"MP14_SUBZONE_WEB_PL\")\n\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `D:\\KathyChiu77\\ISSS624\\Hands-on Ex 1\\Data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n\ncyclingpath = st_read(dsn = \"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial\", \n                         layer = \"CyclingPathGazette\")\n\nReading layer `CyclingPathGazette' from data source \n  `D:\\KathyChiu77\\ISSS624\\Hands-on Ex 1\\Data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 2558 features and 2 fields\nGeometry type: MULTILINESTRING\nDimension:     XY\nBounding box:  xmin: 11854.32 ymin: 28347.98 xmax: 42626.09 ymax: 48948.15\nProjected CRS: SVY21\n\npreschool = st_read(\"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial/PreSchoolsLocation.kml\")\n\nReading layer `PRESCHOOLS_LOCATION' from data source \n  `D:\\KathyChiu77\\ISSS624\\Hands-on Ex 1\\Data\\geospatial\\PreSchoolsLocation.kml' \n  using driver `KML'\nSimple feature collection with 2290 features and 2 fields\nGeometry type: POINT\nDimension:     XYZ\nBounding box:  xmin: 103.6878 ymin: 1.247759 xmax: 103.9897 ymax: 1.462134\nz_range:       zmin: 0 zmax: 0\nGeodetic CRS:  WGS 84\n\n\n\n\nChecking the Content of A Simple Feature Data Frame\n\nst_geometry(mpsz)\n\nGeometry set for 323 features \nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\nFirst 5 geometries:\n\n\nMULTIPOLYGON (((31495.56 30140.01, 31980.96 296...\n\n\nMULTIPOLYGON (((29092.28 30021.89, 29119.64 300...\n\n\nMULTIPOLYGON (((29932.33 29879.12, 29947.32 298...\n\n\nMULTIPOLYGON (((27131.28 30059.73, 27088.33 297...\n\n\nMULTIPOLYGON (((26451.03 30396.46, 26440.47 303...\n\nglimpse(mpsz)\n\nRows: 323\nColumns: 16\n$ OBJECTID   &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, …\n$ SUBZONE_NO &lt;int&gt; 1, 1, 3, 8, 3, 7, 9, 2, 13, 7, 12, 6, 1, 5, 1, 1, 3, 2, 2, …\n$ SUBZONE_N  &lt;chr&gt; \"MARINA SOUTH\", \"PEARL'S HILL\", \"BOAT QUAY\", \"HENDERSON HIL…\n$ SUBZONE_C  &lt;chr&gt; \"MSSZ01\", \"OTSZ01\", \"SRSZ03\", \"BMSZ08\", \"BMSZ03\", \"BMSZ07\",…\n$ CA_IND     &lt;chr&gt; \"Y\", \"Y\", \"Y\", \"N\", \"N\", \"N\", \"N\", \"Y\", \"N\", \"N\", \"N\", \"N\",…\n$ PLN_AREA_N &lt;chr&gt; \"MARINA SOUTH\", \"OUTRAM\", \"SINGAPORE RIVER\", \"BUKIT MERAH\",…\n$ PLN_AREA_C &lt;chr&gt; \"MS\", \"OT\", \"SR\", \"BM\", \"BM\", \"BM\", \"BM\", \"SR\", \"QT\", \"QT\",…\n$ REGION_N   &lt;chr&gt; \"CENTRAL REGION\", \"CENTRAL REGION\", \"CENTRAL REGION\", \"CENT…\n$ REGION_C   &lt;chr&gt; \"CR\", \"CR\", \"CR\", \"CR\", \"CR\", \"CR\", \"CR\", \"CR\", \"CR\", \"CR\",…\n$ INC_CRC    &lt;chr&gt; \"5ED7EB253F99252E\", \"8C7149B9EB32EEFC\", \"C35FEFF02B13E0E5\",…\n$ FMEL_UPD_D &lt;date&gt; 2014-12-05, 2014-12-05, 2014-12-05, 2014-12-05, 2014-12-05…\n$ X_ADDR     &lt;dbl&gt; 31595.84, 28679.06, 29654.96, 26782.83, 26201.96, 25358.82,…\n$ Y_ADDR     &lt;dbl&gt; 29220.19, 29782.05, 29974.66, 29933.77, 30005.70, 29991.38,…\n$ SHAPE_Leng &lt;dbl&gt; 5267.381, 3506.107, 1740.926, 3313.625, 2825.594, 4428.913,…\n$ SHAPE_Area &lt;dbl&gt; 1630379.27, 559816.25, 160807.50, 595428.89, 387429.44, 103…\n$ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYGON (…\n\nhead(mpsz, n=5)  \n\nSimple feature collection with 5 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 25867.68 ymin: 28369.47 xmax: 32362.39 ymax: 30435.54\nProjected CRS: SVY21\n  OBJECTID SUBZONE_NO      SUBZONE_N SUBZONE_C CA_IND      PLN_AREA_N\n1        1          1   MARINA SOUTH    MSSZ01      Y    MARINA SOUTH\n2        2          1   PEARL'S HILL    OTSZ01      Y          OUTRAM\n3        3          3      BOAT QUAY    SRSZ03      Y SINGAPORE RIVER\n4        4          8 HENDERSON HILL    BMSZ08      N     BUKIT MERAH\n5        5          3        REDHILL    BMSZ03      N     BUKIT MERAH\n  PLN_AREA_C       REGION_N REGION_C          INC_CRC FMEL_UPD_D   X_ADDR\n1         MS CENTRAL REGION       CR 5ED7EB253F99252E 2014-12-05 31595.84\n2         OT CENTRAL REGION       CR 8C7149B9EB32EEFC 2014-12-05 28679.06\n3         SR CENTRAL REGION       CR C35FEFF02B13E0E5 2014-12-05 29654.96\n4         BM CENTRAL REGION       CR 3775D82C5DDBEFBD 2014-12-05 26782.83\n5         BM CENTRAL REGION       CR 85D9ABEF0A40678F 2014-12-05 26201.96\n    Y_ADDR SHAPE_Leng SHAPE_Area                       geometry\n1 29220.19   5267.381  1630379.3 MULTIPOLYGON (((31495.56 30...\n2 29782.05   3506.107   559816.2 MULTIPOLYGON (((29092.28 30...\n3 29974.66   1740.926   160807.5 MULTIPOLYGON (((29932.33 29...\n4 29933.77   3313.625   595428.9 MULTIPOLYGON (((27131.28 30...\n5 30005.70   2825.594   387429.4 MULTIPOLYGON (((26451.03 30...\n\n\n\n\nPlotting the Geospatial Data\n\nplot(mpsz)\n\nWarning: plotting the first 9 out of 15 attributes; use max.plot = 15 to plot\nall\n\n\n\n\nplot(st_geometry(mpsz))\n\n\n\nplot(mpsz[\"PLN_AREA_N\"])\n\n\n\n\n\n\nWorking with Projection\n\nst_crs(mpsz)\n\nCoordinate Reference System:\n  User input: SVY21 \n  wkt:\nPROJCRS[\"SVY21\",\n    BASEGEOGCRS[\"SVY21[WGS84]\",\n        DATUM[\"World Geodetic System 1984\",\n            ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n                LENGTHUNIT[\"metre\",1]],\n            ID[\"EPSG\",6326]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433]]],\n    CONVERSION[\"unnamed\",\n        METHOD[\"Transverse Mercator\",\n            ID[\"EPSG\",9807]],\n        PARAMETER[\"Latitude of natural origin\",1.36666666666667,\n            ANGLEUNIT[\"Degree\",0.0174532925199433],\n            ID[\"EPSG\",8801]],\n        PARAMETER[\"Longitude of natural origin\",103.833333333333,\n            ANGLEUNIT[\"Degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"Scale factor at natural origin\",1,\n            SCALEUNIT[\"unity\",1],\n            ID[\"EPSG\",8805]],\n        PARAMETER[\"False easting\",28001.642,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",38744.572,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"(E)\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]],\n        AXIS[\"(N)\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]]]\n\nmpsz3414 &lt;- st_set_crs(mpsz, 3414)\n\nWarning: st_crs&lt;- : replacing crs does not reproject data; use st_transform for\nthat\n\nst_crs(mpsz3414)\n\nCoordinate Reference System:\n  User input: EPSG:3414 \n  wkt:\nPROJCRS[\"SVY21 / Singapore TM\",\n    BASEGEOGCRS[\"SVY21\",\n        DATUM[\"SVY21\",\n            ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        ID[\"EPSG\",4757]],\n    CONVERSION[\"Singapore Transverse Mercator\",\n        METHOD[\"Transverse Mercator\",\n            ID[\"EPSG\",9807]],\n        PARAMETER[\"Latitude of natural origin\",1.36666666666667,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8801]],\n        PARAMETER[\"Longitude of natural origin\",103.833333333333,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"Scale factor at natural origin\",1,\n            SCALEUNIT[\"unity\",1],\n            ID[\"EPSG\",8805]],\n        PARAMETER[\"False easting\",28001.642,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",38744.572,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"northing (N)\",north,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1]],\n        AXIS[\"easting (E)\",east,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1]],\n    USAGE[\n        SCOPE[\"Cadastre, engineering survey, topographic mapping.\"],\n        AREA[\"Singapore - onshore and offshore.\"],\n        BBOX[1.13,103.59,1.47,104.07]],\n    ID[\"EPSG\",3414]]\n\npreschool3414 &lt;- st_transform(preschool, \n                              crs = 3414)\n\n\n\nImporting and Converting An Aspatial Data\n\nlistings &lt;- read_csv(\"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/aspatial/listings.csv\")\n\nRows: 3483 Columns: 75\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr  (26): listing_url, source, name, description, neighborhood_overview, pi...\ndbl  (37): id, scrape_id, host_id, host_listings_count, host_total_listings_...\nlgl   (7): host_is_superhost, host_has_profile_pic, host_identity_verified, ...\ndate  (5): last_scraped, host_since, calendar_last_scraped, first_review, la...\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\nlist(listings) \n\n[[1]]\n# A tibble: 3,483 × 75\n       id listing_url            scrape_id last_scraped source name  description\n    &lt;dbl&gt; &lt;chr&gt;                      &lt;dbl&gt; &lt;date&gt;       &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;      \n 1  71609 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Vill… For 3 room…\n 2  71896 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Home… &lt;b&gt;The spa…\n 3  71903 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Home… Like your …\n 4 275343 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… **IMPORTAN…\n 5 275344 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… Lovely hom…\n 6 289234 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Home… This whole…\n 7 294281 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… I have 3 b…\n 8 324945 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… **IMPORTAN…\n 9 330095 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… **IMPORTAN…\n10 369141 https://www.airbnb.co…   2.02e13 2023-09-23   city … Plac… A room in …\n# ℹ 3,473 more rows\n# ℹ 68 more variables: neighborhood_overview &lt;chr&gt;, picture_url &lt;chr&gt;,\n#   host_id &lt;dbl&gt;, host_url &lt;chr&gt;, host_name &lt;chr&gt;, host_since &lt;date&gt;,\n#   host_location &lt;chr&gt;, host_about &lt;chr&gt;, host_response_time &lt;chr&gt;,\n#   host_response_rate &lt;chr&gt;, host_acceptance_rate &lt;chr&gt;,\n#   host_is_superhost &lt;lgl&gt;, host_thumbnail_url &lt;chr&gt;, host_picture_url &lt;chr&gt;,\n#   host_neighbourhood &lt;chr&gt;, host_listings_count &lt;dbl&gt;, …\n\n\n\nlistings_sf &lt;- st_as_sf(listings, \n                       coords = c(\"longitude\", \"latitude\"),\n                       crs=4326) %&gt;%\n  st_transform(crs = 3414)\nglimpse(listings_sf)\n\nRows: 3,483\nColumns: 74\n$ id                                           &lt;dbl&gt; 71609, 71896, 71903, 2753…\n$ listing_url                                  &lt;chr&gt; \"https://www.airbnb.com/r…\n$ scrape_id                                    &lt;dbl&gt; 2.023092e+13, 2.023092e+1…\n$ last_scraped                                 &lt;date&gt; 2023-09-23, 2023-09-23, …\n$ source                                       &lt;chr&gt; \"previous scrape\", \"previ…\n$ name                                         &lt;chr&gt; \"Villa in Singapore · ★4.…\n$ description                                  &lt;chr&gt; \"For 3 rooms.Book room 1&…\n$ neighborhood_overview                        &lt;chr&gt; NA, NA, \"Quiet and view o…\n$ picture_url                                  &lt;chr&gt; \"https://a0.muscache.com/…\n$ host_id                                      &lt;dbl&gt; 367042, 367042, 367042, 1…\n$ host_url                                     &lt;chr&gt; \"https://www.airbnb.com/u…\n$ host_name                                    &lt;chr&gt; \"Belinda\", \"Belinda\", \"Be…\n$ host_since                                   &lt;date&gt; 2011-01-29, 2011-01-29, …\n$ host_location                                &lt;chr&gt; \"Singapore\", \"Singapore\",…\n$ host_about                                   &lt;chr&gt; \"Hi My name is Belinda -H…\n$ host_response_time                           &lt;chr&gt; \"within a few hours\", \"wi…\n$ host_response_rate                           &lt;chr&gt; \"100%\", \"100%\", \"100%\", \"…\n$ host_acceptance_rate                         &lt;chr&gt; \"100%\", \"100%\", \"100%\", \"…\n$ host_is_superhost                            &lt;lgl&gt; FALSE, FALSE, FALSE, FALS…\n$ host_thumbnail_url                           &lt;chr&gt; \"https://a0.muscache.com/…\n$ host_picture_url                             &lt;chr&gt; \"https://a0.muscache.com/…\n$ host_neighbourhood                           &lt;chr&gt; \"Tampines\", \"Tampines\", \"…\n$ host_listings_count                          &lt;dbl&gt; 5, 5, 5, 52, 52, 5, 7, 52…\n$ host_total_listings_count                    &lt;dbl&gt; 15, 15, 15, 65, 65, 15, 8…\n$ host_verifications                           &lt;chr&gt; \"['email', 'phone']\", \"['…\n$ host_has_profile_pic                         &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, T…\n$ host_identity_verified                       &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, T…\n$ neighbourhood                                &lt;chr&gt; NA, NA, \"Singapore, Singa…\n$ neighbourhood_cleansed                       &lt;chr&gt; \"Tampines\", \"Tampines\", \"…\n$ neighbourhood_group_cleansed                 &lt;chr&gt; \"East Region\", \"East Regi…\n$ property_type                                &lt;chr&gt; \"Private room in villa\", …\n$ room_type                                    &lt;chr&gt; \"Private room\", \"Private …\n$ accommodates                                 &lt;dbl&gt; 3, 1, 2, 1, 1, 4, 2, 1, 1…\n$ bathrooms                                    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, N…\n$ bathrooms_text                               &lt;chr&gt; \"1 private bath\", \"Shared…\n$ bedrooms                                     &lt;dbl&gt; NA, NA, NA, NA, NA, 3, NA…\n$ beds                                         &lt;dbl&gt; 3, 1, 2, 1, 1, 5, 1, 1, 1…\n$ amenities                                    &lt;chr&gt; \"[\\\"Private backyard \\\\u2…\n$ price                                        &lt;chr&gt; \"$150.00\", \"$80.00\", \"$80…\n$ minimum_nights                               &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…\n$ maximum_nights                               &lt;dbl&gt; 365, 365, 365, 999, 999, …\n$ minimum_minimum_nights                       &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…\n$ maximum_minimum_nights                       &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…\n$ minimum_maximum_nights                       &lt;dbl&gt; 1125, 1125, 1125, 1125, 1…\n$ maximum_maximum_nights                       &lt;dbl&gt; 1125, 1125, 1125, 1125, 1…\n$ minimum_nights_avg_ntm                       &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…\n$ maximum_nights_avg_ntm                       &lt;dbl&gt; 1125, 1125, 1125, 1125, 1…\n$ calendar_updated                             &lt;lgl&gt; NA, NA, NA, NA, NA, NA, N…\n$ has_availability                             &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, T…\n$ availability_30                              &lt;dbl&gt; 28, 28, 28, 1, 30, 28, 30…\n$ availability_60                              &lt;dbl&gt; 58, 58, 58, 1, 60, 58, 60…\n$ availability_90                              &lt;dbl&gt; 88, 88, 88, 1, 90, 88, 90…\n$ availability_365                             &lt;dbl&gt; 89, 89, 89, 275, 274, 89,…\n$ calendar_last_scraped                        &lt;date&gt; 2023-09-23, 2023-09-23, …\n$ number_of_reviews                            &lt;dbl&gt; 20, 24, 47, 22, 17, 12, 1…\n$ number_of_reviews_ltm                        &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 1, 3…\n$ number_of_reviews_l30d                       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1…\n$ first_review                                 &lt;date&gt; 2011-12-19, 2011-07-30, …\n$ last_review                                  &lt;date&gt; 2020-01-17, 2019-10-13, …\n$ review_scores_rating                         &lt;dbl&gt; 4.44, 4.16, 4.41, 4.40, 4…\n$ review_scores_accuracy                       &lt;dbl&gt; 4.37, 4.22, 4.39, 4.16, 4…\n$ review_scores_cleanliness                    &lt;dbl&gt; 4.00, 4.09, 4.52, 4.26, 4…\n$ review_scores_checkin                        &lt;dbl&gt; 4.63, 4.43, 4.63, 4.47, 4…\n$ review_scores_communication                  &lt;dbl&gt; 4.78, 4.43, 4.64, 4.42, 4…\n$ review_scores_location                       &lt;dbl&gt; 4.26, 4.17, 4.50, 4.53, 4…\n$ review_scores_value                          &lt;dbl&gt; 4.32, 4.04, 4.36, 4.63, 4…\n$ license                                      &lt;chr&gt; NA, NA, NA, \"S0399\", \"S03…\n$ instant_bookable                             &lt;lgl&gt; FALSE, FALSE, FALSE, TRUE…\n$ calculated_host_listings_count               &lt;dbl&gt; 5, 5, 5, 52, 52, 5, 7, 52…\n$ calculated_host_listings_count_entire_homes  &lt;dbl&gt; 0, 0, 0, 1, 1, 0, 1, 1, 1…\n$ calculated_host_listings_count_private_rooms &lt;dbl&gt; 5, 5, 5, 51, 51, 5, 6, 51…\n$ calculated_host_listings_count_shared_rooms  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0…\n$ reviews_per_month                            &lt;dbl&gt; 0.14, 0.16, 0.31, 0.17, 0…\n$ geometry                                     &lt;POINT [m]&gt; POINT (41972.5 3639…\n\n\n\n\nGeoprocessing with sf package\n\nbuffer_cycling &lt;- st_buffer(cyclingpath, \n                               dist=5, nQuadSegs = 30)\nbuffer_cycling$AREA &lt;- st_area(buffer_cycling)\nsum(buffer_cycling$AREA)\n\n1774367 [m^2]\n\nmpsz3414$`PreSch Count`&lt;- lengths(st_intersects(mpsz3414, preschool3414))\nsummary(mpsz3414$`PreSch Count`)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   0.00    0.00    4.00    7.09   10.00   72.00 \n\ntop_n(mpsz3414, 1, `PreSch Count`)\n\nSimple feature collection with 1 feature and 16 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 39655.33 ymin: 35966 xmax: 42940.57 ymax: 38622.37\nProjected CRS: SVY21 / Singapore TM\n  OBJECTID SUBZONE_NO     SUBZONE_N SUBZONE_C CA_IND PLN_AREA_N PLN_AREA_C\n1      189          2 TAMPINES EAST    TMSZ02      N   TAMPINES         TM\n     REGION_N REGION_C          INC_CRC FMEL_UPD_D   X_ADDR   Y_ADDR SHAPE_Leng\n1 EAST REGION       ER 21658EAAF84F4D8D 2014-12-05 41122.55 37392.39   10180.62\n  SHAPE_Area                       geometry PreSch Count\n1    4339824 MULTIPOLYGON (((42196.76 38...           72\n\nmpsz3414$Area &lt;- mpsz3414 %&gt;%\n  st_area()\nmpsz3414 &lt;- mpsz3414 %&gt;%\n  mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)\n\n\n\nExplorotary Data Analysis (EDA)\n\nhist(mpsz3414$`PreSch Density`)\n\n\n\nggplot(data=mpsz3414, \n       aes(x= as.numeric(`PreSch Density`)))+\n  geom_histogram(bins=20, \n                 color=\"black\", \n                 fill=\"light blue\") +\n  labs(title = \"Are pre-school even distributed in Singapore?\",\n       subtitle= \"There are many planning sub-zones with a single pre-school, on the other hand, \\nthere are two planning sub-zones with at least 20 pre-schools\",\n      x = \"Pre-school density (per km sq)\",\n      y = \"Frequency\")\n\n\n\nggplot(data=mpsz3414, \n       aes(y = `PreSch Count`, \n           x= as.numeric(`PreSch Density`)))+\n  geom_point(color=\"black\", \n             fill=\"light blue\") +\n  xlim(0, 40) +\n  ylim(0, 40) +\n  labs(title = \"\",\n      x = \"Pre-school density (per km sq)\",\n      y = \"Pre-school count\")\n\nWarning: Removed 2 rows containing missing values (`geom_point()`)."
+    "text": "In this hands-on exercise, you will learn how to handle geospatial data in R by using sf package.\nBy the end of this hands-on exercise, you should acquire the following competencies:\n\ninstalling and loading sf and tidyverse packages into R environment,\nimporting geospatial data by using appropriate functions of sf package,\nimporting aspatial data by using appropriate function of readr package,\nexploring the content of simple feature data frame by using appropriate Base R and sf functions,\nassigning or transforming coordinate systems by using using appropriate sf functions,\nconverting an aspatial data into a sf data frame by using appropriate function of sf package,\nperforming geoprocessing tasks by using appropriate functions of sf package,\nperforming data wrangling tasks by using appropriate functions of dplyr package and\nperforming Exploratory Data Analysis (EDA) by using appropriate functions from ggplot2 package."
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#data-wrangling",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#data-wrangling",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Data wrangling",
+    "text": "Data wrangling\n\npopdata2020 &lt;- popdata %&gt;%\n  filter(Time == 2020) %&gt;%\n  group_by(PA, SZ, AG) %&gt;%\n  summarise(`POP` = sum(`Pop`)) %&gt;%\n  ungroup()%&gt;%\n  pivot_wider(names_from=AG, \n              values_from=POP) %&gt;%\n  mutate(YOUNG = rowSums(.[3:6])\n         +rowSums(.[12])) %&gt;%\nmutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+\nrowSums(.[13:15]))%&gt;%\nmutate(`AGED`=rowSums(.[16:21])) %&gt;%\nmutate(`TOTAL`=rowSums(.[3:21])) %&gt;%  \nmutate(`DEPENDENCY` = (`YOUNG` + `AGED`)\n/`ECONOMY ACTIVE`) %&gt;%\n  select(`PA`, `SZ`, `YOUNG`, \n       `ECONOMY ACTIVE`, `AGED`, \n       `TOTAL`, `DEPENDENCY`)\n\n`summarise()` has grouped output by 'PA', 'SZ'. You can override using the\n`.groups` argument."
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#joining-the-attribute-data-and-geospatial-data",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#joining-the-attribute-data-and-geospatial-data",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Joining the attribute data and geospatial data",
+    "text": "Joining the attribute data and geospatial data\n\npopdata2020 &lt;- popdata2020 %&gt;%\n  mutate_at(.vars = vars(PA, SZ), \n          .funs = list(toupper)) %&gt;%\n  filter(`ECONOMY ACTIVE` &gt; 0)\nmpsz_pop2020 &lt;- left_join(mpsz, popdata2020,\n                          by = c(\"SUBZONE_N\" = \"SZ\"))\nwrite_rds(mpsz_pop2020, \"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/rds/mpszpop2020.rds\")"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Plotting a choropleth map quickly by using qtm()",
+    "text": "Plotting a choropleth map quickly by using qtm()\n\nlibrary(tmap)\n\nBreaking News: tmap 3.x is retiring. Please test v4, e.g. with\nremotes::install_github('r-tmap/tmap')\n\ntmap_mode(\"plot\")\n\ntmap mode set to plotting\n\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#creating-a-choropleth-map-by-using-tmaps-elements",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#creating-a-choropleth-map-by-using-tmaps-elements",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Creating a choropleth map by using tmap's elements",
+    "text": "Creating a choropleth map by using tmap's elements\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"Dependency ratio\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar() +\n  tm_grid(alpha =0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-base-map",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-base-map",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing a base map",
+    "text": "Drawing a base map\n\ntm_shape(mpsz_pop2020) +\n  tm_polygons()"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-choropleth-map-using-tm_polygons",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-choropleth-map-using-tm_polygons",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing a choropleth map using tm_polygons()",
+    "text": "Drawing a choropleth map using tm_polygons()\n\ntm_shape(mpsz_pop2020)+\n  tm_polygons(\"DEPENDENCY\")"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-choropleth-map-using-tm_fill-and-tm_border",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-choropleth-map-using-tm_fill-and-tm_border",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing a choropleth map using tm_fill() and *tm_border()**",
+    "text": "Drawing a choropleth map using tm_fill() and *tm_border()**\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\")\n\n\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\") +\n  tm_borders(lwd = 0.1,  alpha = 1)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-choropleth-maps-with-built-in-classification-methods",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-choropleth-maps-with-built-in-classification-methods",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Plotting choropleth maps with built-in classification methods",
+    "text": "Plotting choropleth maps with built-in classification methods\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 5,\n          style = \"jenks\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nIn the code chunk below, equal data classification method is used.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 5,\n          style = \"equal\") +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-choropleth-map-with-custome-break",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-choropleth-map-with-custome-break",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Plotting choropleth map with custome break",
+    "text": "Plotting choropleth map with custome break\n\nsummary(mpsz_pop2020$DEPENDENCY)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 \n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +\n  tm_borders(alpha = 0.5)\n\nWarning: Values have found that are higher than the highest break"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#using-colourbrewer-palette",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#using-colourbrewer-palette",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Using ColourBrewer palette",
+    "text": "Using ColourBrewer palette\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 6,\n          style = \"quantile\",\n          palette = \"Blues\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nTo reverse the colour shading, add a \"-\" prefix.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#map-legend",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#map-legend",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Map Legend",
+    "text": "Map Legend\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"jenks\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone \\n(Jenks classification)\",\n            main.title.position = \"center\",\n            main.title.size = 1,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            legend.outside = FALSE,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#map-style",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#map-style",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Map style",
+    "text": "Map style\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"classic\")\n\ntmap style set to \"classic\"\n\n\nother available styles are: \"white\", \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"watercolor\""
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#cartographic-furniture",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#cartographic-furniture",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Cartographic Furniture",
+    "text": "Cartographic Furniture\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"No. of persons\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio \\nby planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar(width = 0.15) +\n  tm_grid(lwd = 0.1, alpha = 0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-small-multiple-choropleth-maps",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-small-multiple-choropleth-maps",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing Small Multiple Choropleth Maps",
+    "text": "Drawing Small Multiple Choropleth Maps"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "By assigning multiple values to at least one of the aesthetic arguments",
+    "text": "By assigning multiple values to at least one of the aesthetic arguments\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(c(\"YOUNG\", \"AGED\"),\n          style = \"equal\", \n          palette = \"Blues\") +\n  tm_layout(legend.position = c(\"right\", \"bottom\")) +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"white\")\n\ntmap style set to \"white\"\n\n\nother available styles are: \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"classic\", \"watercolor\" \n\n\n\n\n\n\ntm_shape(mpsz_pop2020)+ \n  tm_polygons(c(\"DEPENDENCY\",\"AGED\"),\n          style = c(\"equal\", \"quantile\"), \n          palette = list(\"Blues\",\"Greens\")) +\n  tm_layout(legend.position = c(\"right\", \"bottom\"))"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#by-defining-a-group-by-variable-in-tm_facets",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#by-defining-a-group-by-variable-in-tm_facets",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "By defining a group-by variable in tm_facets()",
+    "text": "By defining a group-by variable in tm_facets()\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          thres.poly = 0) + \n  tm_facets(by=\"REGION_N\", \n            free.coords=TRUE, \n            drop.shapes=TRUE) +\n  tm_layout(legend.show = FALSE,\n            title.position = c(\"center\", \"center\"), \n            title.size = 20) +\n  tm_borders(alpha = 0.5)\n\nWarning: The argument drop.shapes has been renamed to drop.units, and is\ntherefore deprecated"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "By creating multiple stand-alone maps with tmap_arrange()",
+    "text": "By creating multiple stand-alone maps with tmap_arrange()\n\nyoungmap &lt;- tm_shape(mpsz_pop2020)+ \n  tm_polygons(\"YOUNG\", \n              style = \"quantile\", \n              palette = \"Blues\")\n\nagedmap &lt;- tm_shape(mpsz_pop2020)+ \n  tm_polygons(\"AGED\", \n              style = \"quantile\", \n              palette = \"Blues\")\n\ntmap_arrange(youngmap, agedmap, asp=1, ncol=2)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#mappping-spatial-object-meeting-a-selection-criterion",
+    "href": "Hands-on Ex 1/Hands-on Exercise 1.html#mappping-spatial-object-meeting-a-selection-criterion",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Mappping Spatial Object Meeting a Selection Criterion",
+    "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)\n\nWarning in pre_process_gt(x, interactive = interactive, orig_crs =\ngm$shape.orig_crs): legend.width controls the width of the legend within a map.\nPlease use legend.outside.size to control the width of the outside legend"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "",
+    "text": "In this hands-on exercise, you will learn how to handle geospatial data in R by using sf package.\nBy the end of this hands-on exercise, you should acquire the following competencies:\n\ninstalling and loading sf and tidyverse packages into R environment,\nimporting geospatial data by using appropriate functions of sf package,\nimporting aspatial data by using appropriate function of readr package,\nexploring the content of simple feature data frame by using appropriate Base R and sf functions,\nassigning or transforming coordinate systems by using using appropriate sf functions,\nconverting an aspatial data into a sf data frame by using appropriate function of sf package,\nperforming geoprocessing tasks by using appropriate functions of sf package,\nperforming data wrangling tasks by using appropriate functions of dplyr package and\nperforming Exploratory Data Analysis (EDA) by using appropriate functions from ggplot2 package."
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#data-wrangling",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#data-wrangling",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Data wrangling",
+    "text": "Data wrangling\n\npopdata2020 &lt;- popdata %&gt;%\n  filter(Time == 2020) %&gt;%\n  group_by(PA, SZ, AG) %&gt;%\n  summarise(`POP` = sum(`Pop`)) %&gt;%\n  ungroup()%&gt;%\n  pivot_wider(names_from=AG, \n              values_from=POP) %&gt;%\n  mutate(YOUNG = rowSums(.[3:6])\n         +rowSums(.[12])) %&gt;%\nmutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+\nrowSums(.[13:15]))%&gt;%\nmutate(`AGED`=rowSums(.[16:21])) %&gt;%\nmutate(`TOTAL`=rowSums(.[3:21])) %&gt;%  \nmutate(`DEPENDENCY` = (`YOUNG` + `AGED`)\n/`ECONOMY ACTIVE`) %&gt;%\n  select(`PA`, `SZ`, `YOUNG`, \n       `ECONOMY ACTIVE`, `AGED`, \n       `TOTAL`, `DEPENDENCY`)\n\n`summarise()` has grouped output by 'PA', 'SZ'. You can override using the\n`.groups` argument."
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#joining-the-attribute-data-and-geospatial-data",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#joining-the-attribute-data-and-geospatial-data",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Joining the attribute data and geospatial data",
+    "text": "Joining the attribute data and geospatial data\n\npopdata2020 &lt;- popdata2020 %&gt;%\n  mutate_at(.vars = vars(PA, SZ), \n          .funs = list(toupper)) %&gt;%\n  filter(`ECONOMY ACTIVE` &gt; 0)\nmpsz_pop2020 &lt;- left_join(mpsz, popdata2020,\n                          by = c(\"SUBZONE_N\" = \"SZ\"))\nwrite_rds(mpsz_pop2020, \"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/rds/mpszpop2020.rds\")"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Plotting a choropleth map quickly by using qtm()",
+    "text": "Plotting a choropleth map quickly by using qtm()\n\ntmap_mode(\"plot\")\n\ntmap mode set to plotting\n\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#creating-a-choropleth-map-by-using-tmaps-elements",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#creating-a-choropleth-map-by-using-tmaps-elements",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Creating a choropleth map by using tmap’s elements",
+    "text": "Creating a choropleth map by using tmap’s elements\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"Dependency ratio\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar() +\n  tm_grid(alpha =0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-base-map",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-base-map",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing a base map",
+    "text": "Drawing a base map\n\ntm_shape(mpsz_pop2020) +\n  tm_polygons()"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_polygons",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_polygons",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing a choropleth map using tm_polygons()",
+    "text": "Drawing a choropleth map using tm_polygons()\n\ntm_shape(mpsz_pop2020)+\n  tm_polygons(\"DEPENDENCY\")"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_fill-and-tm_border",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_fill-and-tm_border",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing a choropleth map using tm_fill() and *tm_border()**",
+    "text": "Drawing a choropleth map using tm_fill() and *tm_border()**\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\")\n\n\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\") +\n  tm_borders(lwd = 0.1,  alpha = 1)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-maps-with-built-in-classification-methods",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-maps-with-built-in-classification-methods",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Plotting choropleth maps with built-in classification methods",
+    "text": "Plotting choropleth maps with built-in classification methods\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 5,\n          style = \"jenks\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nIn the code chunk below, equal data classification method is used.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 5,\n          style = \"equal\") +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-map-with-custome-break",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-map-with-custome-break",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Plotting choropleth map with custome break",
+    "text": "Plotting choropleth map with custome break\n\nsummary(mpsz_pop2020$DEPENDENCY)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 \n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +\n  tm_borders(alpha = 0.5)\n\nWarning: Values have found that are higher than the highest break"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#using-colourbrewer-palette",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#using-colourbrewer-palette",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Using ColourBrewer palette",
+    "text": "Using ColourBrewer palette\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 6,\n          style = \"quantile\",\n          palette = \"Blues\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nTo reverse the colour shading, add a “-” prefix.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-legend",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-legend",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Map Legend",
+    "text": "Map Legend\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"jenks\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone \\n(Jenks classification)\",\n            main.title.position = \"center\",\n            main.title.size = 1,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            legend.outside = FALSE,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-style",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-style",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Map style",
+    "text": "Map style\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"classic\")\n\ntmap style set to \"classic\"\n\n\nother available styles are: \"white\", \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"watercolor\""
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#cartographic-furniture",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#cartographic-furniture",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Cartographic Furniture",
+    "text": "Cartographic Furniture\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"No. of persons\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio \\nby planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar(width = 0.15) +\n  tm_grid(lwd = 0.1, alpha = 0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-small-multiple-choropleth-maps",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-small-multiple-choropleth-maps",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Drawing Small Multiple Choropleth Maps",
+    "text": "Drawing Small Multiple Choropleth Maps"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "By assigning multiple values to at least one of the aesthetic arguments",
+    "text": "By assigning multiple values to at least one of the aesthetic arguments\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(c(\"YOUNG\", \"AGED\"),\n          style = \"equal\", \n          palette = \"Blues\") +\n  tm_layout(legend.position = c(\"right\", \"bottom\")) +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"white\")\n\ntmap style set to \"white\"\n\n\nother available styles are: \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"classic\", \"watercolor\" \n\n\n\n\n\n\ntm_shape(mpsz_pop2020)+ \n  tm_polygons(c(\"DEPENDENCY\",\"AGED\"),\n          style = c(\"equal\", \"quantile\"), \n          palette = list(\"Blues\",\"Greens\")) +\n  tm_layout(legend.position = c(\"right\", \"bottom\"))"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-defining-a-group-by-variable-in-tm_facets",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-defining-a-group-by-variable-in-tm_facets",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "By defining a group-by variable in tm_facets()",
+    "text": "By defining a group-by variable in tm_facets()\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          thres.poly = 0) + \n  tm_facets(by=\"REGION_N\", \n            free.coords=TRUE, \n            drop.shapes=TRUE) +\n  tm_layout(legend.show = FALSE,\n            title.position = c(\"center\", \"center\"), \n            title.size = 20) +\n  tm_borders(alpha = 0.5)\n\nWarning: The argument drop.shapes has been renamed to drop.units, and is\ntherefore deprecated"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "By creating multiple stand-alone maps with tmap_arrange()",
+    "text": "By creating multiple stand-alone maps with tmap_arrange()\n\nyoungmap &lt;- tm_shape(mpsz_pop2020)+ \n  tm_polygons(\"YOUNG\", \n              style = \"quantile\", \n              palette = \"Blues\")\n\nagedmap &lt;- tm_shape(mpsz_pop2020)+ \n  tm_polygons(\"AGED\", \n              style = \"quantile\", \n              palette = \"Blues\")\n\ntmap_arrange(youngmap, agedmap, asp=1, ncol=2)"
+  },
+  {
+    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#mappping-spatial-object-meeting-a-selection-criterion",
+    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#mappping-spatial-object-meeting-a-selection-criterion",
+    "title": "Hands on Exercise 1: Data importing and wrangling",
+    "section": "Mappping Spatial Object Meeting a Selection Criterion",
+    "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)\n\nWarning in pre_process_gt(x, interactive = interactive, orig_crs =\ngm$shape.orig_crs): legend.width controls the width of the legend within a map.\nPlease use legend.outside.size to control the width of the outside legend"
   }
 ]
