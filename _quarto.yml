@@ -6,10 +6,13 @@ website:
   navbar:
     left: 
       - text: Hands-on Exercises
-      - text: In-Class Exercises
         menu: 
           - text: Hands-on Exercise 1
-            href: Hands-on Ex 1/Hands-on Exercise 1.qmd
+            href: Hands-on Ex 1/Hands-on Exercise 1.html
+      - text: In-class Exercises
+        menu: 
+          - text: In-class Exercise 1
+            href: In-class Ex/In-class Ex1/In-class_Ex1_demo.html
     right:
       - href: index.qmd
         text: Home

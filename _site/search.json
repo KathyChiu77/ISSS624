@@ -4,7 +4,14 @@
     "href": "index.html",
     "title": "ISSS624",
     "section": "",
-    "text": "Welcome to ISSS624 Geospatial Analytics Applications!\nIn this webpage, I am going to share with you my learning journey of geospatial analytics.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Welcome to ISSS624 Geospatial Analytics Applications!\nIn this webpage, I am going to share with you my learning journey of geospatial analytics.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "In-class Ex/In-class Ex1/data/geospatial/MPSZ-2019.html",
+    "href": "In-class Ex/In-class Ex1/data/geospatial/MPSZ-2019.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   },
   {
     "objectID": "about.html",
@@ -145,12 +152,5 @@
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Mappping Spatial Object Meeting a Selection Criterion",
     "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)\n\nWarning in pre_process_gt(x, interactive = interactive, orig_crs =\ngm$shape.orig_crs): legend.width controls the width of the legend within a map.\nPlease use legend.outside.size to control the width of the outside legend"
-  },
-  {
-    "objectID": "In-class Ex/In-class Ex1/data/geospatial/MPSZ-2019.html",
-    "href": "In-class Ex/In-class Ex1/data/geospatial/MPSZ-2019.html",
-    "title": "ISSS624",
-    "section": "",
-    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   }
 ]
