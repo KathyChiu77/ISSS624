@@ -39,14 +39,14 @@
     "href": "Hands-on Ex 1/Hands-on Exercise 1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Plotting a choropleth map quickly by using qtm()",
-    "text": "Plotting a choropleth map quickly by using qtm()\n\nlibrary(tmap)\n\nBreaking News: tmap 3.x is retiring. Please test v4, e.g. with\nremotes::install_github('r-tmap/tmap')\n\ntmap_mode(\"plot\")\n\ntmap mode set to plotting\n\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
+    "text": "Plotting a choropleth map quickly by using qtm()\n\ntmap_mode(\"plot\")\n\ntmap mode set to plotting\n\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
   },
   {
     "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#creating-a-choropleth-map-by-using-tmaps-elements",
     "href": "Hands-on Ex 1/Hands-on Exercise 1.html#creating-a-choropleth-map-by-using-tmaps-elements",
     "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Creating a choropleth map by using tmap's elements",
-    "text": "Creating a choropleth map by using tmap's elements\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"Dependency ratio\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar() +\n  tm_grid(alpha =0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
+    "section": "Creating a choropleth map by using tmap’s elements",
+    "text": "Creating a choropleth map by using tmap’s elements\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"Dependency ratio\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar() +\n  tm_grid(alpha =0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
   },
   {
     "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#drawing-a-base-map",
@@ -88,7 +88,7 @@
     "href": "Hands-on Ex 1/Hands-on Exercise 1.html#using-colourbrewer-palette",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Using ColourBrewer palette",
-    "text": "Using ColourBrewer palette\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 6,\n          style = \"quantile\",\n          palette = \"Blues\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nTo reverse the colour shading, add a \"-\" prefix.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5)"
+    "text": "Using ColourBrewer palette\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 6,\n          style = \"quantile\",\n          palette = \"Blues\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nTo reverse the colour shading, add a “-” prefix.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5)"
   },
   {
     "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#map-legend",
@@ -142,139 +142,6 @@
   {
     "objectID": "Hands-on Ex 1/Hands-on Exercise 1.html#mappping-spatial-object-meeting-a-selection-criterion",
     "href": "Hands-on Ex 1/Hands-on Exercise 1.html#mappping-spatial-object-meeting-a-selection-criterion",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Mappping Spatial Object Meeting a Selection Criterion",
-    "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)\n\nWarning in pre_process_gt(x, interactive = interactive, orig_crs =\ngm$shape.orig_crs): legend.width controls the width of the legend within a map.\nPlease use legend.outside.size to control the width of the outside legend"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "",
-    "text": "In this hands-on exercise, you will learn how to handle geospatial data in R by using sf package.\nBy the end of this hands-on exercise, you should acquire the following competencies:\n\ninstalling and loading sf and tidyverse packages into R environment,\nimporting geospatial data by using appropriate functions of sf package,\nimporting aspatial data by using appropriate function of readr package,\nexploring the content of simple feature data frame by using appropriate Base R and sf functions,\nassigning or transforming coordinate systems by using using appropriate sf functions,\nconverting an aspatial data into a sf data frame by using appropriate function of sf package,\nperforming geoprocessing tasks by using appropriate functions of sf package,\nperforming data wrangling tasks by using appropriate functions of dplyr package and\nperforming Exploratory Data Analysis (EDA) by using appropriate functions from ggplot2 package."
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#data-wrangling",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#data-wrangling",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Data wrangling",
-    "text": "Data wrangling\n\npopdata2020 &lt;- popdata %&gt;%\n  filter(Time == 2020) %&gt;%\n  group_by(PA, SZ, AG) %&gt;%\n  summarise(`POP` = sum(`Pop`)) %&gt;%\n  ungroup()%&gt;%\n  pivot_wider(names_from=AG, \n              values_from=POP) %&gt;%\n  mutate(YOUNG = rowSums(.[3:6])\n         +rowSums(.[12])) %&gt;%\nmutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+\nrowSums(.[13:15]))%&gt;%\nmutate(`AGED`=rowSums(.[16:21])) %&gt;%\nmutate(`TOTAL`=rowSums(.[3:21])) %&gt;%  \nmutate(`DEPENDENCY` = (`YOUNG` + `AGED`)\n/`ECONOMY ACTIVE`) %&gt;%\n  select(`PA`, `SZ`, `YOUNG`, \n       `ECONOMY ACTIVE`, `AGED`, \n       `TOTAL`, `DEPENDENCY`)\n\n`summarise()` has grouped output by 'PA', 'SZ'. You can override using the\n`.groups` argument."
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#joining-the-attribute-data-and-geospatial-data",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#joining-the-attribute-data-and-geospatial-data",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Joining the attribute data and geospatial data",
-    "text": "Joining the attribute data and geospatial data\n\npopdata2020 &lt;- popdata2020 %&gt;%\n  mutate_at(.vars = vars(PA, SZ), \n          .funs = list(toupper)) %&gt;%\n  filter(`ECONOMY ACTIVE` &gt; 0)\nmpsz_pop2020 &lt;- left_join(mpsz, popdata2020,\n                          by = c(\"SUBZONE_N\" = \"SZ\"))\nwrite_rds(mpsz_pop2020, \"D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/rds/mpszpop2020.rds\")"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Plotting a choropleth map quickly by using qtm()",
-    "text": "Plotting a choropleth map quickly by using qtm()\n\ntmap_mode(\"plot\")\n\ntmap mode set to plotting\n\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#creating-a-choropleth-map-by-using-tmaps-elements",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#creating-a-choropleth-map-by-using-tmaps-elements",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Creating a choropleth map by using tmap’s elements",
-    "text": "Creating a choropleth map by using tmap’s elements\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"Dependency ratio\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar() +\n  tm_grid(alpha =0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-base-map",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-base-map",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Drawing a base map",
-    "text": "Drawing a base map\n\ntm_shape(mpsz_pop2020) +\n  tm_polygons()"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_polygons",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_polygons",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Drawing a choropleth map using tm_polygons()",
-    "text": "Drawing a choropleth map using tm_polygons()\n\ntm_shape(mpsz_pop2020)+\n  tm_polygons(\"DEPENDENCY\")"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_fill-and-tm_border",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-a-choropleth-map-using-tm_fill-and-tm_border",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Drawing a choropleth map using tm_fill() and *tm_border()**",
-    "text": "Drawing a choropleth map using tm_fill() and *tm_border()**\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\")\n\n\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\") +\n  tm_borders(lwd = 0.1,  alpha = 1)"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-maps-with-built-in-classification-methods",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-maps-with-built-in-classification-methods",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Plotting choropleth maps with built-in classification methods",
-    "text": "Plotting choropleth maps with built-in classification methods\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 5,\n          style = \"jenks\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nIn the code chunk below, equal data classification method is used.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 5,\n          style = \"equal\") +\n  tm_borders(alpha = 0.5)"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-map-with-custome-break",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#plotting-choropleth-map-with-custome-break",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Plotting choropleth map with custome break",
-    "text": "Plotting choropleth map with custome break\n\nsummary(mpsz_pop2020$DEPENDENCY)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 \n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +\n  tm_borders(alpha = 0.5)\n\nWarning: Values have found that are higher than the highest break"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#using-colourbrewer-palette",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#using-colourbrewer-palette",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Using ColourBrewer palette",
-    "text": "Using ColourBrewer palette\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          n = 6,\n          style = \"quantile\",\n          palette = \"Blues\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\nTo reverse the colour shading, add a “-” prefix.\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5)"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-legend",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-legend",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Map Legend",
-    "text": "Map Legend\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"jenks\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone \\n(Jenks classification)\",\n            main.title.position = \"center\",\n            main.title.size = 1,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            legend.outside = FALSE,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-style",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#map-style",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Map style",
-    "text": "Map style\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"classic\")\n\ntmap style set to \"classic\"\n\n\nother available styles are: \"white\", \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"watercolor\""
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#cartographic-furniture",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#cartographic-furniture",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Cartographic Furniture",
-    "text": "Cartographic Furniture\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\",\n          title = \"No. of persons\") +\n  tm_layout(main.title = \"Distribution of Dependency Ratio \\nby planning subzone\",\n            main.title.position = \"center\",\n            main.title.size = 1.2,\n            legend.height = 0.45, \n            legend.width = 0.35,\n            frame = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type=\"8star\", size = 2) +\n  tm_scale_bar(width = 0.15) +\n  tm_grid(lwd = 0.1, alpha = 0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\", \n             position = c(\"left\", \"bottom\"))"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-small-multiple-choropleth-maps",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#drawing-small-multiple-choropleth-maps",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "Drawing Small Multiple Choropleth Maps",
-    "text": "Drawing Small Multiple Choropleth Maps"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "By assigning multiple values to at least one of the aesthetic arguments",
-    "text": "By assigning multiple values to at least one of the aesthetic arguments\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(c(\"YOUNG\", \"AGED\"),\n          style = \"equal\", \n          palette = \"Blues\") +\n  tm_layout(legend.position = c(\"right\", \"bottom\")) +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"white\")\n\ntmap style set to \"white\"\n\n\nother available styles are: \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"classic\", \"watercolor\" \n\n\n\n\n\n\ntm_shape(mpsz_pop2020)+ \n  tm_polygons(c(\"DEPENDENCY\",\"AGED\"),\n          style = c(\"equal\", \"quantile\"), \n          palette = list(\"Blues\",\"Greens\")) +\n  tm_layout(legend.position = c(\"right\", \"bottom\"))"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-defining-a-group-by-variable-in-tm_facets",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-defining-a-group-by-variable-in-tm_facets",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "By defining a group-by variable in tm_facets()",
-    "text": "By defining a group-by variable in tm_facets()\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          thres.poly = 0) + \n  tm_facets(by=\"REGION_N\", \n            free.coords=TRUE, \n            drop.shapes=TRUE) +\n  tm_layout(legend.show = FALSE,\n            title.position = c(\"center\", \"center\"), \n            title.size = 20) +\n  tm_borders(alpha = 0.5)\n\nWarning: The argument drop.shapes has been renamed to drop.units, and is\ntherefore deprecated"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
-    "title": "Hands on Exercise 1: Data importing and wrangling",
-    "section": "By creating multiple stand-alone maps with tmap_arrange()",
-    "text": "By creating multiple stand-alone maps with tmap_arrange()\n\nyoungmap &lt;- tm_shape(mpsz_pop2020)+ \n  tm_polygons(\"YOUNG\", \n              style = \"quantile\", \n              palette = \"Blues\")\n\nagedmap &lt;- tm_shape(mpsz_pop2020)+ \n  tm_polygons(\"AGED\", \n              style = \"quantile\", \n              palette = \"Blues\")\n\ntmap_arrange(youngmap, agedmap, asp=1, ncol=2)"
-  },
-  {
-    "objectID": "Hands-on Ex 1/Hands_on_Exercise_1.html#mappping-spatial-object-meeting-a-selection-criterion",
-    "href": "Hands-on Ex 1/Hands_on_Exercise_1.html#mappping-spatial-object-meeting-a-selection-criterion",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Mappping Spatial Object Meeting a Selection Criterion",
     "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)\n\nWarning in pre_process_gt(x, interactive = interactive, orig_crs =\ngm$shape.orig_crs): legend.width controls the width of the legend within a map.\nPlease use legend.outside.size to control the width of the outside legend"
