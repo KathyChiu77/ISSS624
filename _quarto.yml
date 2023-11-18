@@ -6,6 +6,7 @@ website:
   navbar:
     left: 
       - text: Hands-on Exercises
+      - text: In-Class Exercises
         menu: 
           - text: Hands-on Exercise 1
             href: Hands-on Ex 1/Hands-on Exercise 1.qmd
