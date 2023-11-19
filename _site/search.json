@@ -32,7 +32,7 @@
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#data-wrangling",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Data wrangling",
-    "text": "Data wrangling\n\npopdata2020 &lt;- popdata %&gt;%\n  filter(Time == 2020) %&gt;%\n  group_by(PA, SZ, AG) %&gt;%\n  summarise(`POP` = sum(`Pop`)) %&gt;%\n  ungroup()%&gt;%\n  pivot_wider(names_from=AG, \n              values_from=POP) %&gt;%\n  mutate(YOUNG = rowSums(.[3:6])\n         +rowSums(.[12])) %&gt;%\nmutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+\nrowSums(.[13:15]))%&gt;%\nmutate(`AGED`=rowSums(.[16:21])) %&gt;%\nmutate(`TOTAL`=rowSums(.[3:21])) %&gt;%  \nmutate(`DEPENDENCY` = (`YOUNG` + `AGED`)\n/`ECONOMY ACTIVE`) %&gt;%\n  select(`PA`, `SZ`, `YOUNG`, \n       `ECONOMY ACTIVE`, `AGED`, \n       `TOTAL`, `DEPENDENCY`)\n\n`summarise()` has grouped output by 'PA', 'SZ'. You can override using the\n`.groups` argument."
+    "text": "Data wrangling\n\npopdata2020 &lt;- popdata %&gt;%\n  filter(Time == 2020) %&gt;%\n  group_by(PA, SZ, AG) %&gt;%\n  summarise(`POP` = sum(`Pop`)) %&gt;%\n  ungroup()%&gt;%\n  pivot_wider(names_from=AG, \n              values_from=POP) %&gt;%\n  mutate(YOUNG = rowSums(.[3:6])\n         +rowSums(.[12])) %&gt;%\nmutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+\nrowSums(.[13:15]))%&gt;%\nmutate(`AGED`=rowSums(.[16:21])) %&gt;%\nmutate(`TOTAL`=rowSums(.[3:21])) %&gt;%  \nmutate(`DEPENDENCY` = (`YOUNG` + `AGED`)\n/`ECONOMY ACTIVE`) %&gt;%\n  select(`PA`, `SZ`, `YOUNG`, \n       `ECONOMY ACTIVE`, `AGED`, \n       `TOTAL`, `DEPENDENCY`)"
   },
   {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#joining-the-attribute-data-and-geospatial-data",
@@ -46,7 +46,7 @@
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#plotting-a-choropleth-map-quickly-by-using-qtm",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Plotting a choropleth map quickly by using qtm()",
-    "text": "Plotting a choropleth map quickly by using qtm()\n\ntmap_mode(\"plot\")\n\ntmap mode set to plotting\n\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
+    "text": "Plotting a choropleth map quickly by using qtm()\n\ntmap_mode(\"plot\")\nqtm(mpsz_pop2020, \n    fill = \"DEPENDENCY\")"
   },
   {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#creating-a-choropleth-map-by-using-tmaps-elements",
@@ -88,7 +88,7 @@
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#plotting-choropleth-map-with-custome-break",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Plotting choropleth map with custome break",
-    "text": "Plotting choropleth map with custome break\n\nsummary(mpsz_pop2020$DEPENDENCY)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 \n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +\n  tm_borders(alpha = 0.5)\n\nWarning: Values have found that are higher than the highest break"
+    "text": "Plotting choropleth map with custome break\n\nsummary(mpsz_pop2020$DEPENDENCY)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 \n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\",\n          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +\n  tm_borders(alpha = 0.5)"
   },
   {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#using-colourbrewer-palette",
@@ -109,7 +109,7 @@
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#map-style",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Map style",
-    "text": "Map style\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"classic\")\n\ntmap style set to \"classic\"\n\n\nother available styles are: \"white\", \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"watercolor\""
+    "text": "Map style\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"-Greens\") +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"classic\")"
   },
   {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#cartographic-furniture",
@@ -130,14 +130,14 @@
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "By assigning multiple values to at least one of the aesthetic arguments",
-    "text": "By assigning multiple values to at least one of the aesthetic arguments\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(c(\"YOUNG\", \"AGED\"),\n          style = \"equal\", \n          palette = \"Blues\") +\n  tm_layout(legend.position = c(\"right\", \"bottom\")) +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"white\")\n\ntmap style set to \"white\"\n\n\nother available styles are: \"gray\", \"natural\", \"cobalt\", \"col_blind\", \"albatross\", \"beaver\", \"bw\", \"classic\", \"watercolor\" \n\n\n\n\n\n\ntm_shape(mpsz_pop2020)+ \n  tm_polygons(c(\"DEPENDENCY\",\"AGED\"),\n          style = c(\"equal\", \"quantile\"), \n          palette = list(\"Blues\",\"Greens\")) +\n  tm_layout(legend.position = c(\"right\", \"bottom\"))"
+    "text": "By assigning multiple values to at least one of the aesthetic arguments\n\ntm_shape(mpsz_pop2020)+\n  tm_fill(c(\"YOUNG\", \"AGED\"),\n          style = \"equal\", \n          palette = \"Blues\") +\n  tm_layout(legend.position = c(\"right\", \"bottom\")) +\n  tm_borders(alpha = 0.5) +\n  tmap_style(\"white\")\n\n\n\n\n\ntm_shape(mpsz_pop2020)+ \n  tm_polygons(c(\"DEPENDENCY\",\"AGED\"),\n          style = c(\"equal\", \"quantile\"), \n          palette = list(\"Blues\",\"Greens\")) +\n  tm_layout(legend.position = c(\"right\", \"bottom\"))"
   },
   {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#by-defining-a-group-by-variable-in-tm_facets",
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#by-defining-a-group-by-variable-in-tm_facets",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "By defining a group-by variable in tm_facets()",
-    "text": "By defining a group-by variable in tm_facets()\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          thres.poly = 0) + \n  tm_facets(by=\"REGION_N\", \n            free.coords=TRUE, \n            drop.shapes=TRUE) +\n  tm_layout(legend.show = FALSE,\n            title.position = c(\"center\", \"center\"), \n            title.size = 20) +\n  tm_borders(alpha = 0.5)\n\nWarning: The argument drop.shapes has been renamed to drop.units, and is\ntherefore deprecated"
+    "text": "By defining a group-by variable in tm_facets()\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          thres.poly = 0) + \n  tm_facets(by=\"REGION_N\", \n            free.coords=TRUE, \n            drop.shapes=TRUE) +\n  tm_layout(legend.show = FALSE,\n            title.position = c(\"center\", \"center\"), \n            title.size = 20) +\n  tm_borders(alpha = 0.5)"
   },
   {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#by-creating-multiple-stand-alone-maps-with-tmap_arrange",
@@ -151,7 +151,7 @@
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html#mappping-spatial-object-meeting-a-selection-criterion",
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Mappping Spatial Object Meeting a Selection Criterion",
-    "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)\n\nWarning in pre_process_gt(x, interactive = interactive, orig_crs =\ngm$shape.orig_crs): legend.width controls the width of the legend within a map.\nPlease use legend.outside.size to control the width of the outside legend"
+    "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)"
   },
   {
     "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html",

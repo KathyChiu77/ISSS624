@@ -1,5 +1,14 @@
 ---
 title: "Hands on Exercise 1: Data importing and wrangling"
+author: "QIU RUILIU"
+date: "16 Nov 2023"
+date-modified: "last-modified"
+format: html
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
 ---
 
 # Overview
