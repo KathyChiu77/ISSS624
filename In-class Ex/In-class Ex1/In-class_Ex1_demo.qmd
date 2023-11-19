@@ -1,4 +1,77 @@
 ---
 title: "In-class Exercise 1"
 author: "QIU RUILIU"
+date: "18 Nov 2023"
+date-modified: "last-modified"
+format: html
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
 ---
+
+## **Getting started**
+
+The code chunk below uses p_load() of pacman package to check if the required packages have been installed on the computer. If they are, the packages will be launched. The packages used are:
+
+-   **tmap**: for thematic mapping
+
+-   **sf**: for geospatial data wrangling
+
+-   **tidyverse**: for non-spatial data wrangling
+
+```{r}
+pacman::p_load(tmap, sf, tidyverse)
+```
+
+## **Import Passenger Volume by Origin-Destination Bus Stops**
+
+The code chunk below uses the `read_csv()` function of **readr** package to import the csv file into R and save it as a R dataframe called `odbus`.
+
+```{r}
+odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
+```
+
+`ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` are numeric variables that are categorical in nature. As such, they should be transformed to factor so that R treats them as a grouping variable.
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE)
+```
+
+## **Extract Commuting Flow data**
+
+The code chunk below extracts commuting flows on weekday during the rush hour (7am to 9am).
+
+```{r}
+origtrip_7_9 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 7 & TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+## **Import Geospatial Data**
+
+Geospatial data is adopted to enrich analysis.
+
+### **Import Bus Stop Locations**
+
+The code chunk below uses the `st_read()` function of **sf** package to import `BusStop` shapefile into R as a simple feature data frame called `BusStop`. As `BusStop` uses **svy21** projected coordinate system, the `crs` is set to 3414.
+
+```{r}
+BusStop <- st_read(dsn = "data/geospatial", 
+                layer = "BusStop") %>%
+  st_transform(crs=3414)
+```
+
+### **Import Planning Subzone data**
+
+The code chunk below uses the `st_read()` function of **sf** package to import `MPSZ-2019` shapefile into R as a simple feature data frame called `mpsz`. To ensure we can use `mpsz` together with `BusStop`, `mpsz` is reprojected to the **svy21** projected coordinate system (`crs=3413`).
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", 
+                layer = "MPSZ-2019") %>%
+  st_transform(crs=3414)
+```

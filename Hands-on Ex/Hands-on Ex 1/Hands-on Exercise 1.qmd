@@ -35,11 +35,11 @@ pacman::p_load(sf, tmap, tidyverse)
 # **Importing Geospatial Data**
 
 ```{r}
-mpsz = st_read(dsn = "D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial", 
+mpsz = st_read(dsn = "Data/geospatial", 
                   layer = "MP14_SUBZONE_WEB_PL")
-cyclingpath = st_read(dsn = "D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial", 
+cyclingpath = st_read(dsn = "Data/geospatial", 
                          layer = "CyclingPathGazette")
-preschool = st_read("D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/geospatial/PreSchoolsLocation.kml")
+preschool = st_read("Data/geospatial/PreSchoolsLocation.kml")
 ```
 
 # **Checking the Content of A Simple Feature Data Frame**
@@ -71,7 +71,7 @@ preschool3414 <- st_transform(preschool,
 # **Importing and Converting An Aspatial Data**
 
 ```{r}
-listings <- read_csv("D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/aspatial/listings.csv")
+listings <- read_csv("Data/aspatial/listings.csv")
 list(listings) 
 ```
 
@@ -127,7 +127,7 @@ ggplot(data=mpsz3414,
 # Importing the Population Data
 
 ```{r}
-popdata <- read_csv("D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/aspatial/respopagesextod2011to2020.csv")
+popdata <- read_csv("Data/aspatial/respopagesextod2011to2020.csv")
 ```
 
 # **Data Preparation**
@@ -176,7 +176,7 @@ popdata2020 <- popdata2020 %>%
   filter(`ECONOMY ACTIVE` > 0)
 mpsz_pop2020 <- left_join(mpsz, popdata2020,
                           by = c("SUBZONE_N" = "SZ"))
-write_rds(mpsz_pop2020, "D:/KathyChiu77/ISSS624/Hands-on Ex 1/Data/rds/mpszpop2020.rds")
+write_rds(mpsz_pop2020, "Data/rds/mpszpop2020.rds")
 ```
 
 # **Choropleth Mapping Geospatial Data Using *tmap***
