@@ -161,6 +161,13 @@
     "text": "The specific task of this in-class exercise are as follows:\n\nto import Passenger Volume by Origin Destination Bus Stops data set downloaded from LTA DataMall in to RStudio environment,\nto import geospatial data in ESRI shapefile format into sf data frame format,\nto perform data wrangling by using appropriate functions from tidyverse and sf pakcges, and\nto visualise the distribution of passenger trip by using tmap methods and functions."
   },
   {
+    "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#tasks",
+    "href": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#tasks",
+    "title": "In-class Exercise 1",
+    "section": "",
+    "text": "The specific task of this in-class exercise are as follows:\n\nto import Passenger Volume by Origin Destination Bus Stops data set downloaded from LTA DataMall in to RStudio environment,\nto import geospatial data in ESRI shapefile format into sf data frame format,\nto perform data wrangling by using appropriate functions from tidyverse and sf pakcges, and\nto visualise the distribution of passenger trip by using tmap methods and functions."
+  },
+  {
     "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#getting-started",
     "href": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#getting-started",
     "title": "In-class Exercise 1",
@@ -180,20 +187,6 @@
     "title": "In-class Exercise 1",
     "section": "Extract Commuting Flow data",
     "text": "Extract Commuting Flow data\nThe code chunk below extracts commuting flows on weekday during the rush hour (7am to 9am).\n\norigin7_9 &lt;- odbus %&gt;%\n  filter(DAY_TYPE == \"WEEKDAY\") %&gt;%\n  filter(TIME_PER_HOUR &gt;= 7 &\n           TIME_PER_HOUR &lt;= 9) %&gt;%\n  group_by(ORIGIN_PT_CODE) %&gt;%\n  summarise(TRIPS = sum(TOTAL_TRIPS))\n\nIt should look similar to the data table below.\n\nkable(head(origin7_9))\n\n\n\n\nORIGIN_PT_CODE\nTRIPS\n\n\n\n\n01012\n1617\n\n\n01013\n813\n\n\n01019\n1620\n\n\n01029\n2383\n\n\n01039\n2727\n\n\n01059\n1415\n\n\n\n\n\nWe will save the output in rds format for future used.\n\nwrite_rds(origin7_9, \"data/rds/origin7_9.rds\")\n\nThe code chunk below will be used to import the save origin7_9.rds into R environment.\n\norigin7_9 &lt;- read_rds(\"data/rds/origin7_9.rds\")"
-  },
-  {
-    "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#import-geospatial-data",
-    "href": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#import-geospatial-data",
-    "title": "In-class Exercise 1",
-    "section": "Import Geospatial Data",
-    "text": "Import Geospatial Data\nGeospatial data is adopted to enrich analysis.\n\nImport Bus Stop Locations\nThe code chunk below uses the st_read() function of sf package to import BusStop shapefile into R as a simple feature data frame called BusStop. As BusStop uses svy21 projected coordinate system, the crs is set to 3414.\n\nBusStop &lt;- st_read(dsn = \"data/geospatial\", \n                layer = \"BusStop\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `BusStop' from data source \n  `D:\\KathyChiu77\\ISSS624\\In-class Ex\\In-class Ex1\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 5161 features and 3 fields\nGeometry type: POINT\nDimension:     XY\nBounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48284.56 ymax: 52983.82\nProjected CRS: SVY21\n\n\n\n\nImport Planning Subzone data\nThe code chunk below uses the st_read() function of sf package to import MPSZ-2019 shapefile into R as a simple feature data frame called mpsz. To ensure we can use mpsz together with BusStop, mpsz is reprojected to the svy21 projected coordinate system (crs=3413).\n\nmpsz &lt;- st_read(dsn = \"data/geospatial\", \n                layer = \"MPSZ-2019\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `MPSZ-2019' from data source \n  `D:\\KathyChiu77\\ISSS624\\In-class Ex\\In-class Ex1\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84"
-  },
-  {
-    "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#tasks",
-    "href": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#tasks",
-    "title": "In-class Exercise 1",
-    "section": "",
-    "text": "The specific task of this in-class exercise are as follows:\n\nto import Passenger Volume by Origin Destination Bus Stops data set downloaded from LTA DataMall in to RStudio environment,\nto import geospatial data in ESRI shapefile format into sf data frame format,\nto perform data wrangling by using appropriate functions from tidyverse and sf pakcges, and\nto visualise the distribution of passenger trip by using tmap methods and functions."
   },
   {
     "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html#working-with-geospatial-data",
