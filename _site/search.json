@@ -14,13 +14,6 @@
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html",
     "href": "Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html",
     "title": "Hands on Exercise 1: Data importing and wrangling",
@@ -152,6 +145,48 @@
     "title": "Hands on Exercise 1: Data importing and wrangling",
     "section": "Mappping Spatial Object Meeting a Selection Criterion",
     "text": "Mappping Spatial Object Meeting a Selection Criterion\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N==\"CENTRAL REGION\", ])+\n  tm_fill(\"DEPENDENCY\", \n          style = \"quantile\", \n          palette = \"Blues\", \n          legend.hist = TRUE, \n          legend.is.portrait = TRUE,\n          legend.hist.z = 0.1) +\n  tm_layout(legend.outside = TRUE,\n            legend.height = 0.45, \n            legend.width = 5.0,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html",
+    "href": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html",
+    "title": "Hands-on Exercise 2: Spatial Weights and Applications",
+    "section": "",
+    "text": "The main task of this hands-on exercise is to learn how to compute spatial weights using R. We are mainly using:\n\nimport geospatial data using appropriate function(s) of sf package,\nimport csv file using appropriate function of readr package,\nperform relational join using appropriate join function of dplyr package,\ncompute spatial weights using appropriate functions of spdep package, and\ncalculate spatially lagged variables using appropriate functions of spdep package.\n\n\n\n\nTwo data sets will be used in this hands-on exercise, they are:\n\nHunan county boundary layer. This is a geospatial data set in ESRI shapefile format.\nHunan_2012.csv: This csv file contains selected Hunan’s local development indicators in 2012.\n\n\n\nBefore we get started, we need to ensure that spdep, sf, tmap and tidyverse packages of R are currently installed in your R.\n\npacman::p_load(sf, spdep, tmap, tidyverse, knitr)\n\n\n\n\n\nIn this section, we will bring a geospatial data and its associated attribute table into R environment. The geospatial data is in ESRI shapefile format and the attribute table is in csv fomat.\n\n\nThe code chunk below uses st_read() of sf package to import Hunan shapefile into R. The imported shapefile will be simple features Object of sf.\n\nhunan &lt;- st_read(dsn = \"data/geospatial\", \n                 layer = \"Hunan\")\n\nReading layer `Hunan' from data source \n  `D:\\KathyChiu77\\ISSS624\\Hands-on Ex\\Hands-on Ex 2\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 88 features and 7 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812\nGeodetic CRS:  WGS 84\n\n\n\n\n\nNext, we will import Hunan_2012.csv into R by using read_csv() of readr package. The output is R dataframe class.\n\nhunan2012 &lt;- read_csv(\"data/aspatial/Hunan_2012.csv\")\n\n\n\n\nThe code chunk below will be used to update the attribute table of hunan’s SpatialPolygonsDataFrame with the attribute fields of hunan2012 dataframe. This is performed by using left_join() of dplyr package.\n\nhunan &lt;- left_join(hunan,hunan2012)%&gt;%\n  select(1:4, 7, 15)\n\n select(1:4, 7, 15)  This function is used to select specific columns from a data frame.  1:4  means it selects the first, second, third, and fourth columns. The numbers  7  and  15  mean it also selects the seventh and fifteenth columns.\n\n\n\n\nNow, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using qtm() of tmap package.\n\nbasemap &lt;- tm_shape(hunan) +\n  tm_polygons() +\n  tm_text(\"NAME_3\", size=0.5)\n\ngdppc &lt;- qtm(hunan, \"GDPPC\")\ntmap_arrange(basemap, gdppc, asp=1, ncol=2)"
+  },
+  {
+    "objectID": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#overview",
+    "href": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#overview",
+    "title": "Hands-on Exercise 2: Spatial Weights and Applications",
+    "section": "",
+    "text": "The main task of this hands-on exercise is to learn how to compute spatial weights using R. We are mainly using:\n\nimport geospatial data using appropriate function(s) of sf package,\nimport csv file using appropriate function of readr package,\nperform relational join using appropriate join function of dplyr package,\ncompute spatial weights using appropriate functions of spdep package, and\ncalculate spatially lagged variables using appropriate functions of spdep package."
+  },
+  {
+    "objectID": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#the-study-area-and-data",
+    "href": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#the-study-area-and-data",
+    "title": "Hands-on Exercise 2: Spatial Weights and Applications",
+    "section": "",
+    "text": "Two data sets will be used in this hands-on exercise, they are:\n\nHunan county boundary layer. This is a geospatial data set in ESRI shapefile format.\nHunan_2012.csv: This csv file contains selected Hunan’s local development indicators in 2012.\n\n\n\nBefore we get started, we need to ensure that spdep, sf, tmap and tidyverse packages of R are currently installed in your R.\n\npacman::p_load(sf, spdep, tmap, tidyverse, knitr)"
+  },
+  {
+    "objectID": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#getting-the-data-into-r-environment",
+    "href": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#getting-the-data-into-r-environment",
+    "title": "Hands-on Exercise 2: Spatial Weights and Applications",
+    "section": "",
+    "text": "In this section, we will bring a geospatial data and its associated attribute table into R environment. The geospatial data is in ESRI shapefile format and the attribute table is in csv fomat.\n\n\nThe code chunk below uses st_read() of sf package to import Hunan shapefile into R. The imported shapefile will be simple features Object of sf.\n\nhunan &lt;- st_read(dsn = \"data/geospatial\", \n                 layer = \"Hunan\")\n\nReading layer `Hunan' from data source \n  `D:\\KathyChiu77\\ISSS624\\Hands-on Ex\\Hands-on Ex 2\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 88 features and 7 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812\nGeodetic CRS:  WGS 84\n\n\n\n\n\nNext, we will import Hunan_2012.csv into R by using read_csv() of readr package. The output is R dataframe class.\n\nhunan2012 &lt;- read_csv(\"data/aspatial/Hunan_2012.csv\")\n\n\n\n\nThe code chunk below will be used to update the attribute table of hunan’s SpatialPolygonsDataFrame with the attribute fields of hunan2012 dataframe. This is performed by using left_join() of dplyr package.\n\nhunan &lt;- left_join(hunan,hunan2012)%&gt;%\n  select(1:4, 7, 15)\n\n select(1:4, 7, 15)  This function is used to select specific columns from a data frame.  1:4  means it selects the first, second, third, and fourth columns. The numbers  7  and  15  mean it also selects the seventh and fifteenth columns."
+  },
+  {
+    "objectID": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#visualising-regional-development-indicator",
+    "href": "Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2.html#visualising-regional-development-indicator",
+    "title": "Hands-on Exercise 2: Spatial Weights and Applications",
+    "section": "",
+    "text": "Now, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using qtm() of tmap package.\n\nbasemap &lt;- tm_shape(hunan) +\n  tm_polygons() +\n  tm_text(\"NAME_3\", size=0.5)\n\ngdppc &lt;- qtm(hunan, \"GDPPC\")\ntmap_arrange(basemap, gdppc, asp=1, ncol=2)"
   },
   {
     "objectID": "In-class Ex/In-class Ex1/In-class_Ex1_demo.html",
