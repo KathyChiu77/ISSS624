@@ -10,7 +10,9 @@ website:
           - text: Hands-on Exercise 1
             href: Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html
           - text: Hands-on Exercise 2A
-          - href: Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2A.html
+            href: Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2A.html
+          - text: Hands-on Exercise 2B
+            href: Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2B.html
       - text: In-class Exercises
         menu: 
           - text: In-class Exercise 1
