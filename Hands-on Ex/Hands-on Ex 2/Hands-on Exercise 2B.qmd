@@ -182,9 +182,9 @@ moran.test(hunan$GDPPC,
 
 The Moran's I statistic of approximately 0.3075 indicates a positive spatial autocorrelation. This suggests that locations with similar values of **`GDPPC`** are clustered together geographically.
 
-#### 2.4.4.1 Computing Monte Carlo Moran\'s I
+#### 2.4.4.1 Computing Monte Carlo Moran's I
 
-The code chunk below performs permutation test for Moran\'s I statistic by using [*moran.mc()*](https://r-spatial.github.io/spdep/reference/moran.mc.html) of **spdep**. A total of 1000 simulation will be performed.
+The code chunk below performs permutation test for Moran's I statistic by using [*moran.mc()*](https://r-spatial.github.io/spdep/reference/moran.mc.html) of **spdep**. A total of 1000 simulation will be performed.
 
 ```{r}
 set.seed(1234)
@@ -198,9 +198,9 @@ bperm
 
 The statistic of approximately 0.30075 suggests that there is a positive spatial autocorrelation in the dataset **`hunan$GDPPC`**, similar to what was indicated in the previous output.
 
-#### 2.4.4.2 Visualising Monte Carlo Moran\'s I
+#### 2.4.4.2 Visualising Monte Carlo Moran's I
 
-It is always a good practice for us the examine the simulated Moran\'s I test statistics in greater detail. This can be achieved by plotting the distribution of the statistical values as a histogram by using the code chunk below.
+It is always a good practice for us the examine the simulated Moran's I test statistics in greater detail. This can be achieved by plotting the distribution of the statistical values as a histogram by using the code chunk below.
 
 In the code chunk below [*hist()*](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/hist) and [*abline()*](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline) of R Graphics are used.
 
@@ -235,23 +235,23 @@ ggplot(bperm_data, aes(x = MoransI)) +
   ggtitle('Histogram of Simulated Moran\'s I')
 ```
 
-### **2.4.5 Global Spatial Autocorrelation: Geary\'s**
+### **2.4.5 Global Spatial Autocorrelation: Geary's**
 
-In this section, you will learn how to perform Geary\'s c statistics testing by using appropriate functions of **spdep** package.
+In this section, you will learn how to perform Geary's c statistics testing by using appropriate functions of **spdep** package.
 
-#### 2.4.5.1 Geary\'s C test
+#### 2.4.5.1 Geary's C test
 
-The code chunk below performs Geary\'s C test for spatial autocorrelation by using [*geary.test()*](https://r-spatial.github.io/spdep/reference/geary.test.html) of **spdep**.
+The code chunk below performs Geary's C test for spatial autocorrelation by using [*geary.test()*](https://r-spatial.github.io/spdep/reference/geary.test.html) of **spdep**.
 
 ```{r}
 geary.test(hunan$GDPPC, listw=rswm_q)
 ```
 
-The Geary\'s C test results suggest there is a statistically significant positive local spatial autocorrelation in the variable **`GDPPC`** within the dataset **`hunan$`**. This means that regions with similar values of **`GDPPC`** are clustered together geographically more than would be expected by chance.
+The Geary's C test results suggest there is a statistically significant positive local spatial autocorrelation in the variable **`GDPPC`** within the dataset **`hunan$`**. This means that regions with similar values of **`GDPPC`** are clustered together geographically more than would be expected by chance.
 
-#### 2.4.5.2 Computing Monte Carlo Geary\'s C
+#### 2.4.5.2 Computing Monte Carlo Geary's C
 
-The code chunk below performs permutation test for Geary\'s C statistic by using [*geary.mc()*](https://r-spatial.github.io/spdep/reference/geary.mc.html) of **spdep**.
+The code chunk below performs permutation test for Geary's C statistic by using [*geary.mc()*](https://r-spatial.github.io/spdep/reference/geary.mc.html) of **spdep**.
 
 ```{r}
 set.seed(1234)
@@ -261,7 +261,7 @@ bperm=geary.mc(hunan$GDPPC,
 bperm
 ```
 
-#### 2.4.5.3 Visualising the Monte Carlo Geary\'s C
+#### 2.4.5.3 Visualising the Monte Carlo Geary's C
 
 Next, we will plot a histogram to reveal the distribution of the simulated values by using the code chunk below.
 
@@ -284,11 +284,11 @@ abline(v=1, col="red")
 
 ## **2.5 Spatial Correlogram**
 
-Spatial correlograms are great to examine patterns of spatial autocorrelation in your data or model residuals. They show how correlated are pairs of spatial observations when you increase the distance (lag) between them - they are plots of some index of autocorrelation (Moran\'s I or Geary\'s c) against distance.Although correlograms are not as fundamental as variograms (a keystone concept of geostatistics), they are very useful as an exploratory and descriptive tool. For this purpose they actually provide richer information than variograms.
+Spatial correlograms are great to examine patterns of spatial autocorrelation in your data or model residuals. They show how correlated are pairs of spatial observations when you increase the distance (lag) between them - they are plots of some index of autocorrelation (Moran's I or Geary's c) against distance.Although correlograms are not as fundamental as variograms (a keystone concept of geostatistics), they are very useful as an exploratory and descriptive tool. For this purpose they actually provide richer information than variograms.
 
-### **2.5.1 Compute Moran\'s I correlogram**
+### **2.5.1 Compute Moran's I correlogram**
 
-In the code chunk below, [*sp.correlogram()*](https://r-spatial.github.io/spdep/reference/sp.correlogram.html) of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Moran\'s I. The **plot()** of base Graph is then used to plot the output.
+In the code chunk below, [*sp.correlogram()*](https://r-spatial.github.io/spdep/reference/sp.correlogram.html) of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Moran's I. The **plot()** of base Graph is then used to plot the output.
 
 ```{r}
 MI_corr <- sp.correlogram(wm_q, 
@@ -307,9 +307,9 @@ print(MI_corr)
 
 The correlogram suggest that there is a pattern of positive spatial autocorrelation at shorter distances (lags 1-4) and negative spatial autocorrelation at larger distances (lags 5-6), with the pattern being statistically significant at least up to lag 5. This implies that GDPPC values are spatially clustered at small distances and dispersed at larger distances.
 
-### **2.5.2 Compute Geary\'s C correlogram and plot**
+### **2.5.2 Compute Geary's C correlogram and plot**
 
-In the code chunk below, *sp.correlogram()* of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary\'s C. The **plot()** of base Graph is then used to plot the output.
+In the code chunk below, *sp.correlogram()* of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary's C. The **plot()** of base Graph is then used to plot the output.
 
 ```{r}
 GC_corr <- sp.correlogram(wm_q, 
