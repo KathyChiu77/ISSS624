@@ -173,5 +173,12 @@
     "title": "Hands-on Exercise 2A: Spatial Weights and Applications",
     "section": "",
     "text": "Creating Neighbours using sf objects"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This is the journey of geospatial analytics of QIU RUILIU!!!"
   }
 ]
