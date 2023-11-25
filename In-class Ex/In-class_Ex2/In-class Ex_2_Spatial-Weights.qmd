@@ -1,0 +1,79 @@
+---
+title: "In-class_Ex2:Spatial Weights"
+author: "QIU RUILIU"
+date: "25 Nov 2023"
+date-modified: "last-modified"
+format: html
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+## Getting Started
+
+### Installing and Loading the R packages
+
+Install and load **sf**,**tmap**, **sfdep**, **tidyverse** and **knitr** packages into R environment for preparation.
+
+```{r}
+#pacman:: is for introducing pacman without installing it into R environment
+pacman::p_load(sf, sfdep, knitr, tmap, tidyverse)
+```
+
+## Data Importing
+
+For the purpose of in-class exercise, two data sets will be used:
+
+-   Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.
+
+-   Hunan_2012.csv: This csv file contains selected Hunan\'s local development indicators in 2012.
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+## Combining Both Data Frame by Using Left Join
+
+Check and grasp the basic structure of data.
+
+```{r}
+head(hunan,5)
+```
+
+```{r}
+head(hunan2012,5)
+```
+
+```{r}
+hunan_GDPPC <- left_join(hunan,hunan2012) %>%
+  select(1:4,7,15)
+```
+
+By using `left_join`, the selected column (1, 2, 3, 4, 7, 15) of data frame **hunan** will be retained in the new one. Notably, the column **geometry** will be auto-saved for geospatial data.
+
+Deriving Contiguity Weights: Queen's Method
+
+In the code chunk below, queen method is used to derive the contiguity weights.
+
+```{r}
+we_q <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb,
+                         style = "W"),
+         .before = 1)
+```
+
+Notice that `st_weights()` provides tree arguments, they are:
+
+-   *nb*: A neighbor list object as created by `st_neighbors()`.
+
+-   *style*:Default "W" for row standardized weights.
+
+-   *allow_zero*:if TRUE, assign zero as lagged value to zone without neighbors.

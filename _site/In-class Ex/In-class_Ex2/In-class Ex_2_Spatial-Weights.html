@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="QIU RUILIU">
+<meta name="dcterms.date" content="2023-11-25">
 
-<title>ISSS624 - About</title>
+<title>ISSS624 - In-class_Ex2:Spatial Weights</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,22 +59,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -95,7 +97,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -105,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">ISSS624</span>
     </a>
   </div>
@@ -121,19 +123,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercises">    
         <li>
-    <a class="dropdown-item" href="./Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html" rel="" target="">
+    <a class="dropdown-item" href="../../Hands-on Ex/Hands-on Ex 1/Hands-on Exercise 1.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2A.html" rel="" target="">
+    <a class="dropdown-item" href="../../Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2A.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 2A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2B.html" rel="" target="">
+    <a class="dropdown-item" href="../../Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2B.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 2B</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2C.html" rel="" target="">
+    <a class="dropdown-item" href="../../Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2C.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 2C</span></a>
   </li>  
     </ul>
@@ -144,11 +146,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercises">    
         <li>
-    <a class="dropdown-item" href="./In-class Ex/In-class Ex1/In-class_Ex1_demo.html" rel="" target="">
+    <a class="dropdown-item" href="../../In-class Ex/In-class Ex1/In-class_Ex1_demo.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./In-class Ex/In-class_Ex2/In-class Ex_2_Spatial-Weights.html" rel="" target="">
+    <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_Spatial-Weights.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 2: Spatial Weights</span></a>
   </li>  
     </ul>
@@ -156,11 +158,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html" rel="" target="">
+    <a class="nav-link" href="../../index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="../../about.html" rel="" target="">
  <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -175,37 +177,158 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#installing-and-loading-the-r-packages" id="toc-installing-and-loading-the-r-packages" class="nav-link" data-scroll-target="#installing-and-loading-the-r-packages">Installing and Loading the R packages</a></li>
+  </ul></li>
+  <li><a href="#data-importing" id="toc-data-importing" class="nav-link" data-scroll-target="#data-importing">Data Importing</a></li>
+  <li><a href="#combining-both-data-frame-by-using-left-join" id="toc-combining-both-data-frame-by-using-left-join" class="nav-link" data-scroll-target="#combining-both-data-frame-by-using-left-join">Combining Both Data Frame by Using Left Join</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About</h1>
+<h1 class="title">In-class_Ex2:Spatial Weights</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>QIU RUILIU </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 25, 2023</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">November 25, 2023</p>
+    </div>
+  </div>
     
   </div>
   
 
 </header>
 
-<p>About this site</p>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
+<section id="installing-and-loading-the-r-packages" class="level3">
+<h3 class="anchored" data-anchor-id="installing-and-loading-the-r-packages">Installing and Loading the R packages</h3>
+<p>Install and load <strong>sf</strong>,<strong>tmap</strong>, <strong>sfdep</strong>, <strong>tidyverse</strong> and <strong>knitr</strong> packages into R environment for preparation.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#pacman:: is for introducing pacman without installing it into R environment</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, knitr, tmap, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="data-importing" class="level2">
+<h2 class="anchored" data-anchor-id="data-importing">Data Importing</h2>
+<p>For the purpose of in-class exercise, two data sets will be used:</p>
+<ul>
+<li><p>Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.</p></li>
+<li><p>Hunan_2012.csv: This csv file contains selected Hunan's local development indicators in 2012.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">layer =</span> <span class="st">"Hunan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>Reading layer `Hunan' from data source 
+  `D:\KathyChiu77\ISSS624\In-class Ex\In-class_Ex2\data\geospatial' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 88 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812
+Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hunan2012 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/Hunan_2012.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="combining-both-data-frame-by-using-left-join" class="level2">
+<h2 class="anchored" data-anchor-id="combining-both-data-frame-by-using-left-join">Combining Both Data Frame by Using Left Join</h2>
+<p>Check and grasp the basic structure of data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hunan,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 5 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 111.2145 ymin: 28.61762 xmax: 112.3013 ymax: 29.95847
+Geodetic CRS:  WGS 84
+   NAME_2  ID_3  NAME_3   ENGTYPE_3 Shape_Leng Shape_Area  County
+1 Changde 21098 Anxiang      County   1.869074 0.10056190 Anxiang
+2 Changde 21100 Hanshou      County   2.360691 0.19978745 Hanshou
+3 Changde 21101  Jinshi County City   1.425620 0.05302413  Jinshi
+4 Changde 21102      Li      County   3.474325 0.18908121      Li
+5 Changde 21103   Linli      County   2.289506 0.11450357   Linli
+                        geometry
+1 POLYGON ((112.0625 29.75523...
+2 POLYGON ((112.2288 29.11684...
+3 POLYGON ((111.8927 29.6013,...
+4 POLYGON ((111.3731 29.94649...
+5 POLYGON ((111.6324 29.76288...</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hunan2012,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 29
+  County  City  avg_wage deposite   FAI Gov_Rev Gov_Exp    GDP GDPPC   GIO  Loan
+  &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 Anhua   Yiya…    30544   10967  6832.    457.   2703  13225  14567 9277. 3955.
+2 Anren   Chen…    28058    4599. 6386.    221.   1455.  4941. 12761 4189. 2555.
+3 Anxiang Chan…    31935    5517. 3541     244.   1780. 12482  23667 5109. 2807.
+4 Baojing Huna…    30843    2250  1005.    193.   1379.  4088. 14563 3624. 1254.
+5 Chaling Zhuz…    31251    8241. 6508.    620.   1947  11585  20078 9158. 4287.
+# ℹ 18 more variables: NIPCR &lt;dbl&gt;, Bed &lt;dbl&gt;, Emp &lt;dbl&gt;, EmpR &lt;dbl&gt;,
+#   EmpRT &lt;dbl&gt;, Pri_Stu &lt;dbl&gt;, Sec_Stu &lt;dbl&gt;, Household &lt;dbl&gt;,
+#   Household_R &lt;dbl&gt;, NOIP &lt;dbl&gt;, Pop_R &lt;dbl&gt;, RSCG &lt;dbl&gt;, Pop_T &lt;dbl&gt;,
+#   Agri &lt;dbl&gt;, Service &lt;dbl&gt;, Disp_Inc &lt;dbl&gt;, RORP &lt;dbl&gt;, ROREmp &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>hunan_GDPPC <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,hunan2012) <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="dv">7</span>,<span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>By using <code>left_join</code>, the selected column (1, 2, 3, 4, 7, 15) of data frame <strong>hunan</strong> will be retained in the new one. Notably, the column <strong>geometry</strong> will be auto-saved for geospatial data.</p>
+<p>Deriving Contiguity Weights: Queen’s Method</p>
+<p>In the code chunk below, queen method is used to derive the contiguity weights.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>we_q <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">style =</span> <span class="st">"W"</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that <code>st_weights()</code> provides tree arguments, they are:</p>
+<ul>
+<li><p><em>nb</em>: A neighbor list object as created by <code>st_neighbors()</code>.</p></li>
+<li><p><em>style</em>:Default “W” for row standardized weights.</p></li>
+<li><p><em>allow_zero</em>:if TRUE, assign zero as lagged value to zone without neighbors.</p></li>
+</ul>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

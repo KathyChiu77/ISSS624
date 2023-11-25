@@ -149,6 +149,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class Ex/In-class Ex1/In-class_Ex1_demo.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_Spatial-Weights.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 2: Spatial Weights</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -217,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#hot-spot-and-cold-spot-area-analysis" id="toc-hot-spot-and-cold-spot-area-analysis" class="nav-link" data-scroll-target="#hot-spot-and-cold-spot-area-analysis"><strong>2.8 Hot Spot and Cold Spot Area Analysis</strong></a>
   <ul class="collapse">
-  <li><a href="#getis-and-ords-g-statistics" id="toc-getis-and-ords-g-statistics" class="nav-link" data-scroll-target="#getis-and-ords-g-statistics"><strong>2.8.1 Getis and Ord's G-Statistics</strong></a></li>
+  <li><a href="#getis-and-ords-g-statistics" id="toc-getis-and-ords-g-statistics" class="nav-link" data-scroll-target="#getis-and-ords-g-statistics"><strong>2.8.1 Getis and Ord’s G-Statistics</strong></a></li>
   <li><a href="#deriving-distance-based-weight-matrix" id="toc-deriving-distance-based-weight-matrix" class="nav-link" data-scroll-target="#deriving-distance-based-weight-matrix"><strong>2.8.2 Deriving distance-based weight matrix</strong></a></li>
   <li><a href="#computing-adaptive-distance-weight-matrix" id="toc-computing-adaptive-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-adaptive-distance-weight-matrix"><strong>2.8.3 Computing adaptive distance weight matrix</strong></a></li>
   </ul></li>
@@ -260,7 +264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 24, 2023</p>
+      <p class="date-modified">November 25, 2023</p>
     </div>
   </div>
     
@@ -806,16 +810,16 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </div>
 <section id="mapping-the-local-morans-i" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-the-local-morans-i">2.6.1.1 Mapping the local Moran's I</h4>
-<p>Before mapping the local Moran's I map, it is wise to append the local Moran's I dataframe (i.e.&nbsp;localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called&nbsp;<em>hunan.localMI</em>.</p>
+<h4 class="anchored" data-anchor-id="mapping-the-local-morans-i">2.6.1.1 Mapping the local Moran’s I</h4>
+<p>Before mapping the local Moran’s I map, it is wise to append the local Moran’s I dataframe (i.e.&nbsp;localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called&nbsp;<em>hunan.localMI</em>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>hunan.localMI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan,localMI) <span class="sc">%&gt;%</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Pr.Ii =</span> Pr.z....E.Ii..)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="mapping-local-morans-i-values" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-local-morans-i-values">2.6.1.2 Mapping local Moran's I values</h4>
-<p>Using choropleth mapping functions of&nbsp;<strong>tmap</strong>&nbsp;package, we can plot the local Moran's I values by using the code chinks below.</p>
+<h4 class="anchored" data-anchor-id="mapping-local-morans-i-values">2.6.1.2 Mapping local Moran’s I values</h4>
+<p>Using choropleth mapping functions of&nbsp;<strong>tmap</strong>&nbsp;package, we can plot the local Moran’s I values by using the code chinks below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"Ii"</span>, </span>
@@ -829,9 +833,9 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </section>
 <section id="mapping-local-morans-i-p-values" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-local-morans-i-p-values">2.6.1.3 Mapping local Moran's I p-values</h4>
+<h4 class="anchored" data-anchor-id="mapping-local-morans-i-p-values">2.6.1.3 Mapping local Moran’s I p-values</h4>
 <p>The choropleth shows there is evidence for both positive and negative Ii values. However, it is useful to consider the p-values for each of these values, as consider above.</p>
-<p>The code chunks below produce a choropleth map of Moran's I p-values by using functions of <strong>tmap</strong> package.</p>
+<p>The code chunks below produce a choropleth map of Moran’s I p-values by using functions of <strong>tmap</strong> package.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"Pr.Ii"</span>, </span>
@@ -845,8 +849,8 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </section>
 <section id="mapping-both-local-morans-i-values-and-p-values" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-both-local-morans-i-values-and-p-values">2.6.1.4 Mapping both local Moran's I values and p-values</h4>
-<p>For effective interpretation, it is better to plot both the local Moran's I values map and its corresponding p-values map next to each other.</p>
+<h4 class="anchored" data-anchor-id="mapping-both-local-morans-i-values-and-p-values">2.6.1.4 Mapping both local Moran’s I values and p-values</h4>
+<p>For effective interpretation, it is better to plot both the local Moran’s I values map and its corresponding p-values map next to each other.</p>
 <p>The code chunk below will be used to create such visualisation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>localMI.map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
@@ -918,7 +922,7 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>hunan<span class="sc">$</span>lag_GDPPC <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>DV <span class="ot">&lt;-</span> hunan<span class="sc">$</span>lag_GDPPC <span class="sc">-</span> <span class="fu">mean</span>(hunan<span class="sc">$</span>lag_GDPPC)     </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>This is follow by centering the local Moran's around the mean.</p>
+<p>This is follow by centering the local Moran’s around the mean.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>LM_I <span class="ot">&lt;-</span> localMI[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">mean</span>(localMI[,<span class="dv">1</span>])    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -971,7 +975,7 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p><img src="Hands-on-Exercise-2C_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>For effective interpretation, it is better to plot both the local Moran's I values map and its corresponding p-values map next to each other.</p>
+<p>For effective interpretation, it is better to plot both the local Moran’s I values map and its corresponding p-values map next to each other.</p>
 <p>The code chunk below will be used to create such visualisation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
@@ -1000,10 +1004,10 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <section id="hot-spot-and-cold-spot-area-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="hot-spot-and-cold-spot-area-analysis"><strong>2.8 Hot Spot and Cold Spot Area Analysis</strong></h2>
 <p>Beside detecting cluster and outliers, localised spatial statistics can be also used to detect hot spot and/or cold spot areas.</p>
-<p>The term 'hot spot' has been used generically across disciplines to describe a region or value that is higher relative to its surroundings (Lepers et al 2005, Aben et al 2012, Isobe et al 2015).</p>
+<p>The term ‘hot spot’ has been used generically across disciplines to describe a region or value that is higher relative to its surroundings (Lepers et al 2005, Aben et al 2012, Isobe et al 2015).</p>
 <section id="getis-and-ords-g-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="getis-and-ords-g-statistics"><strong>2.8.1 Getis and Ord's G-Statistics</strong></h3>
-<p>An alternative spatial statistics to detect spatial anomalies is the Getis and Ord's G-statistics (Getis and Ord, 1972; Ord and Getis, 1995). It looks at neighbours within a defined proximity to identify where either high or low values clutser spatially. Here, statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p>
+<h3 class="anchored" data-anchor-id="getis-and-ords-g-statistics"><strong>2.8.1 Getis and Ord’s G-Statistics</strong></h3>
+<p>An alternative spatial statistics to detect spatial anomalies is the Getis and Ord’s G-statistics (Getis and Ord, 1972; Ord and Getis, 1995). It looks at neighbours within a defined proximity to identify where either high or low values clutser spatially. Here, statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p>
 <p>The analysis consists of three steps:</p>
 <ul>
 <li><p>Deriving spatial weight matrix</p></li>
@@ -1277,7 +1281,7 @@ attr(,"class")
 [1] "localG"</code></pre>
 </div>
 </div>
-<p>The output of localG() is a vector of G or Gstar values, with attributes "gstari" set to TRUE or FALSE, "call" set to the function call, and class "localG".</p>
+<p>The output of localG() is a vector of G or Gstar values, with attributes “gstari” set to TRUE or FALSE, “call” set to the function call, and class “localG”.</p>
 <p>The Gi statistics is represented as a Z-score. Greater values represent a greater intensity of clustering and the direction (positive or negative) indicates high or low clusters.</p>
 <p>Next, we will join the Gi values to their corresponding hunan sf data frame by using the code chunk below.</p>
 <div class="cell">
