@@ -93,29 +93,29 @@ lisa <- wm_q %>%
 ## Creating a Time Series Cube
 
 ```{r}
-GDPPC_st <- spacetime(GDPPC, hunan,
-                      .loc_col = "County",
-                      .time_col = "Year")
+#GDPPC_st <- spacetime(GDPPC, hunan,
+                      #.loc_col = "County",
+                     # .time_col = "Year")
 ```
 
 ```{r}
-GDPPC_nb <- GDPPC_st %>%
-  activate("geometry") %>%
-  mutate(nb = include_self(st_contiguity(geometry)),
-         wt = st_inverse_distance(nb,geometry,
-                                  scale = 1,
-                                  alpha = 1),
-         .before = 1) %>%
-  set_nbs("nb") %>%
-  set_wts("wt")
+#GDPPC_nb <- GDPPC_st %>%
+  #activate("geometry") %>%
+  #mutate(nb = include_self(st_contiguity(geometry)),
+         #wt = st_inverse_distance(nb,geometry,
+                                  #scale = 1,
+                                  #alpha = 1),
+        # .before = 1) %>%
+  #set_nbs("nb") %>%
+  #set_wts("wt")
 ```
 
 ## Computing GI\*
 
 ```{r}
-gi_stars <- GDPPC_nb %>%
-    group_by(Year) %>%
-    mutate(gi_star = local_gstar_perm(
-      GDPPC, nb, wt)) %>%
-  tidyr::unnest(gi_star)
+#gi_stars <- GDPPC_nb %>%
+    #group_by(Year) %>%
+    #mutate(gi_star = local_gstar_perm(
+      #GDPPC, nb, wt)) %>%
+  #tidyr::unnest(gi_star)
 ```
