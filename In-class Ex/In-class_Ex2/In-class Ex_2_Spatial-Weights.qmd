@@ -63,7 +63,7 @@ Deriving Contiguity Weights: Queen's Method
 In the code chunk below, queen method is used to derive the contiguity weights.
 
 ```{r}
-we_q <- hunan_GDPPC %>%
+wm_q <- hunan_GDPPC %>%
   mutate(nb = st_contiguity(geometry),
          wt = st_weights(nb,
                          style = "W"),
@@ -77,3 +77,15 @@ Notice that `st_weights()` provides tree arguments, they are:
 -   *style*:Default "W" for row standardized weights.
 
 -   *allow_zero*:if TRUE, assign zero as lagged value to zone without neighbors.
+
+## Computing Local Moran's I
+
+In this section, we will compute Local Moran's I of GDPPC at county level by using `local_moran()` of sfdep package.
+
+```{r}
+lisa <- wm_q %>%
+  mutate(local_moran = local_moran(
+    GDPPC, nb, wt, nsim = 99),
+    .before = 1) %>%
+  unnest(local_moran)
+```
