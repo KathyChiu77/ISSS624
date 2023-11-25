@@ -19,7 +19,7 @@ Install and load **sf**,**tmap**, **sfdep**, **tidyverse** and **knitr** package
 
 ```{r}
 #pacman:: is for introducing pacman without installing it into R environment
-pacman::p_load(sf, sfdep, knitr, tmap, tidyverse)
+pacman::p_load(sf, sfdep, knitr, tmap, tidyverse, plotly)
 ```
 
 ## Data Importing
@@ -28,7 +28,7 @@ For the purpose of in-class exercise, two data sets will be used:
 
 -   Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.
 
--   Hunan_2012.csv: This csv file contains selected Hunan\'s local development indicators in 2012.
+-   Hunan_2012.csv: This csv file contains selected Hunan's local development indicators in 2012.
 
 ```{r}
 hunan <- st_read(dsn = "data/geospatial", 
@@ -88,4 +88,12 @@ lisa <- wm_q %>%
     GDPPC, nb, wt, nsim = 99),
     .before = 1) %>%
   unnest(local_moran)
+```
+
+## Creating a Time Series Cube
+
+```{r}
+GDPPC_st <- spacetime(GDPPC, hunan,
+                      .loc_col = "County",
+                      .time_col = "Year")
 ```
