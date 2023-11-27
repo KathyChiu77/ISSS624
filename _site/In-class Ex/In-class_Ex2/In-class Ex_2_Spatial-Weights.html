@@ -153,6 +153,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_Spatial-Weights.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 2: Spatial Weights</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_Global_Local_Measures.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 2: Global and Local Measures of Spatial Association - sfdep methods</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -193,13 +197,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#deriving-contiguity-spatial-weights" id="toc-deriving-contiguity-spatial-weights" class="nav-link" data-scroll-target="#deriving-contiguity-spatial-weights">Deriving Contiguity Spatial Weights</a>
   <ul class="collapse">
-  <li><a href="#identifying-contiguity-neighbours-queens-method" id="toc-identifying-contiguity-neighbours-queens-method" class="nav-link" data-scroll-target="#identifying-contiguity-neighbours-queens-method"><strong>Identifying contiguity neighbours: Queen's method</strong></a></li>
-  <li><a href="#identify-contiguity-neighbours-rooks-method" id="toc-identify-contiguity-neighbours-rooks-method" class="nav-link" data-scroll-target="#identify-contiguity-neighbours-rooks-method"><strong>Identify contiguity neighbours: Rooks' method</strong></a></li>
+  <li><a href="#identifying-contiguity-neighbours-queens-method" id="toc-identifying-contiguity-neighbours-queens-method" class="nav-link" data-scroll-target="#identifying-contiguity-neighbours-queens-method"><strong>Identifying contiguity neighbours: Queen’s method</strong></a></li>
+  <li><a href="#identify-contiguity-neighbours-rooks-method" id="toc-identify-contiguity-neighbours-rooks-method" class="nav-link" data-scroll-target="#identify-contiguity-neighbours-rooks-method"><strong>Identify contiguity neighbours: Rooks’ method</strong></a></li>
   <li><a href="#identifying-higher-order-neighbors" id="toc-identifying-higher-order-neighbors" class="nav-link" data-scroll-target="#identifying-higher-order-neighbors"><strong>Identifying higher order neighbors</strong></a></li>
   </ul></li>
-  <li><a href="#deriving-contiguity-weights-queens-method" id="toc-deriving-contiguity-weights-queens-method" class="nav-link" data-scroll-target="#deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen's method</strong></a>
+  <li><a href="#deriving-contiguity-weights-queens-method" id="toc-deriving-contiguity-weights-queens-method" class="nav-link" data-scroll-target="#deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen’s method</strong></a>
   <ul class="collapse">
-  <li><a href="#deriving-contiguity-weights-queens-method-1" id="toc-deriving-contiguity-weights-queens-method-1" class="nav-link" data-scroll-target="#deriving-contiguity-weights-queens-method-1"><strong>Deriving contiguity weights: Queen's method</strong></a></li>
+  <li><a href="#deriving-contiguity-weights-queens-method-1" id="toc-deriving-contiguity-weights-queens-method-1" class="nav-link" data-scroll-target="#deriving-contiguity-weights-queens-method-1"><strong>Deriving contiguity weights: Queen’s method</strong></a></li>
   </ul></li>
   <li><a href="#distance-based-weights" id="toc-distance-based-weights" class="nav-link" data-scroll-target="#distance-based-weights"><strong>Distance-based Weights</strong></a>
   <ul class="collapse">
@@ -250,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This in-class introduces an alternative R package called&nbsp;<a href="https://sfdep.josiahparry.com/"><strong>sfdep</strong></a>. According to Josiah Parry, the developer of the package, "sfdep builds on the great shoulders of&nbsp;<strong>spdep</strong>&nbsp;package for spatial dependence. sfdep creates an sf and tidyverse friendly interface to the package as well as introduces new functionality that is not present in spdep. sfdep utilizes list columns extensively to make this interface possible."</p>
+<p>This in-class introduces an alternative R package called&nbsp;<a href="https://sfdep.josiahparry.com/"><strong>sfdep</strong></a>. According to Josiah Parry, the developer of the package, “sfdep builds on the great shoulders of&nbsp;<strong>spdep</strong>&nbsp;package for spatial dependence. sfdep creates an sf and tidyverse friendly interface to the package as well as introduces new functionality that is not present in spdep. sfdep utilizes list columns extensively to make this interface possible.”</p>
 </section>
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
@@ -370,8 +374,8 @@ Geodetic CRS:  WGS 84
 </ol>
 <p>In this section, we will learn how to derive the contiguity neighbour list and contiguity spatial weights separately. Then, we will learn how to combine both steps into a single process.</p>
 <section id="identifying-contiguity-neighbours-queens-method" class="level3">
-<h3 class="anchored" data-anchor-id="identifying-contiguity-neighbours-queens-method"><strong>Identifying contiguity neighbours: Queen's method</strong></h3>
-<p>In the code chunk below&nbsp;<a href="https://sfdep.josiahparry.com/reference/st_contiguity.html"><code>st_contiguity()</code></a>&nbsp;is used to derive a contiguity neighbour list by using Queen's method.</p>
+<h3 class="anchored" data-anchor-id="identifying-contiguity-neighbours-queens-method"><strong>Identifying contiguity neighbours: Queen’s method</strong></h3>
+<p>In the code chunk below&nbsp;<a href="https://sfdep.josiahparry.com/reference/st_contiguity.html"><code>st_contiguity()</code></a>&nbsp;is used to derive a contiguity neighbour list by using Queen’s method.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nb_queen <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span> </span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
@@ -567,7 +571,7 @@ First 10 features:
 </div>
 </section>
 <section id="identify-contiguity-neighbours-rooks-method" class="level3">
-<h3 class="anchored" data-anchor-id="identify-contiguity-neighbours-rooks-method"><strong>Identify contiguity neighbours: Rooks' method</strong></h3>
+<h3 class="anchored" data-anchor-id="identify-contiguity-neighbours-rooks-method"><strong>Identify contiguity neighbours: Rooks’ method</strong></h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>nb_rook <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span> </span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry,</span>
@@ -643,10 +647,10 @@ First 10 features:
 </section>
 </section>
 <section id="deriving-contiguity-weights-queens-method" class="level2">
-<h2 class="anchored" data-anchor-id="deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen's method</strong></h2>
+<h2 class="anchored" data-anchor-id="deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen’s method</strong></h2>
 <p>Now, you are ready to compute the contiguity weights by using&nbsp;<a href="https://sfdep.josiahparry.com/reference/st_weights.html"><code>st_weights()</code></a>&nbsp;of&nbsp;<strong>sfdep</strong>&nbsp;package.</p>
 <section id="deriving-contiguity-weights-queens-method-1" class="level3">
-<h3 class="anchored" data-anchor-id="deriving-contiguity-weights-queens-method-1"><strong>Deriving contiguity weights: Queen's method</strong></h3>
+<h3 class="anchored" data-anchor-id="deriving-contiguity-weights-queens-method-1"><strong>Deriving contiguity weights: Queen’s method</strong></h3>
 <p>In the code chunk below, queen method is used to derive the contiguity weights.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>wm_q <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
@@ -658,7 +662,7 @@ First 10 features:
 <p>Notice that <code>st_weights()</code> provides tree arguments, they are:</p>
 <ul>
 <li><p><em>nb</em>: A neighbor list object as created by st_neighbors().</p></li>
-<li><p><em>style</em>: Default "W" for row standardized weights. This value can also be "B", "C", "U", "minmax", and "S". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al.&nbsp;1999, p.&nbsp;167-168 (sums over all links to n).</p></li>
+<li><p><em>style</em>: Default “W” for row standardized weights. This value can also be “B”, “C”, “U”, “minmax”, and “S”. B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al.&nbsp;1999, p.&nbsp;167-168 (sums over all links to n).</p></li>
 <li><p><em>allow_zero</em>: If TRUE, assigns zero as lagged value to zone without neighbors.</p></li>
 </ul>
 <div class="cell">
