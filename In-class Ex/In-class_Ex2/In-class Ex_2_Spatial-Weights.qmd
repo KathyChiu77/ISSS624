@@ -1,5 +1,5 @@
 ---
-title: "In-class_Ex2:Spatial Weights"
+title: "In-class Ex2:Spatial Weights"
 author: "QIU RUILIU"
 date: "25 Nov 2023"
 date-modified: "last-modified"
@@ -10,6 +10,10 @@ execute:
   warning: false
 editor: visual
 ---
+
+## Overview
+
+This in-class introduces an alternative R package called [**sfdep**](https://sfdep.josiahparry.com/). According to Josiah Parry, the developer of the package, \"sfdep builds on the great shoulders of **spdep** package for spatial dependence. sfdep creates an sf and tidyverse friendly interface to the package as well as introduces new functionality that is not present in spdep. sfdep utilizes list columns extensively to make this interface possible.\"
 
 ## Getting Started
 
@@ -58,7 +62,103 @@ hunan_GDPPC <- left_join(hunan,hunan2012) %>%
 
 By using `left_join`, the selected column (1, 2, 3, 4, 7, 15) of data frame **hunan** will be retained in the new one. Notably, the column **geometry** will be auto-saved for geospatial data.
 
-Deriving Contiguity Weights: Queen's Method
+### **Plotting a choropleth map**
+
+```{r}
+tmap_mode("plot")
+tm_shape(hunan_GDPPC) +
+  tm_fill("GDPPC", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "GDPPC") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Distribution of GDP per capita by district, Hunan Province",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+
+## Deriving Contiguity Spatial Weights
+
+By and large, there are two types of spatial weights, they are contiguity wights and distance-based weights. In this section, you will learn how to derive contiguity spatial weights by using sfdep.
+
+Two steps are required to derive a contiguity spatial weights, they are:
+
+1.  identifying contiguity neighbour list by [`st_contiguity()`](https://sfdep.josiahparry.com/reference/st_contiguity.html) of **sfdep** package, and
+
+2.  deriving the contiguity spatial weights by using [`st_weights()`](https://sfdep.josiahparry.com/reference/st_weights.html) of **sfdep** package
+
+In this section, we will learn how to derive the contiguity neighbour list and contiguity spatial weights separately. Then, we will learn how to combine both steps into a single process.
+
+### **Identifying contiguity neighbours: Queen\'s method**
+
+In the code chunk below [`st_contiguity()`](https://sfdep.josiahparry.com/reference/st_contiguity.html) is used to derive a contiguity neighbour list by using Queen\'s method.
+
+```{r}
+nb_queen <- hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry),
+         .before = 1)
+```
+
+The code chunk below is used to print the summary of the first lag neighbour list (i.e. nb) .
+
+```{r}
+summary(nb_queen$nb)
+```
+
+The summary report above shows that there are 88 area units in Hunan province. The most connected area unit has 11 neighbours. There are two are units with only one neighbour.
+
+To view the content of the data table, you can either display the output data frame on RStudio data viewer or by printing out the first ten records by using the code chunk below.
+
+```{r}
+nb_queen
+```
+
+The print shows that polygon 1 has five neighbours. They are polygons number 2, 3, 4, 57,and 85.
+
+One of the advantage of **sfdep** over **spdep** is that the output is an sf tibble data frame.
+
+```{r}
+kable(head(nb_queen,
+           n=10))
+```
+
+### **Identify contiguity neighbours: Rooks\' method**
+
+```{r}
+nb_rook <- hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry,
+                            queen = FALSE),
+         .before = 1)
+```
+
+### **Identifying higher order neighbors**
+
+There are times that we need to identify high order contiguity neighbours. To accomplish the task, [`st_nb_lag_cumul()`](https://sfdep.josiahparry.com/reference/st_nb_lag_cumul.html) should be used as shown in the code chunk below.
+
+```{r}
+nb2_queen <-  hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry),
+         nb2 = st_nb_lag_cumul(nb, 2),
+         .before = 1)
+```
+
+Note that if the order is 2, the result contains both 1st and 2nd order neighbors as shown on the print below.
+
+```{r}
+nb2_queen
+```
+
+## **Deriving contiguity weights: Queen\'s method**
+
+Now, you are ready to compute the contiguity weights by using [`st_weights()`](https://sfdep.josiahparry.com/reference/st_weights.html) of **sfdep** package.
+
+### **Deriving contiguity weights: Queen\'s method**
 
 In the code chunk below, queen method is used to derive the contiguity weights.
 
@@ -67,55 +167,80 @@ wm_q <- hunan_GDPPC %>%
   mutate(nb = st_contiguity(geometry),
          wt = st_weights(nb,
                          style = "W"),
-         .before = 1)
+         .before = 1) 
 ```
 
 Notice that `st_weights()` provides tree arguments, they are:
 
--   *nb*: A neighbor list object as created by `st_neighbors()`.
+-   *nb*: A neighbor list object as created by st_neighbors().
 
--   *style*:Default "W" for row standardized weights.
+-   *style*: Default \"W\" for row standardized weights. This value can also be \"B\", \"C\", \"U\", \"minmax\", and \"S\". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al. 1999, p. 167-168 (sums over all links to n).
 
--   *allow_zero*:if TRUE, assign zero as lagged value to zone without neighbors.
-
-## Computing Local Moran's I
-
-In this section, we will compute Local Moran's I of GDPPC at county level by using `local_moran()` of sfdep package.
+-   *allow_zero*: If TRUE, assigns zero as lagged value to zone without neighbors.
 
 ```{r}
-lisa <- wm_q %>%
-  mutate(local_moran = local_moran(
-    GDPPC, nb, wt, nsim = 99),
-    .before = 1) %>%
-  unnest(local_moran)
+wm_q
 ```
 
-## Creating a Time Series Cube
+## **Distance-based Weights**
+
+There are three popularly used distance-based spatial weights, they are:
+
+-   fixed distance weights,
+
+-   adaptive distance weights, and
+
+-   inverse distance weights (IDW).
+
+### **Deriving fixed distance weights**
+
+Before we can derive the fixed distance weights, we need to determine the upper limit for distance band by using the steps below:
 
 ```{r}
-#GDPPC_st <- spacetime(GDPPC, hunan,
-                      #.loc_col = "County",
-                     # .time_col = "Year")
+geo <- sf::st_geometry(hunan_GDPPC)
+nb <- st_knn(geo, longlat = TRUE)
+dists <- unlist(st_nb_dists(geo, nb))
 ```
 
+Now, we will go ahead to derive summary statistics of the nearest neighbour distances vector (i.e. dists) by usign the coced chunk below.
+
 ```{r}
-#GDPPC_nb <- GDPPC_st %>%
-  #activate("geometry") %>%
-  #mutate(nb = include_self(st_contiguity(geometry)),
-         #wt = st_inverse_distance(nb,geometry,
-                                  #scale = 1,
-                                  #alpha = 1),
-        # .before = 1) %>%
-  #set_nbs("nb") %>%
-  #set_wts("wt")
+summary(dists)
 ```
 
-## Computing GI\*
+The summary statistics report above shows that the maximum nearest neighbour distance is 65.80km. By using a threshold value of 66km will ensure that each area will have at least one neighbour.
+
+Now we will go ahead to compute the fixed distance weights by using the code chunk below.
 
 ```{r}
-#gi_stars <- GDPPC_nb %>%
-    #group_by(Year) %>%
-    #mutate(gi_star = local_gstar_perm(
-      #GDPPC, nb, wt)) %>%
-  #tidyr::unnest(gi_star)
+wm_fd <- hunan_GDPPC %>%
+  mutate(nb = st_dist_band(geometry,
+                           upper = 66),
+               wt = st_weights(nb),
+               .before = 1)
+```
+
+### **Deriving adaptive distance weights**
+
+In this section, you will derive an adaptive spatial weights by using the code chunk below.
+
+```{r}
+wm_ad <- hunan_GDPPC %>% 
+  mutate(nb = st_knn(geometry,
+                     k=8),
+         wt = st_weights(nb),
+               .before = 1)
+```
+
+### **Calculate inverse distance weights**
+
+In this section, you will derive an inverse distance weights by using the code chunk below.
+
+```{r}
+wm_idw <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wts = st_inverse_distance(nb, geometry,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
 ```
