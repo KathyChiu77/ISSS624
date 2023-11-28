@@ -157,6 +157,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_Global_Local_Measures.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 2: Global and Local Measures of Spatial Association - sfdep methods</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_EHSA.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 2: Emerging Hot Spot Analysis: sfdep methods</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -198,17 +202,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#global-measures-of-spatial-association" id="toc-global-measures-of-spatial-association" class="nav-link" data-scroll-target="#global-measures-of-spatial-association"><strong>Global Measures of Spatial Association</strong></a>
   <ul class="collapse">
-  <li><a href="#step-1-deriving-contiguity-weights-queens-method" id="toc-step-1-deriving-contiguity-weights-queens-method" class="nav-link" data-scroll-target="#step-1-deriving-contiguity-weights-queens-method"><strong>Step 1: Deriving contiguity weights: Queen's method</strong></a></li>
-  <li><a href="#deriving-contiguity-weights-queens-method" id="toc-deriving-contiguity-weights-queens-method" class="nav-link" data-scroll-target="#deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen's method</strong></a></li>
-  <li><a href="#computing-global-moran-i" id="toc-computing-global-moran-i" class="nav-link" data-scroll-target="#computing-global-moran-i"><strong>Computing Global Moran' I</strong></a></li>
-  <li><a href="#performing-global-moransi-test" id="toc-performing-global-moransi-test" class="nav-link" data-scroll-target="#performing-global-moransi-test"><strong>Performing Global Moran'sI test</strong></a></li>
-  <li><a href="#performing-global-morani-permutation-test" id="toc-performing-global-morani-permutation-test" class="nav-link" data-scroll-target="#performing-global-morani-permutation-test"><strong>Performing Global Moran'I permutation test</strong></a></li>
+  <li><a href="#step-1-deriving-contiguity-weights-queens-method" id="toc-step-1-deriving-contiguity-weights-queens-method" class="nav-link" data-scroll-target="#step-1-deriving-contiguity-weights-queens-method"><strong>Step 1: Deriving contiguity weights: Queen’s method</strong></a></li>
+  <li><a href="#deriving-contiguity-weights-queens-method" id="toc-deriving-contiguity-weights-queens-method" class="nav-link" data-scroll-target="#deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen’s method</strong></a></li>
+  <li><a href="#computing-global-moran-i" id="toc-computing-global-moran-i" class="nav-link" data-scroll-target="#computing-global-moran-i"><strong>Computing Global Moran’ I</strong></a></li>
+  <li><a href="#performing-global-moransi-test" id="toc-performing-global-moransi-test" class="nav-link" data-scroll-target="#performing-global-moransi-test"><strong>Performing Global Moran’sI test</strong></a></li>
+  <li><a href="#performing-global-morani-permutation-test" id="toc-performing-global-morani-permutation-test" class="nav-link" data-scroll-target="#performing-global-morani-permutation-test"><strong>Performing Global Moran’I permutation test</strong></a></li>
   </ul></li>
-  <li><a href="#computing-local-morans-i" id="toc-computing-local-morans-i" class="nav-link" data-scroll-target="#computing-local-morans-i"><strong>Computing local Moran's I</strong></a>
+  <li><a href="#computing-local-morans-i" id="toc-computing-local-morans-i" class="nav-link" data-scroll-target="#computing-local-morans-i"><strong>Computing local Moran’s I</strong></a>
   <ul class="collapse">
-  <li><a href="#visualising-local-morans-i" id="toc-visualising-local-morans-i" class="nav-link" data-scroll-target="#visualising-local-morans-i"><strong>Visualising local Moran's I</strong></a></li>
-  <li><a href="#visualising-p-value-of-local-morans-i" id="toc-visualising-p-value-of-local-morans-i" class="nav-link" data-scroll-target="#visualising-p-value-of-local-morans-i"><strong>Visualising p-value of local Moran's I</strong></a></li>
-  <li><a href="#visualising-local-morans-i-and-p-value" id="toc-visualising-local-morans-i-and-p-value" class="nav-link" data-scroll-target="#visualising-local-morans-i-and-p-value"><strong>Visualising local Moran's I and p-value</strong></a></li>
+  <li><a href="#visualising-local-morans-i" id="toc-visualising-local-morans-i" class="nav-link" data-scroll-target="#visualising-local-morans-i"><strong>Visualising local Moran’s I</strong></a></li>
+  <li><a href="#visualising-p-value-of-local-morans-i" id="toc-visualising-p-value-of-local-morans-i" class="nav-link" data-scroll-target="#visualising-p-value-of-local-morans-i"><strong>Visualising p-value of local Moran’s I</strong></a></li>
+  <li><a href="#visualising-local-morans-i-and-p-value" id="toc-visualising-local-morans-i-and-p-value" class="nav-link" data-scroll-target="#visualising-local-morans-i-and-p-value"><strong>Visualising local Moran’s I and p-value</strong></a></li>
   <li><a href="#visualising-lisa-map" id="toc-visualising-lisa-map" class="nav-link" data-scroll-target="#visualising-lisa-map"><strong>Visualising LISA map</strong></a></li>
   </ul></li>
   <li><a href="#hot-spot-and-cold-spot-area-analysis-hcsa" id="toc-hot-spot-and-cold-spot-area-analysis-hcsa" class="nav-link" data-scroll-target="#hot-spot-and-cold-spot-area-analysis-hcsa"><strong>Hot Spot and Cold Spot Area Analysis (HCSA)</strong></a></li>
@@ -251,7 +255,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 27, 2023</p>
+      <p class="date-modified">November 28, 2023</p>
     </div>
   </div>
     
@@ -262,7 +266,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview"><strong>Overview</strong></h2>
-<p>This in-class introduces an alternative R package to spdep package which is called &nbsp;<a href="https://sfdep.josiahparry.com/"><strong>sfdep</strong></a>. According to Josiah Parry, the developer of the package, "sfdep builds on the great shoulders of&nbsp;<strong>spdep</strong>&nbsp;package for spatial dependence. sfdep creates an sf and tidyverse friendly interface to the package as well as introduces new functionality that is not present in spdep. sfdep utilizes list columns extensively to make this interface possible."</p>
+<p>This in-class introduces an alternative R package to spdep package which is called &nbsp;<a href="https://sfdep.josiahparry.com/"><strong>sfdep</strong></a>. According to Josiah Parry, the developer of the package, “sfdep builds on the great shoulders of&nbsp;<strong>spdep</strong>&nbsp;package for spatial dependence. sfdep creates an sf and tidyverse friendly interface to the package as well as introduces new functionality that is not present in spdep. sfdep utilizes list columns extensively to make this interface possible.”</p>
 </section>
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started"><strong>Getting started</strong></h2>
@@ -337,10 +341,10 @@ Geodetic CRS:  WGS 84</code></pre>
 <section id="global-measures-of-spatial-association" class="level2">
 <h2 class="anchored" data-anchor-id="global-measures-of-spatial-association"><strong>Global Measures of Spatial Association</strong></h2>
 <section id="step-1-deriving-contiguity-weights-queens-method" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-deriving-contiguity-weights-queens-method"><strong>Step 1: Deriving contiguity weights: Queen's method</strong></h3>
+<h3 class="anchored" data-anchor-id="step-1-deriving-contiguity-weights-queens-method"><strong>Step 1: Deriving contiguity weights: Queen’s method</strong></h3>
 </section>
 <section id="deriving-contiguity-weights-queens-method" class="level3">
-<h3 class="anchored" data-anchor-id="deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen's method</strong></h3>
+<h3 class="anchored" data-anchor-id="deriving-contiguity-weights-queens-method"><strong>Deriving contiguity weights: Queen’s method</strong></h3>
 <p>In the code chunk below, queen method is used to derive the contiguity weights.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>wm_q <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
@@ -352,7 +356,7 @@ Geodetic CRS:  WGS 84</code></pre>
 <p>Notice that <code>st_weights()</code> provides tree arguments, they are:</p>
 <ul>
 <li><p><em>nb</em>: A neighbor list object as created by st_neighbors().</p></li>
-<li><p><em>style</em>: Default "W" for row standardized weights. This value can also be "B", "C", "U", "minmax", and "S". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al.&nbsp;1999, p.&nbsp;167-168 (sums over all links to n).</p></li>
+<li><p><em>style</em>: Default “W” for row standardized weights. This value can also be “B”, “C”, “U”, “minmax”, and “S”. B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al.&nbsp;1999, p.&nbsp;167-168 (sums over all links to n).</p></li>
 <li><p><em>allow_zero</em>: If TRUE, assigns zero as lagged value to zone without neighbors.</p></li>
 </ul>
 <div class="cell">
@@ -412,8 +416,8 @@ First 10 features:
 </div>
 </section>
 <section id="computing-global-moran-i" class="level3">
-<h3 class="anchored" data-anchor-id="computing-global-moran-i"><strong>Computing Global Moran' I</strong></h3>
-<p>In the code chunk below, global_moran() function is used to compute the Moran's I value. Different from spdep package, the output is a tibble data.frame.</p>
+<h3 class="anchored" data-anchor-id="computing-global-moran-i"><strong>Computing Global Moran’ I</strong></h3>
+<p>In the code chunk below, global_moran() function is used to compute the Moran’s I value. Different from spdep package, the output is a tibble data.frame.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>moranI <span class="ot">&lt;-</span> <span class="fu">global_moran</span>(wm_q<span class="sc">$</span>GDPPC,</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                       wm_q<span class="sc">$</span>nb,</span>
@@ -427,8 +431,8 @@ First 10 features:
 </div>
 </section>
 <section id="performing-global-moransi-test" class="level3">
-<h3 class="anchored" data-anchor-id="performing-global-moransi-test"><strong>Performing Global Moran'sI test</strong></h3>
-<p>In general, Moran's I test will be performed instead of just computing the Moran's I statistics. With sfdep package, Moran's I test can be performed by using&nbsp;<a href="https://sfdep.josiahparry.com/reference/global_moran_test.html"><code>global_moran_test()</code></a>&nbsp;as shown in the code chunk below.</p>
+<h3 class="anchored" data-anchor-id="performing-global-moransi-test"><strong>Performing Global Moran’sI test</strong></h3>
+<p>In general, Moran’s I test will be performed instead of just computing the Moran’s I statistics. With sfdep package, Moran’s I test can be performed by using&nbsp;<a href="https://sfdep.josiahparry.com/reference/global_moran_test.html"><code>global_moran_test()</code></a>&nbsp;as shown in the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">global_moran_test</span>(wm_q<span class="sc">$</span>GDPPC,</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                       wm_q<span class="sc">$</span>nb,</span>
@@ -449,7 +453,7 @@ Moran I statistic       Expectation          Variance
 </div>
 </section>
 <section id="performing-global-morani-permutation-test" class="level3">
-<h3 class="anchored" data-anchor-id="performing-global-morani-permutation-test"><strong>Performing Global Moran'I permutation test</strong></h3>
+<h3 class="anchored" data-anchor-id="performing-global-morani-permutation-test"><strong>Performing Global Moran’I permutation test</strong></h3>
 <p>In practice, monte carlo simulation should be used to perform the statistical test. For <strong>sfdep</strong>, it is supported by <a href="https://sfdep.josiahparry.com/reference/global_moran_perm.html"><code>globel_moran_perm()</code></a></p>
 <p>It is always a good practice to use <code>set.seed()</code> before performing simulation. This is to ensure that the computation is reproducible.</p>
 <div class="cell">
@@ -473,12 +477,12 @@ statistic = 0.30075, observed rank = 100, p-value &lt; 2.2e-16
 alternative hypothesis: two.sided</code></pre>
 </div>
 </div>
-<p>The report above show that the p-value is smaller than alpha value of 0.05. Hence, reject the null hypothesis that the spatial patterns spatial independent. Because the Moran's I statistics is greater than 0. We can infer the spatial distribution shows sign of clustering.</p>
+<p>The report above show that the p-value is smaller than alpha value of 0.05. Hence, reject the null hypothesis that the spatial patterns spatial independent. Because the Moran’s I statistics is greater than 0. We can infer the spatial distribution shows sign of clustering.</p>
 </section>
 </section>
 <section id="computing-local-morans-i" class="level2">
-<h2 class="anchored" data-anchor-id="computing-local-morans-i"><strong>Computing local Moran's I</strong></h2>
-<p>In this section, you will learn how to compute Local Moran's I of GDPPC at county level by using&nbsp;<a href="https://sfdep.josiahparry.com/reference/local_moran.html"><code>local_moran()</code></a>&nbsp;of sfdep package.</p>
+<h2 class="anchored" data-anchor-id="computing-local-morans-i"><strong>Computing local Moran’s I</strong></h2>
+<p>In this section, you will learn how to compute Local Moran’s I of GDPPC at county level by using&nbsp;<a href="https://sfdep.josiahparry.com/reference/local_moran.html"><code>local_moran()</code></a>&nbsp;of sfdep package.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>lisa <span class="ot">&lt;-</span> wm_q <span class="sc">%&gt;%</span> </span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">local_moran =</span> <span class="fu">local_moran</span>(</span>
@@ -499,7 +503,7 @@ alternative hypothesis: two.sided</code></pre>
 <li><p>kurtosis: For <code>localmoran_perm</code>, the output of e1071::kurtosis() for the permutation samples underlying the standard deviates.</p></li>
 </ul>
 <section id="visualising-local-morans-i" class="level3">
-<h3 class="anchored" data-anchor-id="visualising-local-morans-i"><strong>Visualising local Moran's I</strong></h3>
+<h3 class="anchored" data-anchor-id="visualising-local-morans-i"><strong>Visualising local Moran’s I</strong></h3>
 <p>In this code chunk below, tmap functions are used prepare a choropleth map by using value in the&nbsp;<em>ii</em>&nbsp;field.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
@@ -515,7 +519,7 @@ alternative hypothesis: two.sided</code></pre>
 </div>
 </section>
 <section id="visualising-p-value-of-local-morans-i" class="level3">
-<h3 class="anchored" data-anchor-id="visualising-p-value-of-local-morans-i"><strong>Visualising p-value of local Moran's I</strong></h3>
+<h3 class="anchored" data-anchor-id="visualising-p-value-of-local-morans-i"><strong>Visualising p-value of local Moran’s I</strong></h3>
 <p>In the code chunk below, tmap functions are used prepare a choropleth map by using value in the&nbsp;<em>p_ii_sim</em>&nbsp;field.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
@@ -530,7 +534,7 @@ alternative hypothesis: two.sided</code></pre>
 </div>
 </section>
 <section id="visualising-local-morans-i-and-p-value" class="level3">
-<h3 class="anchored" data-anchor-id="visualising-local-morans-i-and-p-value"><strong>Visualising local Moran's I and p-value</strong></h3>
+<h3 class="anchored" data-anchor-id="visualising-local-morans-i-and-p-value"><strong>Visualising local Moran’s I and p-value</strong></h3>
 <p>For effective comparison, it will be better for us to plot both maps next to each other as shown below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
@@ -557,7 +561,7 @@ alternative hypothesis: two.sided</code></pre>
 </section>
 <section id="visualising-lisa-map" class="level3">
 <h3 class="anchored" data-anchor-id="visualising-lisa-map"><strong>Visualising LISA map</strong></h3>
-<p>LISA map is a categorical map showing outliers and clusters. There are two types of outliers namely: High-Low and Low-High outliers. Likewise, there are two type of clusters namely: High-High and Low-Low cluaters. In fact, LISA map is an interpreted map by combining local Moran's I of geographical areas and their respective p-values.</p>
+<p>LISA map is a categorical map showing outliers and clusters. There are two types of outliers namely: High-Low and Low-High outliers. Likewise, there are two type of clusters namely: High-High and Low-Low cluaters. In fact, LISA map is an interpreted map by combining local Moran’s I of geographical areas and their respective p-values.</p>
 <p>In lisa sf data.frame, we can find three fields contain the LISA categories. They are <em>mean</em>, <em>median</em> and <em>pysal</em>. In general, classification in <em>mean</em> will be used as shown in the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lisa_sig <span class="ot">&lt;-</span> lisa  <span class="sc">%&gt;%</span></span>
@@ -690,7 +694,7 @@ Geodetic CRS:  WGS 84
 <p><img src="In-class-Ex_2_Global_Local_Measures_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Figure above reveals that there is one hot spot area and two cold spot areas. Interestingly, the hot spot areas coincide with the High-high cluster identifies by using local Moran's I method in the earlier sub-section.</p>
+<p>Figure above reveals that there is one hot spot area and two cold spot areas. Interestingly, the hot spot areas coincide with the High-high cluster identifies by using local Moran’s I method in the earlier sub-section.</p>
 
 
 </section>

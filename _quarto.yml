@@ -23,6 +23,8 @@ website:
             href: In-class Ex/In-class_Ex2/In-class Ex_2_Spatial-Weights.html
           - text: "In-class Exercise 2: Global and Local Measures of Spatial Association - sfdep methods"
             href: In-class Ex/In-class_Ex2/In-class Ex_2_Global_Local_Measures.html
+          - text: "In-class Exercise 2: Emerging Hot Spot Analysis: sfdep methods"
+            href: In-class Ex/In-class_Ex2/In-class Ex_2_EHSA.html
     right:
       - href: index.qmd
         text: Home
