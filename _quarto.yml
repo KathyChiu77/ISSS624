@@ -25,6 +25,10 @@ website:
             href: In-class Ex/In-class_Ex2/In-class Ex_2_Global_Local_Measures.html
           - text: "In-class Exercise 2: Emerging Hot Spot Analysis: sfdep methods"
             href: In-class Ex/In-class_Ex2/In-class Ex_2_EHSA.html
+      - text: Take-home Exercises
+        menu: 
+          - text: Take-home Exercise 1
+            href: Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html
     right:
       - href: index.qmd
         text: Home
