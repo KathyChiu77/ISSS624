@@ -621,5 +621,54 @@
     "title": "ISSS624",
     "section": "",
     "text": "Welcome to ISSS624 Geospatial Analytics Applications!\nIn this webpage, I am going to share with you my learning journey of geospatial analytics.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html",
+    "title": "Take-home Exercise 1:",
+    "section": "",
+    "text": "In modern cities, digital transformations in transportation and public utilities, including buses, taxis, mass transit, and roads, generate extensive datasets. These datasets can track patterns of movement over time and space, especially with the widespread integration of technologies like GPS and RFID in vehicles. For instance, smart cards and GPS devices on public buses help gather data on routes and ridership. The vast amount of movement data thus collected likely reveals structural patterns and useful insights about the observed phenomena. Analyzing and comparing these patterns can offer deeper understanding of human movements and behaviors within urban environments. Such insights are valuable for enhancing city management and providing key information to both private and public urban transport service providers, aiding them in making informed decisions for a competitive edge.\nHowever, in practical applications, the utilization of this extensive location-aware data is often limited to basic tracking and mapping using GIS (Geographic Information System) tools. This limitation stems mainly from the inadequate capabilities of traditional GIS in effectively analyzing and modeling spatial and spatio-temporal data."
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#setting-the-scene",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#setting-the-scene",
+    "title": "Take-home Exercise 1:",
+    "section": "",
+    "text": "In modern cities, digital transformations in transportation and public utilities, including buses, taxis, mass transit, and roads, generate extensive datasets. These datasets can track patterns of movement over time and space, especially with the widespread integration of technologies like GPS and RFID in vehicles. For instance, smart cards and GPS devices on public buses help gather data on routes and ridership. The vast amount of movement data thus collected likely reveals structural patterns and useful insights about the observed phenomena. Analyzing and comparing these patterns can offer deeper understanding of human movements and behaviors within urban environments. Such insights are valuable for enhancing city management and providing key information to both private and public urban transport service providers, aiding them in making informed decisions for a competitive edge.\nHowever, in practical applications, the utilization of this extensive location-aware data is often limited to basic tracking and mapping using GIS (Geographic Information System) tools. This limitation stems mainly from the inadequate capabilities of traditional GIS in effectively analyzing and modeling spatial and spatio-temporal data."
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#objectives",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#objectives",
+    "title": "Take-home Exercise 1:",
+    "section": "Objectives",
+    "text": "Objectives\n\nApply Exploratory Spatial Data Analysis (ESDA) to uncover spatial and spatio-temporal mobility patterns of public bus passengers in Singapore.\nUtilize Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) for this analysis."
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#tasks",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#tasks",
+    "title": "Take-home Exercise 1:",
+    "section": "Tasks",
+    "text": "Tasks\n\nGeovisualisation and Analysis\n\nCompute passenger trips from origin at the hexagon level during different peak hours\n\n\n\n\nPeak hour period\nBus tap on time\n\n\n\n\nWeekday morning peak\n6am to 9am\n\n\nWeekday afternoon peak\n5pm to 8pm\n\n\nWeekend/holiday morning peak\n11am to 2pm\n\n\nWeekend/holiday evening peak\n4pm to 7pm\n\n\n\n\nUse appropriate geovisualisation methods to display geographical distribution of these trips.\nDescribe spatial patterns observed in the geovisualisations (max 200 words per visual).\n\n\n\nLocal Indicators of Spatial Association (LISA) Analysis\n\nCalculate LISA for passenger trips by origin at hexagon level.\nDisplay LISA maps for these trips, highlighting only significant results (p-value &lt; 0.05).\nDraw statistical conclusions based on the analysis results (max 200 words per visual).\n\n\n\nEmerging Hot Spot Analysis (EHSA)\n\nConduct Mann-Kendall Test using spatio-temporal local Gi* values for passenger trips by origin at the hexagon level for the four time intervals.\nPrepare EHSA maps showing Gi* values of passenger trips by origin at hexagon level, focusing on significant results (p-value &lt; 0.05).\nDescribe spatial patterns revealed in EHSA maps and data visualisation (max 250 words per cluster)."
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#getting-started",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#getting-started",
+    "title": "Take-home Exercise 1:",
+    "section": "Getting Started",
+    "text": "Getting Started"
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#installing-and-loading-the-r-packages",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#installing-and-loading-the-r-packages",
+    "title": "Take-home Exercise 1:",
+    "section": "Installing and Loading the R Packages",
+    "text": "Installing and Loading the R Packages\nAs usual, p_load() of pacman package will be used to check if the necessary packages have been installed in R, if yes, load the packages on R environment.\nFive R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.\n\npacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse)"
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#the-data",
+    "href": "Take-home Ex/Take-home Ex 1/Take-home_Exercise_1.html#the-data",
+    "title": "Take-home Exercise 1:",
+    "section": "The Data",
+    "text": "The Data"
   }
 ]

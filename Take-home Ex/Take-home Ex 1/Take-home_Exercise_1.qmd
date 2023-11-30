@@ -10,3 +10,62 @@ execute:
   warning: false
 editor: visual
 ---
+
+## **Setting the Scene**
+
+In modern cities, digital transformations in transportation and public utilities, including buses, taxis, mass transit, and roads, generate extensive datasets. These datasets can track patterns of movement over time and space, especially with the widespread integration of technologies like GPS and RFID in vehicles. For instance, smart cards and GPS devices on public buses help gather data on routes and ridership. The vast amount of movement data thus collected likely reveals structural patterns and useful insights about the observed phenomena. Analyzing and comparing these patterns can offer deeper understanding of human movements and behaviors within urban environments. Such insights are valuable for enhancing city management and providing key information to both private and public urban transport service providers, aiding them in making informed decisions for a competitive edge.
+
+However, in practical applications, the utilization of this extensive location-aware data is often limited to basic tracking and mapping using GIS (Geographic Information System) tools. This limitation stems mainly from the inadequate capabilities of traditional GIS in effectively analyzing and modeling spatial and spatio-temporal data.
+
+## Objectives
+
+-   Apply Exploratory Spatial Data Analysis (ESDA) to uncover spatial and spatio-temporal mobility patterns of public bus passengers in Singapore.
+
+-   Utilize Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) for this analysis.
+
+## Tasks
+
+### Geovisualisation and Analysis
+
+-   Compute passenger trips from origin at the hexagon level during different peak hours
+
+| Peak hour period             | Bus tap on time |
+|------------------------------|-----------------|
+| Weekday morning peak         | 6am to 9am      |
+| Weekday afternoon peak       | 5pm to 8pm      |
+| Weekend/holiday morning peak | 11am to 2pm     |
+| Weekend/holiday evening peak | 4pm to 7pm      |
+
+-   Use appropriate geovisualisation methods to display geographical distribution of these trips.
+
+-   Describe spatial patterns observed in the geovisualisations (max 200 words per visual).
+
+### Local Indicators of Spatial Association (LISA) Analysis
+
+-   Calculate LISA for passenger trips by origin at hexagon level.
+
+-   Display LISA maps for these trips, highlighting only significant results (p-value \< 0.05).
+
+-   Draw statistical conclusions based on the analysis results (max 200 words per visual).
+
+### Emerging Hot Spot Analysis (EHSA)
+
+-   Conduct Mann-Kendall Test using spatio-temporal local Gi\* values for passenger trips by origin at the hexagon level for the four time intervals.
+
+-   Prepare EHSA maps showing Gi\* values of passenger trips by origin at hexagon level, focusing on significant results (p-value \< 0.05).
+
+-   Describe spatial patterns revealed in EHSA maps and data visualisation (max 250 words per cluster).
+
+## Getting Started
+
+## **Installing and Loading the R Packages**
+
+As usual, `p_load()` of **pacman** package will be used to check if the necessary packages have been installed in R, if yes, load the packages on R environment.
+
+Five R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.
+
+```{r}
+pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse)
+```
+
+## **The Data**
