@@ -69,3 +69,63 @@ pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse)
 ```
 
 ## **The Data**
+
+### Aspatial Data
+
+-   *Passenger Volume by Origin Destination Bus Stops* from LTA DataMall. In this exercise, we will focus on the latest data which is the Octmber of 2023.
+
+```{r}
+    odbus <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
+```
+
+### Geospatial Data
+
+-   *Bus Stop Location* from LTA DataMall: Contains information on all bus stops serviced by buses, including bus stop codes and location coordinates.
+
+```{r}
+    busstop <- st_read(dsn = "data/geospatial",
+                       layer = "BusStop") %>%
+      st_transform(crs = 3414)
+```
+
+-   *Hexagon Layer*, a hexagon grid layer with a cell diameter of 250m, meant to replace the Master Plan 2019 Planning Sub-zone GIS data set of URA.
+
+    Use the **`st_read`** function from the **`sf`** package to read in the existing geospatial layer, and then transform it to the correct coordinate reference system (CRS).
+
+```{r}
+    mpsz <- st_read(dsn = "data/geospatial",
+                       layer = "MPSZ-2019") %>%
+      st_transform(crs = 3414)
+```
+
+```{r}
+glimpse(mpsz)
+```
+
+```{r}
+plot(mpsz["PLN_AREA_N"])
+```
+
+```{r}
+hex_size <- 250 / sqrt(3) * 2  # Calculate the hexagon diameter
+hex_grid <- st_make_grid(mpsz, cellsize = hex_size, square = FALSE)
+```
+
+Convert the grid into a simple feature collection with hexagon geometries.
+
+```{r}
+hex_sf <- st_sf(geometry = st_sfc(hex_grid, crs = st_crs(mpsz)))
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_borders() +
+  tm_shape(hex_sf) +
+  tm_borders(col = "lightblue")
+```
+
+## Reference
+
+<https://desktop.arcgis.com/zh-cn/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm>
+
+<https://urbandatapalette.com/post/2021-08-tessellation-sf/>
