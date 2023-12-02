@@ -65,7 +65,7 @@ As usual, `p_load()` of **pacman** package will be used to check if the necessar
 Five R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.
 
 ```{r}
-pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse)
+pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2)
 ```
 
 ## **The Data**
@@ -78,6 +78,133 @@ pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse)
     odbus <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
 ```
 
+```{r}
+glimpse(odbus)
+```
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE)
+```
+
+Notice that both of them are in factor data type now.
+
+```{r}
+glimpse(odbus)
+```
+
+## **Extract Commuting Flow data**
+
+For the **Weekday morning peak** (6am to 9am):
+
+```{r}
+weekday_morning_peak <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+kable(head(weekday_morning_peak))
+```
+
+We will save the output in rds format for future used.
+
+```{r}
+write_rds(weekday_morning_peak, "data/rds/weekday_morning_peak.rds")
+```
+
+The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
+
+```{r}
+weekday_morning_peak <- read_rds("data/rds/weekday_morning_peak.rds")
+```
+
+For the **Weekday afternoon peak** (5pm to 8pm):
+
+```{r}
+weekday_afternoon_peak <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 17 & TIME_PER_HOUR <= 20) %>%
+  group_by(DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+kable(head(weekday_afternoon_peak))
+```
+
+We will save the output in rds format for future used.
+
+```{r}
+write_rds(weekday_afternoon_peak, "data/rds/weekday_afternoon_peak.rds")
+```
+
+The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
+
+```{r}
+weekday_afternoon_peak <- read_rds("data/rds/weekday_afternoon_peak.rds")
+```
+
+For the **Weekend/holiday morning peak** (11am to 2pm):
+
+```{r}
+weekend_morning_peak <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  filter(TIME_PER_HOUR >= 11 & TIME_PER_HOUR <= 14) %>%
+  group_by(ORIGIN_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+kable(head(weekend_morning_peak))
+```
+
+We will save the output in rds format for future used.
+
+```{r}
+write_rds(weekend_morning_peak, "data/rds/weekend_morning_peak.rds")
+```
+
+The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
+
+```{r}
+weekend_morning_peak <- read_rds("data/rds/weekend_morning_peak.rds")
+```
+
+For the **Weekend/holiday evening peak** (4pm to 7pm):
+
+```{r}
+weekend_evening_peak <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  filter(TIME_PER_HOUR >= 16 & TIME_PER_HOUR <= 19) %>%
+  group_by(DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+kable(head(weekend_evening_peak))
+```
+
+We will save the output in rds format for future used.
+
+```{r}
+write_rds(weekend_evening_peak, "data/rds/weekend_evening_peak.rds")
+```
+
+The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
+
+```{r}
+weekend_evening_peak <- read_rds("data/rds/weekend_evening_peak.rds")
+```
+
+Remove unnecessay dataset **odbus** in R environment to avoid redundancy
+
+```{r}
+rm(odbus)
+```
+
 ### Geospatial Data
 
 -   *Bus Stop Location* from LTA DataMall: Contains information on all bus stops serviced by buses, including bus stop codes and location coordinates.
@@ -88,7 +215,9 @@ pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse)
       st_transform(crs = 3414)
 ```
 
-
+```{r}
+mapview(busstop)
+```
 
 ## Reference
 
