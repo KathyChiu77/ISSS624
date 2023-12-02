@@ -27,6 +27,8 @@ website:
             href: In-class Ex/In-class_Ex2/In-class Ex_2_Global_Local_Measures.html
           - text: "In-class Exercise 2: Emerging Hot Spot Analysis: sfdep methods"
             href: In-class Ex/In-class_Ex2/In-class Ex_2_EHSA.html
+          - text: "In-class Exercise 3: Calibrating Spatial Interaction Models with R"
+            href: In-class Ex/In-class_Ex3/In-class_Ex3.html  
       - text: Take-home Exercises
         menu: 
           - text: Take-home Exercise 1
