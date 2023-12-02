@@ -65,7 +65,7 @@ As usual, `p_load()` of **pacman** package will be used to check if the necessar
 Five R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.
 
 ```{r}
-pacman::p_load(sf, dplyr, sfdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2)
+pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr)
 ```
 
 ## **The Data**
@@ -496,6 +496,79 @@ tm_shape(hex_grid_sf) +
   tm_scale_bar() +
   tm_grid(alpha =0.2) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
+```
+
+```{r}
+rm(busstop_hex, hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
+```
+
+## Create a Spatial Weights Matrix
+
+In this case, since contiguity-based weights (which only consider neighboring polygons that share a boundary) might not be appropriate due to the missing observations, distance-based weights could be more suitable. Distance-based weights consider the distance between the centroids of the hexagons to determine neighbors, which can capture spatial relationships even when hexagons are not directly adjacent.
+
+### Fixed Distance Weights
+
+In examining the spatial distribution of passenger trips originating from hexagonal zones, we assume that the influence of any given zone on its neighbors is consistent up to a specific threshold. This assumption is grounded in the regularity of urban transportation patterns, where the effect of a transport node is presumed to reach a limit beyond which it dissipates rapidly due to the availability of alternative nodes. Given the structured nature of urban layouts and the spacing of transport hubs, fixed distance weights provide a clear-cut criterion for delineating the sphere of influence for each zone. This approach allows for a simplified yet robust analysis of spatial autocorrelation, revealing clusters of high and low trip generation that are critical for transport planning and policy interventions.
+
+```{r}
+k1 <- knn2nb(knearneigh(coords))
+k1dists <- unlist(nbdists(k1, coords, longlat = TRUE))
+summary(k1dists)
+```
+
+The summary report shows that the largest first nearest neighbour distance is 67.5 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.
+
+### Computing Fixed-Distance Weights Matrix
+
+Now, we will compute the distance weight matrix by using *dnearneigh()* as shown in the code chunk below.
+
+```{r}
+wm_d68 <- dnearneigh(coords, 0, 68, longlat = TRUE)
+wm_d68
+```
+
+Next, we will use *str()* to display the content of wm_d68 weight matrix.
+
+```{r}
+str(wm_d68)
+```
+
+```{r}
+n_comp <- n.comp.nb(wm_d68)
+table(n_comp$comp.id)
+```
+
+```{r}
+summary(wm_d68)
+```
+
+### **Computing adaptive distance weight matrix**
+
+One of the characteristics of fixed distance weight matrix is that more densely settled areas (usually the urban areas) tend to have more neighbours and the less densely settled areas (usually the rural counties) tend to have lesser neighbours. Having many neighbours smoothes the neighbour relationship across more neighbours.
+
+It is possible to control the numbers of neighbours directly using k-nearest neighbours, either accepting asymmetric neighbours or imposing symmetry as shown in the code chunk below.
+
+```{r}
+wm_ad <- hex_grid_sf %>% 
+  mutate(nb = st_knn(geometry,
+                     k=8),
+         wt = st_weights(nb),
+               .before = 1)
+```
+
+```{r}
+str(wm_ad)
+```
+
+## **Weights based on IDW**
+
+```{r}
+wm_idw <- hex_grid_sf %>%
+  mutate(nb = st_contiguity(geometry),
+         wts = st_inverse_distance(nb, geometry,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
 ```
 
 ## Reference
