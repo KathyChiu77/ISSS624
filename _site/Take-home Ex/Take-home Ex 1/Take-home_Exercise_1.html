@@ -165,6 +165,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class Ex/In-class_Ex2/In-class Ex_2_EHSA.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 2: Emerging Hot Spot Analysis: sfdep methods</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class Ex/In-class_Ex3/In-class_Ex3.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 3: Calibrating Spatial Interaction Models with R</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -252,7 +256,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">December 1, 2023</p>
+      <p class="date-modified">December 2, 2023</p>
     </div>
   </div>
     
@@ -368,62 +372,6 @@ Geometry type: POINT
 Dimension:     XY
 Bounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48284.56 ymax: 52983.82
 Projected CRS: SVY21</code></pre>
-</div>
-</div>
-<ul>
-<li><p><em>Hexagon Layer</em>, a hexagon grid layer with a cell diameter of 250m, meant to replace the Master Plan 2019 Planning Sub-zone GIS data set of URA.</p>
-<p>Use the <strong><code>st_read</code></strong> function from the <strong><code>sf</code></strong> package to read in the existing geospatial layer, and then transform it to the correct coordinate reference system (CRS).</p></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>    mpsz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">layer =</span> <span class="st">"MPSZ-2019"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Reading layer `MPSZ-2019' from data source 
-  `D:\KathyChiu77\ISSS624\Take-home Ex\Take-home Ex 1\data\geospatial' 
-  using driver `ESRI Shapefile'
-Simple feature collection with 332 features and 6 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775
-Geodetic CRS:  WGS 84</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows: 332
-Columns: 7
-$ SUBZONE_N  &lt;chr&gt; "MARINA EAST", "INSTITUTION HILL", "ROBERTSON QUAY", "JURON…
-$ SUBZONE_C  &lt;chr&gt; "MESZ01", "RVSZ05", "SRSZ01", "WISZ01", "MUSZ02", "MPSZ05",…
-$ PLN_AREA_N &lt;chr&gt; "MARINA EAST", "RIVER VALLEY", "SINGAPORE RIVER", "WESTERN …
-$ PLN_AREA_C &lt;chr&gt; "ME", "RV", "SR", "WI", "MU", "MP", "WI", "WI", "SI", "SI",…
-$ REGION_N   &lt;chr&gt; "CENTRAL REGION", "CENTRAL REGION", "CENTRAL REGION", "WEST…
-$ REGION_C   &lt;chr&gt; "CR", "CR", "CR", "WR", "CR", "CR", "WR", "WR", "CR", "CR",…
-$ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((33222.98 29..., MULTIPOLYGON (…</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz[<span class="st">"PLN_AREA_N"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Take-home_Exercise_1_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>hex_size <span class="ot">&lt;-</span> <span class="dv">250</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">3</span>) <span class="sc">*</span> <span class="dv">2</span>  <span class="co"># Calculate the hexagon diameter</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>hex_grid <span class="ot">&lt;-</span> <span class="fu">st_make_grid</span>(mpsz, <span class="at">cellsize =</span> hex_size, <span class="at">square =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Convert the grid into a simple feature collection with hexagon geometries.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>hex_sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(<span class="at">geometry =</span> <span class="fu">st_sfc</span>(hex_grid, <span class="at">crs =</span> <span class="fu">st_crs</span>(mpsz)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz) <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(hex_sf) <span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">col =</span> <span class="st">"lightblue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Take-home_Exercise_1_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
