@@ -128,7 +128,7 @@ distPair %>%
   summary()
 ```
 
-Next, a constant distance value of 50m is added into intra-zones distance (which won't affect the miximum distance).
+Next, a constant distance value of 50m is added into intra-zones distance (which won't affect the minimum distance).
 
 ```{r}
 distPair$dist <- ifelse(distPair$dist == 0,

@@ -469,7 +469,7 @@ max values  :    YUNNAN,    YSSZ09,     YISHUN,         YS,    WEST REGION,     
  (Other):107906   (Other):107906                    </code></pre>
 </div>
 </div>
-<p>Next, a constant distance value of 50m is added into intra-zones distance (which won’t affect the miximum distance).</p>
+<p>Next, a constant distance value of 50m is added into intra-zones distance (which won’t affect the minimum distance).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>distPair<span class="sc">$</span>dist <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(distPair<span class="sc">$</span>dist <span class="sc">==</span> <span class="dv">0</span>,</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                        <span class="dv">50</span>, distPair<span class="sc">$</span>dist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
