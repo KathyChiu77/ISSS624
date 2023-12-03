@@ -577,9 +577,13 @@ The code provided is removing a list of data frames and variables related to var
 rm(hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, hex_weekday_afternoon_df, hex_weekday_morning_df, hex_weekend_evening_df, hex_weekend_morning_df, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
 ```
 
-## **Global Measures of Spatial Association**
+## 4.Local Indicators of Spatial Association (LISA) Analysis
 
-### **Deriving fixed distance weights**
+In the context of spatial analysis for the provided hexagonal grid, using contiguity weights can prove to be impractical, as there may be hexagons with zero neighbors, particularly on the fringes of the study area or in regions with sparse data coverage. This lack of contiguous neighbors would lead to inaccuracies in the analysis, as these hexagons would be isolated from the rest of the spatial network. Therefore, adopting a distance-based weights matrix is a more robust approach, as it accounts for the spatial relationships between hexagons based on distance rather than mere adjacency. This method ensures that all hexagons, regardless of their neighbor count, are integrated into the analysis, providing a more comprehensive understanding of the spatial dynamics at play.
+
+### **4.1Deriving Fixed Distance Weights**
+
+The provided code snippet is for calculating a fixed distance weight matrix in spatial analysis. It first retrieves the spatial geometry of each hexagon from the **hex_grid_sf** data frame. Then, it identifies the nearest neighbors for each hexagon using a k-nearest neighbors search, which is appropriate for longitude-latitude data as indicated by the `longlat = TRUE` parameter. Lastly, it calculates and extracts the distances between each hexagon and its neighbors into a single vector, laying the groundwork for constructing a weight matrix based on these distances.
 
 ```{r}
 geo <- sf::st_geometry(hex_grid_sf)
@@ -587,9 +591,13 @@ nb <- st_knn(geo, longlat = TRUE)
 dists <- unlist(st_nb_dists(geo, nb))
 ```
 
+The first code chunk displays a summary of the **dists** vector, which contains the distances between each hexagon and its nearest neighbors. These statistics describe the range and central tendency of the distances, which is important for understanding the spread and typical distance between neighbors in the grid （especially the maximum 4358.9m).
+
 ```{r}
 summary(dists)
 ```
+
+The code chunk is creating a fixed distance weights matrix for the **hex_grid_sf** spatial data. The `mutate()` function is used to add two new columns: **nb**, which stores the neighbors within a certain distance band specified by the `upper` parameter (in this case, 4359 meters), and **wt**, which calculates the weights for these neighbors. The `st_dist_band` function is used to identify neighbors within the specified distance band, and `st_weights` computes the weights based on this neighbor relationship. The `.before = 1` argument indicates that the new columns should be added before the first column in the existing data frame.
 
 ```{r}
 wm_fd <- hex_grid_sf %>%
@@ -599,7 +607,9 @@ wm_fd <- hex_grid_sf %>%
                .before = 1)
 ```
 
-### **Deriving adaptive distance weights**
+### **4.2Deriving Adaptive Distance Weights**
+
+The given code creates an adaptive weights matrix using the **hex_grid_sf** spatial data frame, which contains the geometry of a hexagonal grid. By invoking the `st_knn()` function with `k=6`, it identifies the six nearest hexagons to each hexagon as neighbors, forming an adaptive neighborhood structure that does not rely on a fixed distance. Subsequently, the `st_weights()` function calculates the weights for these k-nearest neighbor relationships. The new neighbor and weight columns are added to the beginning of the data frame. This adaptive method is particularly useful for ensuring each hexagon is evenly connected to a set number of neighbors, which is beneficial for spatial analyses in heterogeneous areas.
 
 ```{r}
 wm_ad <- hex_grid_sf %>% 
@@ -609,7 +619,9 @@ wm_ad <- hex_grid_sf %>%
                .before = 1)
 ```
 
-### **Calculate inverse distance weights**
+### **4.3Calculate Inverse Distance Weights**
+
+The code snippet provided outlines the steps to create an inverse distance weights (IDW) matrix for the **hex_grid_sf** spatial dataframe, which contains the geometries of a hexagonal grid. The process begins by establishing contiguity-based neighbors for each hexagon using the `st_contiguity()` function, which assesses adjacency between features. Following this, the `st_inverse_distance()` function is applied to generate weights that are inversely proportional to the distance between neighbors---meaning that closer neighbors have greater influence than those farther away. The `scale` parameter is set to 1, maintaining the original distance units, and `alpha` is set to 1, indicating that the weight will be the reciprocal of the distance. These weights are then inserted at the start of the dataframe. The resulting **wm_idw** dataframe contains an IDW matrix which captures the intensity of spatial relationships based on proximity, suitable for spatial analyses where the effect of distance is expected to diminish with increasing separation.
 
 ```{r}
 wm_idw <- hex_grid_sf %>%
@@ -620,9 +632,17 @@ wm_idw <- hex_grid_sf %>%
          .before = 1)
 ```
 
-### **Performing Global Moran'sI test**
+And the Inverse Distance Weights will be adopted for further analysis for reasons as below:
 
-In general, Moran's I test will be performed instead of just computing the Moran's I statistics. With sfdep package, Moran's I test can be performed by using [`global_moran_test()`](https://sfdep.josiahparry.com/reference/global_moran_test.html) as shown in the code chunk below.
+-   **Proximity Relevance**: Places closer together are more likely to share similar trip volumes, making inverse distance a logical choice to reflect the stronger relationship between nearby locations.
+
+-   **Urban Density**: Singapore's urban density varies, and inverse distance weights can accurately capture the greater interaction between bus stops in densely populated areas.
+
+-   **Distance Decay Principle**: Bus ridership tends to decrease with distance, and inverse distance weights naturally incorporate this principle into the analysis.
+
+### **4.4Performing Global Moran'sI Test**
+
+The code is conducting a Global Moran's I test, which is a measure of spatial autocorrelation. The test assesses whether the pattern of bus trips on weekday mornings across Singapore is clustered, dispersed, or random. The function `global_moran_test()` is called with the number of weekday morning trips as the variable of interest, using the inverse distance weights matrix and neighbor definitions previously created (**wm_idw\$nb** and **wm_idw\$wts**). The `zero.policy = TRUE` parameter allows the function to proceed even if some areas have no neighbors.
 
 ```{r}
 global_moran_test(wm_idw$weekday_morning_trips,
@@ -631,12 +651,28 @@ global_moran_test(wm_idw$weekday_morning_trips,
                        zero.policy = TRUE)
 ```
 
+-   **Moran I statistic**: The value of 0.2562577532 indicates positive spatial autocorrelation. This suggests that bus stops with a high number of trips are more likely to be surrounded by stops with similarly high numbers of trips.
+
+-   **Expectation**: The expected Moran's I in the case of no spatial autocorrelation is close to 0, specifically -0.0008445946 here, and the observed Moran's I is far from this, suggesting non-randomness.
+
+-   **p-value**: A p-value less than 2.2e-16 indicates the result is highly significant, meaning there's a very low probability that this clustered pattern could be the result of random chance.
+
+In summary, the Global Moran's I test suggests a significant clustering of bus trip volumes in Singapore during weekday mornings, which could have implications for transit planning and resource allocation.
+
 ```{r}
 global_moran_test(wm_idw$weekday_afternoon_trips,
                        wm_idw$nb,
                        wm_idw$wts,
                        zero.policy = TRUE)
 ```
+
+-   **Moran I statistic**: The value of 0.0564036260 suggests a positive but weak spatial autocorrelation for weekday afternoon trips. This indicates that while there is some tendency for bus stops with a high number of trips to be near other busy stops, this pattern is not as strong as it is during the morning.
+
+-   **Expectation**: The expected Moran's I is -0.0008445946, which is a value near zero that would indicate a random spatial pattern. The observed Moran's I being above this value points to a non-random pattern, though the strength of this pattern is not as pronounced.
+
+-   **p-value**: With a p-value of 0.00101, the test is statistically significant, suggesting that the observed spatial pattern of bus trip volumes in the afternoon is unlikely to be due to random variation.
+
+In summary, the Global Moran's I test indicates a statistically significant but relatively weak clustering of bus trip volumes in Singapore during weekday afternoons.
 
 ```{r}
 global_moran_test(wm_idw$weekend_morning_trips,
@@ -645,6 +681,14 @@ global_moran_test(wm_idw$weekend_morning_trips,
                        zero.policy = TRUE)
 ```
 
+-   **Moran I statistic**: The value of 0.1778617811 indicates a positive spatial autocorrelation for weekend morning bus trips, suggesting a pattern where bus stops with higher trip volumes are likely to be close to other stops with high volumes. This clustering tendency, however, is less strong than the value observed for weekday mornings (0.2562577532), implying a somewhat less pronounced clustering on weekends.
+
+-   **Expectation**: The expected Moran's I value near zero (-0.0008445946) would suggest a random spatial distribution. The observed Moran's I being much higher suggests a significant departure from randomness, pointing to a clustered spatial pattern.
+
+-   **p-value**: The extremely low p-value (less than 2.2e-16) indicates that the clustering pattern is highly statistically significant and is very unlikely to have arisen by chance.
+
+In comparison with weekday mornings, the Global Moran's I test for weekend mornings shows significant clustering but indicates that bus stops are likely less tightly clustered than during weekday mornings.
+
 ```{r}
 global_moran_test(wm_idw$weekend_evening_trips,
                        wm_idw$nb,
@@ -652,7 +696,15 @@ global_moran_test(wm_idw$weekend_evening_trips,
                        zero.policy = TRUE)
 ```
 
-### **Performing Global Moran'I permutation test**
+-   **Moran I statistic**: The value of 0.1138372546 suggests a moderate level of positive spatial autocorrelation for weekend evening bus trips.
+
+-   **Expectation**: The expectation of Moran's I in a random pattern is -0.0008445946, and the observed value being substantially higher suggests that the distribution of bus trips is not random.
+
+-   **p-value**: With a p-value of 3.872e-10, the clustering observed is statistically significant, though the strength of autocorrelation is lower compared to weekday morning and weekend morning.
+
+The Global Moran's I test result for weekend evenings demonstrates significant clustering of bus trip volumes, indicating that there is a pattern to passenger movement during this time.
+
+### **4.5Performing Global Moran'I Permutation Test**
 
 It is always a good practice to use `set.seed()` before performing simulation. This is to ensure that the computation is reproducible.
 
@@ -660,7 +712,7 @@ It is always a good practice to use `set.seed()` before performing simulation.
 set.seed(1234)
 ```
 
-Next, `global_moran_perm()` is used to perform Monte Carlo simulation.
+The `global_moran_perm()` function is executing a permutation-based Global Moran's I test on the weekday morning trips data from the **wm_idw** dataframe. This test assesses spatial autocorrelation by comparing the observed Moran's I value against a distribution of Moran's I values obtained by randomly shuffling the dataset 99 times (`nsim = 99`). By doing so, it calculates the likelihood of the observed spatial pattern occurring by random chance. The `zero.policy = TRUE` parameter ensures that the test includes all data points, even those without neighbors, which could otherwise distort the analysis. This permutation approach is a non-parametric test that does not assume the data follows a normal distribution, making it a robust method for evaluating spatial autocorrelation in the distribution of bus trips.
 
 ```{r}
 global_moran_perm(wm_idw$weekday_morning_trips,
@@ -670,6 +722,8 @@ global_moran_perm(wm_idw$weekday_morning_trips,
                   nsim = 99)
 ```
 
+The result shows a Monte-Carlo simulation of the Global Moran's I test, with a statistic of 0.25626. This value indicates a positive spatial autocorrelation, meaning there's a tendency for similar values to be located near each other. The observed rank of 100 out of 100 simulations suggests that the observed Moran's I is higher than any of the Moran's I values from the permuted datasets. With a p-value of less than 2.2e-16, the result is highly significant, indicating that the observed spatial pattern is very unlikely to be due to random chance.
+
 ```{r}
 global_moran_perm(wm_idw$weekday_afternoon_trips,
                        wm_idw$nb,
@@ -677,6 +731,8 @@ global_moran_perm(wm_idw$weekday_afternoon_trips,
                        zero.policy = TRUE,
                   nsim = 99)
 ```
+
+The Monte-Carlo simulation result for the Global Moran's I test on weekday afternoon data shows a statistic of 0.056404, which indicates a low level of positive spatial autocorrelation. This means that there's a slight tendency for bus stops with similar trip volumes to be located near each other, though not as strongly as in the weekday morning scenario. The observed rank of 98 suggests that the calculated Moran's I is greater than 97 of the simulated values, placing it near the top of the distribution. With a p-value of 0.04, the result is statistically significant, albeit less so than the morning results, suggesting that the pattern of bus trip clustering in the afternoon is less pronounced.
 
 ```{r}
 global_moran_perm(wm_idw$weekend_morning_trips,
@@ -686,6 +742,8 @@ global_moran_perm(wm_idw$weekend_morning_trips,
                   nsim = 99)
 ```
 
+The result shows a Monte-Carlo simulation of the Global Moran's I test, with a statistic of 0.17786. This value indicates a positive spatial autocorrelation, meaning there's a tendency for similar values to be located near each other. The observed rank of 100 out of 100 simulations suggests that the observed Moran's I is higher than any of the Moran's I values from the permuted datasets. With a p-value of less than 2.2e-16, the result is highly significant, indicating that the observed spatial pattern is very unlikely to be due to random chance.
+
 ```{r}
 global_moran_perm(wm_idw$weekend_evening_trips,
                        wm_idw$nb,
@@ -694,7 +752,11 @@ global_moran_perm(wm_idw$weekend_evening_trips,
                   nsim = 99)
 ```
 
-## **Compute and Visualize local Moran's I**
+The Monte-Carlo simulation of the Global Moran's I test yields a statistic of 0.11384, indicating positive spatial autocorrelation. This suggests a moderate tendency for similar values to cluster geographically. With the observed rank at 100, the test shows that the Moran's I for the data is higher than any of the Moran's I values from the simulations. The p-value of less than 2.2e-16 is highly significant, strongly suggesting that the observed spatial clustering is not due to random chance.
+
+### **4.6Compute and Visualize local Moran's I**
+
+The code is computing the Local Indicators of Spatial Association (LISA) using the `local_moran()` function on the **weekday_morning_trips** data contained within the **wm_idw** dataframe. This analysis will result in Local Moran's I values, which identify the type of spatial correlation (such as clusters or outliers) at each location.
 
 ```{r}
 lisa_wdm <- wm_idw %>% 
@@ -703,6 +765,10 @@ lisa_wdm <- wm_idw %>%
          .before = 1) %>%
   unnest(local_moran)
 ```
+
+The code creates two thematic maps using the **`tmap`** package in R. The first map (**map1**) visualizes the Local Moran's I statistic (**ii**) for weekday morning trips, which indicates areas of significant spatial clustering or dispersion. The second map (**map2**) shows the p-values (**p_ii_sim**) from the Local Moran's I test, categorizing areas by the significance of their spatial autocorrelation, with breaks set at common statistical significance levels. Both maps include semi-transparent borders and are arranged side by side with `tmap_arrange` for easy comparison.
+
+For weekday afternoon, weekend morning, and weekend evening trips, you would create similar pairs of maps. Each pair would consist of one map visualizing the Local Moran's I values to identify spatial patterns of trips for that specific time, and another map showing the p-values to indicate the statistical significance of these patterns. The arrangement and appearance of the maps would be similar, providing a consistent visual comparison across different times of the week.
 
 ```{r}
 tmap_mode("plot")
@@ -724,6 +790,8 @@ map2 <- tm_shape(lisa_wdm) +
 tmap_arrange(map1, map2, ncol = 2)
 ```
 
+The image shows two side-by-side maps representing the Local Moran's I results for weekday morning bus trips in Singapore. The left map displays the Local Moran's I values with a color gradient where darker greens indicate higher positive autocorrelation, suggesting clusters of high trip volumes, and lighter greens to yellows represent areas with lower or negative autocorrelation, indicating either no significant clustering or potential outliers. The right map shows the p-values associated with these Local Moran's I statistics. Darker browns represent more statistically significant values (strong evidence of spatial clustering or dispersion), and lighter colors represent less significant values. Areas marked as "Not sig" indicate a lack of significant spatial autocorrelation, while "Missing" denotes data that might be unavailable or excluded from the analysis.
+
 ```{r}
 lisa_wdm_sig <- lisa_wdm  %>%
   filter(p_ii_sim < 0.05)
@@ -736,6 +804,8 @@ tm_shape(lisa_wdm_sig) +
   tm_borders(alpha = 0.4)
 ```
 
+The code calculates LISA for **weekday_afternoon_trips**, providing Local Moran's I values to detect spatial patterns like clusters or isolated points for each bus stop.
+
 ```{r}
 lisa_wda <- wm_idw %>% 
   mutate(local_moran = local_moran(
@@ -743,6 +813,10 @@ lisa_wda <- wm_idw %>%
          .before = 1) %>%
   unnest(local_moran)
 ```
+
+The LISA map for weekday morning bus trips in Singapore illustrates spatial clusters of similar values. Hexagons marked as "High-High" indicate clusters where bus stops with high trip volumes are surrounded by others with similarly high volumes, likely reflecting central or busy areas with strong demand for bus services. Conversely, "Low-Low" clusters represent areas with uniformly low trip volumes, possibly less urbanized or residential zones with lower bus usage. "Low-High" and "High-Low" hexagons could indicate outliers where a bus stop has a contrasting number of trips compared to its neighbors, such as a busy stop in a generally quiet area or vice versa. These patterns suggest targeted areas for potential service improvements or adjustments to meet passenger demand effectively in Singapore's urban transport landscape.
+
+The first map could show the Local Moran's I values for weekday afternoons, indicating areas where bus stops with similar trip counts are located near each other, while the second map would represent the p-values, highlighting the areas where the spatial patterns are statistically significant.
 
 ```{r}
 tmap_mode("plot")
@@ -764,6 +838,8 @@ map2 <- tm_shape(lisa_wda) +
 tmap_arrange(map1, map2, ncol = 2)
 ```
 
+The LISA map for weekday afternoon bus trips in Singapore shows various spatial clusters indicating how bus trip volumes are distributed. The "High-High" areas (red) suggest pockets of high ridership likely around key commercial districts or busy residential areas where people are heading home or to after-work activities. The "Low-Low" regions (light blue) might correspond to less active parts of the city during the afternoon, such as business districts winding down or quieter residential areas. The presence of "Low-High" and "High-Low" outliers could indicate specific stops that defy the general trend of their surroundings, such as a busy stop in a generally quiet area or a quiet stop in a busy area. These insights could help optimize bus service allocation for the afternoon commute in Singapore.
+
 ```{r}
 lisa_wda_sig <- lisa_wda  %>%
   filter(p_ii_sim < 0.05)
@@ -776,6 +852,8 @@ tm_shape(lisa_wdm_sig) +
   tm_borders(alpha = 0.4)
 ```
 
+For **weekend_morning_trips**, the script performs LISA, yielding Local Moran's I values that highlight spatial correlations, pinpointing areas of similar trip densities.
+
 ```{r}
 lisa_wem <- wm_idw %>% 
   mutate(local_moran = local_moran(
@@ -783,6 +861,8 @@ lisa_wem <- wm_idw %>%
          .before = 1) %>%
   unnest(local_moran)
 ```
+
+A similar pair of maps for weekend mornings would identify clusters or outliers of bus trip volumes and the significance of these patterns, showing how spatial correlations may differ from weekdays due to different travel behaviors.
 
 ```{r}
 tmap_mode("plot")
@@ -804,6 +884,8 @@ map2 <- tm_shape(lisa_wem) +
 tmap_arrange(map1, map2, ncol = 2)
 ```
 
+The LISA map for weekend mornings in Singapore indicates areas where departure activity is concentrated. "High-High" clusters point to departure stops with a high volume of trips, likely in areas with weekend attractions or key residential zones from where people start their weekend outings. "Low-Low" areas signify stops with fewer departures, which could correlate with less active zones during weekend mornings.
+
 ```{r}
 lisa_wem_sig <- lisa_wem  %>%
   filter(p_ii_sim < 0.05)
@@ -816,6 +898,8 @@ tm_shape(lisa_wem_sig) +
   tm_borders(alpha = 0.4)
 ```
 
+The analysis applies LISA to weekend evening trips, generating Local Moran's I statistics that reveal the geographic distribution of trip volumes, identifying potential clusters.
+
 ```{r}
 lisa_wee <- wm_idw %>% 
   mutate(local_moran = local_moran(
@@ -823,6 +907,8 @@ lisa_wee <- wm_idw %>%
          .before = 1) %>%
   unnest(local_moran)
 ```
+
+For weekend evenings, the maps would again display the Local Moran's I values and their significance, illustrating the spatial distribution of bus trip volumes during leisure times, which might show a different pattern compared to mornings and afternoons.
 
 ```{r}
 tmap_mode("plot")
@@ -844,6 +930,8 @@ map2 <- tm_shape(lisa_wee) +
 tmap_arrange(map1, map2, ncol = 2)
 ```
 
+The LISA map for weekend evening bus trips in Singapore displays "High-High" clusters, indicating areas with a high volume of bus departures, possibly reflecting popular social or recreational destinations active during weekend evenings. "Low-Low" clusters suggest areas with uniformly low departure volumes, which could be residential zones with less outbound activity at this time. The presence of both "High-Low" and "Low-High" areas signifies spots where departure volumes significantly differ from their surroundings, pointing to unique transit patterns. These findings can guide the optimization of bus services to meet the distinct travel demands of weekend evenings in Singapore.
+
 ```{r}
 lisa_wee_sig <- lisa_wee  %>%
   filter(p_ii_sim < 0.05)
@@ -856,11 +944,21 @@ tm_shape(lisa_wee_sig) +
   tm_borders(alpha = 0.4)
 ```
 
+The code provided is removing a list of data frames and variables and cleaning R environment.
+
 ```{r}
 rm(lisa_wda, lisa_wda_sig, lisa_wdm, lisa_wdm_sig, lisa_wee, lisa_wee_sig, lisa_wem, lisa_wem_sig, map1, map2, nb, wm_ad, wm_fd, wm_idw, dists)
 ```
 
-# **Emerging Hot Spot Analysis**
+# **5.Emerging Hot Spot Analysis**
+
+Due to technical difficulties, Task 3 has not been fully completed as planned.
+
+### 5.1Mitigating the Data Gap
+
+#### 5.1.1Supplementary Data for Weekday Trips
+
+The R code snippet is designed to prepare a comprehensive dataset for analyzing weekday bus trips. It begins by creating a data frame of all 24 hours in a day, which it then cross-references with a list of unique bus stop codes to ensure there is an hourly record for each stop. Next, it merges this exhaustive hourly schedule with the existing trip data, keeping all the hourly records even if they don't match any original data (`all.x = TRUE`). Finally, it addresses any missing trip data resulting from the merge by replacing **NA** values with zeros, thus ensuring that the dataset reflects zero trips during hours where no data was recorded, maintaining the integrity of the time series.
 
 ```{r}
 # Create a complete set of hours for each ORIGIN_PT_CODE
@@ -874,21 +972,14 @@ weekday_trips_complete <- merge(complete_hours, weekday_trips, by = c("ORIGIN_PT
 weekday_trips_complete$TRIPS[is.na(weekday_trips_complete$TRIPS)] <- 0
 ```
 
-```{r}
-# Create a complete set of hours for each ORIGIN_PT_CODE
-origin_pt_codes <- unique(weekend_trips$ORIGIN_PT_CODE)
-complete_hours <- expand.grid(ORIGIN_PT_CODE = origin_pt_codes, TIME_PER_HOUR = hours$TIME_PER_HOUR)
-
-# Merge the complete set of hours with the original data
-# and replace NA values with zero
-weekend_trips_complete <- merge(complete_hours, weekend_trips, by = c("ORIGIN_PT_CODE", "TIME_PER_HOUR"), all.x = TRUE)
-weekend_trips_complete$TRIPS[is.na(weekend_trips_complete$TRIPS)] <- 0
-```
+The code merges the **busstop_hex** dataframe, which likely contains hexagonally binned bus stop locations, with the **weekday_trips_complete** dataframe, matching them on the bus stop number and origin point code to integrate complete weekend trip data into the spatial hex grid.
 
 ```{r}
 weekday_trips_hex <- busstop_hex %>%
   inner_join(weekday_trips_complete, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
 ```
+
+The code aggregates the total number of bus trips for each hexagonal cell and each hour of the weekend by summing up the trip counts while omitting any missing values (**NA**).
 
 ```{r}
 weekday_trips_summary <- weekday_trips_hex %>%
@@ -896,6 +987,10 @@ weekday_trips_summary <- weekday_trips_hex %>%
   summarise(total_trips = sum(TRIPS, na.rm = TRUE))
 ```
 
+#### 5.1.2Supplementary Data for Weekend/Holiday Trips
+
+The provided R code constructs a complete time-series dataset for bus trips by ensuring that each bus stop has trip data for every hour of the day. It first generates a full list of hourly time slots and matches them with each unique bus stop code to create a comprehensive grid. This grid is then merged with the existing trip data, filling in any gaps where no trips were recorded with zeros. The result is a dataset with no missing time points, allowing for accurate time-series analysis for each bus stop across the weekday hours.
+
 ```{r}
 # Create a complete set of hours for each ORIGIN_PT_CODE
 origin_pt_codes <- unique(weekend_trips$ORIGIN_PT_CODE)
@@ -907,10 +1002,14 @@ weekend_trips_complete <- merge(complete_hours, weekend_trips, by = c("ORIGIN_PT
 weekend_trips_complete$TRIPS[is.na(weekend_trips_complete$TRIPS)] <- 0
 ```
 
+The code merges the **busstop_hex** dataframe, which likely contains hexagonally binned bus stop locations, with the **weekend_trips_complete** dataframe, matching them on the bus stop number and origin point code to integrate complete weekend trip data into the spatial hex grid.
+
 ```{r}
 weekend_trips_hex <- busstop_hex %>%
   inner_join(weekend_trips_complete, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
 ```
+
+The code aggregates the total number of bus trips for each hexagonal cell and each hour of the weekend by summing up the trip counts while omitting any missing values (**NA**).
 
 ```{r}
 weekend_trips_summary <- weekend_trips_hex %>%
@@ -918,12 +1017,18 @@ weekend_trips_summary <- weekend_trips_hex %>%
   summarise(total_trips = sum(TRIPS, na.rm = TRUE))
 ```
 
+#### 5.1.3Importing Hexagon Layer
+
+The code chunk below uses `st_read()` from the **`sf`** package to read the spatial data we created previously.
+
 ```{r}
 hex_grid_sf <- st_read(dsn = "data/geospatial", 
                  layer = "hex_layer")
 ```
 
-# **Creating a Time Series Cube**
+### **5.2Creating a Time Series Cube**
+
+The code transforms the summarized weekday trips data into a space-time cube using the `as_spacetime()` function. It combines the **weekday_trips_summary**, which contains aggregated trip data by hour and hexagon, with the spatial information in **hex_grid_sf**, specifying **hex_id** as the location identifier and **TIME_PER_HOUR** as the temporal dimension. This results in a structured dataset that facilitates the analysis of trip volumes over time within the spatial framework of the hexagonal grid.
 
 ```{r}
 weekday_trips_st <- as_spacetime(weekday_trips_summary, hex_grid_sf,
@@ -931,15 +1036,21 @@ weekday_trips_st <- as_spacetime(weekday_trips_summary, hex_grid_sf,
                       .time_col = "TIME_PER_HOUR")
 ```
 
+The function `is_spacetime_cube(weekday_trips_st)` is used to check if the object **weekday_trips_st** is correctly formatted as a space-time cube. It returns a logical value: **TRUE** if **weekday_trips_st** is a valid space-time cube, and **FALSE** otherwise.
+
 ```{r}
 is_spacetime_cube(weekday_trips_st)
 ```
+
+The code transforms the summarized weekday trips data into a space-time cube using the `as_spacetime()` function. It combines the **weekend_trips_summary**, which contains aggregated trip data by hour and hexagon, with the spatial information in **hex_grid_sf**, specifying **hex_id** as the location identifier and **TIME_PER_HOUR** as the temporal dimension.
 
 ```{r}
 weekend_trips_st <- as_spacetime(weekend_trips_summary, hex_grid_sf,
                       .loc_col = "hex_id",
                       .time_col = "TIME_PER_HOUR")
 ```
+
+The function `is_spacetime_cube(weekend_trips_st)` is used to check if the object **weekend_trips_st** is correctly formatted as a space-time cube. It returns a logical value: **TRUE** if **weekday_end_st** is a valid space-time cube, and **FALSE** otherwise.
 
 ```{r}
 is_spacetime_cube(weekend_trips_st)
