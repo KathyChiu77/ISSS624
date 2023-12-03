@@ -1,5 +1,5 @@
 ---
-title: "Take-home Exercise 1: "
+title: "Take-home Exercise 1: A Comprehensive Spatial Pattern Analysis of Bus Passenger Trips in Singapore"
 author: "QIU RUILIU"
 date: "26 Nov 2023"
 date-modified: "last-modified"
@@ -25,9 +25,9 @@ However, in practical applications, the utilization of this extensive location-a
 
 ## Tasks
 
-### Geovisualisation and Analysis
+### Task 1: Geovisualisation and Analysis
 
--   Compute passenger trips from origin at the hexagon level during different peak hours
+-   Compute passenger trips from origin at the hexagon level during different peak hours.
 
 | Peak hour period             | Bus tap on time |
 |------------------------------|-----------------|
@@ -38,64 +38,88 @@ However, in practical applications, the utilization of this extensive location-a
 
 -   Use appropriate geovisualisation methods to display geographical distribution of these trips.
 
--   Describe spatial patterns observed in the geovisualisations (max 200 words per visual).
+-   Describe spatial patterns observed in the geovisualisations.
 
-### Local Indicators of Spatial Association (LISA) Analysis
+### Task 2: Local Indicators of Spatial Association (LISA) Analysis
 
 -   Calculate LISA for passenger trips by origin at hexagon level.
 
 -   Display LISA maps for these trips, highlighting only significant results (p-value \< 0.05).
 
--   Draw statistical conclusions based on the analysis results (max 200 words per visual).
+-   Draw statistical conclusions based on the analysis results.
 
-### Emerging Hot Spot Analysis (EHSA)
+### Task 3: Emerging Hot Spot Analysis (EHSA)
 
 -   Conduct Mann-Kendall Test using spatio-temporal local Gi\* values for passenger trips by origin at the hexagon level for the four time intervals.
 
 -   Prepare EHSA maps showing Gi\* values of passenger trips by origin at hexagon level, focusing on significant results (p-value \< 0.05).
 
--   Describe spatial patterns revealed in EHSA maps and data visualisation (max 250 words per cluster).
+-   Describe spatial patterns revealed in EHSA maps and data visual.
 
-## Getting Started
+## 1.**Installing and Loading the R Packages**
 
-## **Installing and Loading the R Packages**
+In the opening of our analysis, we begin by loading all the necessary packages to ensure a seamless and comprehensive analysis of spatial patterns in bus passenger trips in Singapore. The R code utilizes the **`pacman`** package for efficient package management. With **`pacman::p_load`**, we conveniently load a suite of essential packages including:
 
-As usual, `p_load()` of **pacman** package will be used to check if the necessary packages have been installed in R, if yes, load the packages on R environment.
+-   **`sf`** for handling spatial data
 
-Five R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.
+-   **`dplyr`** for data manipulation
+
+-   **`sfdep`** and **`spdep`** for spatial dependencies
+
+-   **`mapview`** and **`tmap`** for interactive mapping
+
+-   **`plotly`** for creating interactive plots
+
+-   **`tidyverse`** for an integrated approach to data science
+
+-   **`knitr`** for dynamic report generation
+
+-   **`ggplot2`** for sophisticated graphics
+
+-   **`spacetime`** for handling spatio-temporal data.
+
+This suite of packages equips us with a robust set of tools necessary to conduct an in-depth and multifaceted analysis.
 
 ```{r}
-pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2, spacetime, lubridate)
+pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2, spacetime)
 ```
 
-## **The Data**
+## **2.Data Importing and Wrangling**
 
-### Aspatial Data
+### 2.1Aspatial Data
 
--   *Passenger Volume by Origin Destination Bus Stops* from LTA DataMall. In this exercise, we will focus on the latest data which is the Octmber of 2023.
+#### 2.1.1Importing Original Passenger Trips Data
+
+-   *Passenger Volume by Origin Destination Bus Stops* from LTA DataMall. In this study, we will focus on the latest data which is collected in Octomber, 2023.
+
+Run the code chunk below to load the corresponding csv.file.
 
 ```{r}
     odbus <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
 ```
 
+Using function `glimpse()` to grasp the basic structure and information of data **odbus**.
+
 ```{r}
 glimpse(odbus)
 ```
+
+This code converts two columns **ORIGIN_PT_CODE** and **DESTINATION_PT_CODE**, into factors, which are categorical variables in R, facilitating their use in statistical modeling and analysis.
 
 ```{r}
 odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
 odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE)
 ```
 
-Notice that both of them are in factor data type now.
+Check again and notice that both of them are in factor data type now.
 
 ```{r}
 glimpse(odbus)
 ```
 
-## **Extract Commuting Flow data**
+#### **2.2.2Extract Commuting Flow data**
 
-For the **Weekday morning peak** (6am to 9am):
+This code chunk below filters and summarizes the `odbus` data to calculate the total number of passenger trips during the weekday morning peak hours (6am to 9am). It first filters for entries on weekdays, then narrows down to entries between 6am and 9am. It groups the data by the origin point code, sums up the total trips from each origin, and replaces any missing values (NA) in the resulting trip totals with 0.
 
 ```{r}
 weekday_morning_peak <- odbus %>%
@@ -106,11 +130,13 @@ weekday_morning_peak <- odbus %>%
   mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
+This code displays the first few rows (head) of the **weekday_morning_peak** data frame in a well-formatted table using the `kable()` function, which is commonly used for creating markdown or HTML tables in R.
+
 ```{r}
 kable(head(weekday_morning_peak))
 ```
 
-For the **Weekday afternoon peak** (5pm to 8pm):
+This code chunk below filters and summarizes the **odbus** data to calculate the total number of passenger trips during the weekday afternoon peak hours (5pm to 8pm). It first filters for entries on weekdays, then narrows down to entries between 6am and 9am. It groups the data by the origin point code, sums up the total trips from each origin, and replaces any missing values (NA) in the resulting trip totals with 0.
 
 ```{r}
 weekday_afternoon_peak <- odbus %>%
@@ -125,7 +151,7 @@ weekday_afternoon_peak <- odbus %>%
 kable(head(weekday_afternoon_peak))
 ```
 
-For the **Weekend/holiday morning peak** (11am to 2pm):
+This code chunk below filters and summarizes the `odbus` data to calculate the total number of passenger trips during the weekends/holidays morning peak hours (11am to 2pm). It first filters for entries on weekends/holidays, then narrows down to entries between 11am and 2pm. It groups the data by the origin point code, sums up the total trips from each origin, and replaces any missing values (NA) in the resulting trip totals with 0.
 
 ```{r}
 weekend_morning_peak <- odbus %>%
@@ -140,7 +166,7 @@ weekend_morning_peak <- odbus %>%
 kable(head(weekend_morning_peak))
 ```
 
-For the **Weekend/holiday evening peak** (4pm to 7pm):
+This code chunk below filters and summarizes the `odbus` data to calculate the total number of passenger trips during the weekends/holidays evening peak hours (4pm to 7pm). It first filters for entries on weekends/holidays, then narrows down to entries between 4pm and 7pm. It groups the data by the origin point code, sums up the total trips from each origin, and replaces any missing values (NA) in the resulting trip totals with 0.
 
 ```{r}
 weekend_evening_peak <- odbus %>%
@@ -155,7 +181,7 @@ weekend_evening_peak <- odbus %>%
 kable(head(weekend_evening_peak))
 ```
 
-Create the trips by hour for each origin stop in weekdays
+This code calculates the total number of bus trips for each hour on weekdays, grouped by the origin point code. It filters the **odbus** data for weekday entries, groups the data by origin point and hour, then sums up the trips for each group, handling missing values by removing them. Finally, it replaces any resulting missing total trip values with 0, which helps in understanding hourly variations in trip counts.
 
 ```{r}
 weekday_trips <- odbus %>%
@@ -165,6 +191,8 @@ weekday_trips <- odbus %>%
   mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
+This code calculates the total number of bus trips for each hour on weekends/holidays, grouped by the origin point code. It filters the **odbus** data for weekends/holidays entries, groups the data by origin point and hour, then sums up the trips for each group, handling missing values by removing them. Finally, it replaces any resulting missing total trip values with 0, which helps in understanding hourly variations in trip counts.
+
 ```{r}
 weekend_trips <- odbus %>%
   filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
@@ -173,15 +201,19 @@ weekend_trips <- odbus %>%
   mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
-Remove unnecessary dataset **odbus** in R environment to avoid redundancy
+This code uses the `rm()` function in R to remove the **odbus** dataset from the current R environment. This is often done to declutter the workspace and free up memory, especially when the dataset is no longer needed, thereby reducing visual distraction and potential confusion with other datasets.
 
 ```{r}
 rm(odbus)
 ```
 
-### Geospatial Data
+### 2.2Geospatial Data
+
+#### 2.2.1Importing Bus Stop Location
 
 -   *Bus Stop Location* from LTA DataMall: Contains information on all bus stops serviced by buses, including bus stop codes and location coordinates.
+
+The code chunk below uses `st_read()` from the **`sf`** package to read the spatial data. After importing, the code transforms the spatial reference system of the bus stop data to coordinate reference system (CRS) 3414 using `st_transform()`, ensuring the data is in the correct format for spatial analysis within the Singapore context.
 
 ```{r}
     busstop <- st_read(dsn = "data/geospatial",
@@ -189,38 +221,54 @@ rm(odbus)
       st_transform(crs = 3414)
 ```
 
+This code is likely part of the R **`mapview`** package, which is designed to create interactive visualizations of spatial data. By calling this function with the **busstop** data, an interactive map is generated where each bus stop is likely represented as a point.
+
 ```{r}
 mapview(busstop)
 ```
 
-## Creating the Hexagon Layer
+Looking at the map above:
 
-Create hexagonal grid over the extent of the bus stops with a diameter of around 577.35m for each hexagon
+-   The blank areas on the map where there are no purple points could represent regions without bus stops, non-residential ( like around Marina Bay) or industrial areas, parks ( like Bukit Timah Nature Reserve), or bodies of water where no bus service is.
+
+-   The concentration of bus stops can give insights into urban planning, population density, and the public transport network's reach within Singapore.
+
+-   The interactive nature of the map allows users to zoom in and out to inspect areas of interest in more detail, which can be useful for both planning and analysis purposes.
+
+#### 2.2.2Creating the New Hexagon Layer
+
+The code creates a hexagonal grid overlay using the `st_make_grid()` function applied to the **busstop** dataset, which contains bus stop locations in Singapore. The specified `cellsize` determines that each hexagon in the grid will have a diameter of approximately 577.35 meters, calculated to ensure accurate hexagonal sizing. Setting `square = FALSE` ensures the grid is composed of hexagons, not squares.
 
 ```{r}
 hex_grid <- st_make_grid(busstop, cellsize = (4/3)*sqrt(3)*250, square = FALSE)
 ```
 
-Convert the hexagonal grid to an sf object and create a unique ID for each hexagon
+The provided code transforms the hexagonal grid into a spatial dataframe (sf object) using the `st_sf()` function, assigning the grid geometries as its spatial features. Subsequently, it appends a unique identifier to each hexagon by creating a new column, **hex_id**, with a sequence of numbers from 1 to the number of hexagons in the grid.
 
 ```{r}
 hex_grid_sf <- st_sf(geometry = hex_grid) %>%
   mutate(hex_id = 1:length(hex_grid))
 ```
 
-To count the number of bus stops in each hexagon, use st_intersects
+By using the `st_intersects()` function, which detects the intersections between the hexagons and the bus stops, the code effectively identifies which bus stops fall within each hexagonal cell. The `lengths()` function is then applied to the list returned by `st_intersects()` to count the number of bus stops intersecting each hexagon.
 
 ```{r}
 hex_grid_sf$bus_stop_count <- lengths(st_intersects(hex_grid_sf, busstop))
 ```
 
-Remove hexagons with 0 bus stops to clean up the visualization
+The code refines the visualization by filtering out hexagons that do not contain any bus stops.
 
 ```{r}
 hex_grid_sf <- filter(hex_grid_sf, bus_stop_count > 0)
 ```
 
-visualize the hexagon grid with the count of bus stops
+The code block initializes an interactive mapping mode with `tmap_mode("view")`, preparing for the creation of an interactive map. It then constructs the map using the `tm_shape()` function to specify the spatial data (**hex_grid_sf**) as the basis for the map. Various `tm_*` functions are chained together to define the map's aesthetics and interactivity:
+
+-   `tm_fill`: This function is used to color the hexagons based on the **bus_stop_count** attribute, using a blue color palette and a continuous style, with semi-transparency set by `alpha = 0.6`.
+
+-   `tm_borders`: Adds grey borders to each hexagon to delineate them clearly.
+
+-   `tm_layout`: Adjusts the layout, setting the legend to appear on the left bottom of the map.
 
 ```{r}
 tmap_mode("view")
@@ -247,34 +295,38 @@ map_hexagon <- tm_shape(hex_grid_sf) +
 map_hexagon
 ```
 
-Remove unnecessary dataset **hex_grid map_hexagon** in R environment to avoid redundancy
+The map visualizes the number of bus stops within each hexagonal grid cell across Singapore. The shading of the hexagons, ranging from light to dark blue, corresponds to the number of bus stops, with darker blues indicating a higher count. The darkest blue areas---Pioneer, Jurong East, Choa Chu Kang Road, Bukit Panjang Road, around Fort Canning Park and so on---suggest these are hubs with a higher density of bus stops. These locations are likely to be key transit areas that cater to significant passenger volumes due to factors like commercial activity, residential populations, and connectivity to other modes of transport. For instance, Fort Canning Park, being a popular recreational area, might also have enhanced bus services to support tourism and leisure activities.
+
+Uses the `st_write()` function to save the **hex_grid_sf** spatial dataframe, which contains the hexagonal grid layer, to a shapefile named "hex_layer.shp" located in the "data/geospatial" directory. The `append = FALSE` parameter ensures that if a file with the same name already exists, it will be overwritten rather than appending the new data to the existing file.
 
 ```{r}
 st_write(hex_grid_sf, "data/geospatial/hex_layer.shp", append = FALSE)
 ```
 
+**map_hexagon** and **hex_grid** are removed from R environment.
+
 ```{r}
 rm(map_hexagon, hex_grid)
 ```
 
-## Combine Passenger Trips and Hexagon Layer
+## 3.Integrating Passenger Trips with Hexagonal Grids for Multidimensional Transit Analysis
 
-### Weekday Morning Peak
+### 3.1Weekday Morning Peak
 
-First, perform a spatial join to match bus stops to the hexagon grid cells they fall into
+To align bus stops with the corresponding hexagonal grid cells they are located in, a spatial join is executed using the `st_join` function from the **`sf`** package.
 
 ```{r}
 busstop_hex <- st_join(busstop, hex_grid_sf)
 ```
 
-Then, join the passenger trips data with the busstop_hex data
+This code merges two datasets: `busstop_hex`, which contains bus stops assigned to their respective hexagons, and `weekday_morning_peak`, which includes data on bus trips during weekday morning peak hours. The `inner_join()` function links the records based on the matching bus stop numbers (**BUS_STOP_N**) and origin point codes (**ORIGIN_PT_CODE**). The resulting **`weekday_morning_trips`** contains only the records that have a corresponding match in both dataframes, specifically for bus stops active during weekday morning peak times.
 
 ```{r}
 weekday_morning_trips <- busstop_hex %>%
   inner_join(weekday_morning_peak, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
 ```
 
-Check for duplicates
+The code is designed to identify duplicate records in the **weekday_morning_trips** dataframe. It groups the data by all columns using `group_by_all()`, then filters for groups with more than one entry using `filter(n() > 1)`, which would indicate duplicates. After removing the grouping with `ungroup()`, it uses `glimpse(duplicate)` to provide a quick overview of the resulting dataframe. The output indicates that no rows are returned, meaning there are no duplicate entries.
 
 ```{r}
 duplicate <- weekday_morning_trips %>%
@@ -284,7 +336,7 @@ duplicate <- weekday_morning_trips %>%
 glimpse(duplicate)
 ```
 
-Aggregate trip data by hexagon grid cells
+This code aggregates the trip data for weekday mornings by hexagon grid cells. It groups the **weekday_morning_trips** dataframe by **hex_id** (each hexagon's unique identifier), then calculates the sum of trips for each hexagon, ensuring that any missing values (**NA**) are not included in the sum (`na.rm = TRUE`). In case there are any **NA** values resulting from the summarisation, it uses `mutate()` with `ifelse` to replace them with zero. The final output, **hex_weekday_morning**, contains the total number of trips that originated in each hexagon during weekday morning peak hours.
 
 ```{r}
 hex_weekday_morning <- weekday_morning_trips %>%
@@ -293,7 +345,9 @@ hex_weekday_morning <- weekday_morning_trips %>%
   mutate(weekday_morning_trips = ifelse(is.na(weekday_morning_trips), 0, weekday_morning_trips))
 ```
 
-Merge the trip summary data back into the hexagon grid data frame
+The **geometr**y column is temporarily removed from the **hex_weekday_morning** dataset to prepare for joining, creating a non-spatial dataframe **hex_weekday_morning_df**. This is done because the geometry column can sometimes complicate joins due to its complex structure.
+
+A spatial join is then performed using `inner_join` from the **`dplyr`** package, which merges the trip summary data in **hex_weekday_morning_df** back into the **hex_grid_sf** spatial dataframe based on the **hex_id** column. This enriches the hexagon grid with the aggregated trip data, allowing for spatial analysis of trips within each hexagon.
 
 ```{r}
 # Remove the geometry column temporarily for the join
@@ -303,6 +357,8 @@ hex_weekday_morning_df <- hex_weekday_morning %>%
 hex_grid_sf <- hex_grid_sf %>%
   inner_join(hex_weekday_morning_df, by = "hex_id")
 ```
+
+The next code chunk is set to generate a static map that visualizes the distribution of weekday morning peak passenger trips across the hexagonal grid, using varying shades of blue to represent the data quantiles
 
 ```{r}
 tmap_mode("plot")
@@ -324,14 +380,18 @@ tm_shape(hex_grid_sf) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
 ```
 
-### Weekday Afternoon Peak
+The image depicts a hexagon-based choropleth map of Singapore, illustrating the number of passenger trips made during weekday morning peak hours. From this map, we can conclude that there are significant variations in public bus usage across different areas. High-density areas, likely to be central and suburban commercial or residential hubs, show a larger number of trips, indicating these are key focus areas for transit services. Lighter shaded areas may correspond to less populated or industrial regions with fewer bus trips.
+
+### 3.2Weekday Afternoon Peak
+
+For weekday afternoon peak hours, the **weekday_afternoon_trips** dataframe is created by merging **busstop_hex** with data on afternoon trips, connecting bus stops to their trip counts using an `inner join`.
 
 ```{r}
 weekday_afternoon_trips <- busstop_hex %>%
   inner_join(weekday_afternoon_peak, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
 ```
 
-Check duplicates
+For weekday afternoon trips, the code checks for duplicates in the **weekday_afternoon_trips** dataframe, and confirms there are none.
 
 ```{r}
 duplicate <- weekday_morning_trips %>%
@@ -341,7 +401,7 @@ duplicate <- weekday_morning_trips %>%
 glimpse(duplicate)
 ```
 
-Aggregate trip data by hexagon grid cells
+The **hex_weekday_afternoon** data sums up afternoon trips for each hexagon on weekdays, replacing any missing data with zeros.
 
 ```{r}
 hex_weekday_afternoon <- weekday_afternoon_trips %>%
@@ -350,7 +410,7 @@ hex_weekday_afternoon <- weekday_afternoon_trips %>%
   mutate(weekday_afternoon_trips = ifelse(is.na(weekday_afternoon_trips), 0, weekday_afternoon_trips))
 ```
 
-Merge the trip summary data back into the hexagon grid data frame
+The **hex_weekday_afternoon** dataframe is joined with the spatial grid, merging afternoon trip data based on hexagon IDs.
 
 ```{r}
 # Remove the geometry column temporarily for the join
@@ -361,6 +421,8 @@ hex_weekday_afternoon_df <- hex_weekday_afternoon %>%
 hex_grid_sf <- hex_grid_sf %>%
   inner_join(hex_weekday_afternoon_df, by = "hex_id")
 ```
+
+A map will display the weekday afternoon peak trips, shaded in blue to show the number of passengers.
 
 ```{r}
 tm_shape(hex_grid_sf) +
@@ -381,12 +443,16 @@ tm_shape(hex_grid_sf) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
 ```
 
-### Weekend Morning Peak
+### 3.3Weekend Morning Peak
+
+The **weekend_morning_trips** dataframe compiles weekend morning data by joining **busstop_hex** with morning trip information, ensuring each bus stop's weekend activity is accounted for.
 
 ```{r}
 weekend_morning_trips <- busstop_hex %>%
   inner_join(weekend_morning_peak, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
 ```
+
+In the **weekend_morning_trips** dataframe, the same method ensures no trip entries are repeated for weekend mornings.
 
 ```{r}
 duplicate <- weekend_morning_trips %>%
@@ -396,12 +462,16 @@ duplicate <- weekend_morning_trips %>%
 glimpse(duplicate)
 ```
 
+Weekend morning trips are totaled in **hex_weekend_morning** for each hexagon, with missing values set to zero.
+
 ```{r}
 hex_weekend_morning <- weekend_morning_trips %>%
   group_by(hex_id) %>%
   summarise(weekend_morning_trips = sum(TRIPS, na.rm = TRUE)) %>%
   mutate(weekend_morning_trips = ifelse(is.na(weekend_morning_trips), 0, weekend_morning_trips))
 ```
+
+For weekend mornings, trip summaries are integrated into the spatial grid through a join on **hex_weekend_morning**.
 
 ```{r}
 # Remove the geometry column temporarily for the join
@@ -412,6 +482,8 @@ hex_weekend_morning_df <- hex_weekend_morning %>%
 hex_grid_sf <- hex_grid_sf %>%
   inner_join(hex_weekend_morning_df, by = "hex_id")
 ```
+
+The weekend morning peak trips will be depicted on a map with a blue gradient indicating trip frequencies.
 
 ```{r}
 tm_shape(hex_grid_sf) +
@@ -432,12 +504,16 @@ tm_shape(hex_grid_sf) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
 ```
 
-### Weekend Evening Peak
+### 3.4Weekend Evening Peak
+
+**weekend_evening_trips** brings together **busstop_hex** and data on evening bus trips during the weekend, combining the datasets to reflect each hexagon's bus stop usage.
 
 ```{r}
 weekend_evening_trips <- busstop_hex %>%
   inner_join(weekend_evening_peak, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
 ```
+
+Similarly, the `weekend_evening_trips` dataframe is verified to be free of duplicates for bus trips in the weekend evenings.
 
 ```{r}
 duplicate <- weekend_evening_trips %>%
@@ -447,12 +523,16 @@ duplicate <- weekend_evening_trips %>%
 glimpse(duplicate)
 ```
 
+**hex_weekend_evening** compiles the evening trip counts for each hexagon on weekends, accounting for and correcting any missing entries.
+
 ```{r}
 hex_weekend_evening <- weekend_evening_trips %>%
   group_by(hex_id) %>%
   summarise(weekend_evening_trips = sum(TRIPS, na.rm = TRUE)) %>%
   mutate(weekend_evening_trips = ifelse(is.na(weekend_evening_trips), 0, weekend_evening_trips))
 ```
+
+Evening trip data for the weekend is combined with the hexagonal grid in the **hex_weekend_evening** dataframe using a similar join method.
 
 ```{r}
 # Remove the geometry column temporarily for the join
@@ -463,6 +543,8 @@ hex_weekend_evening_df <- hex_weekend_evening %>%
 hex_grid_sf <- hex_grid_sf %>%
   inner_join(hex_weekend_evening_df, by = "hex_id")
 ```
+
+For the weekend evening, a map will illustrate passenger trips with blue shades reflecting the volume of travel.
 
 ```{r}
 tm_shape(hex_grid_sf) +
