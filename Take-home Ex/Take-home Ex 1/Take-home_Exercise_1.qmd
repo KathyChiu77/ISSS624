@@ -65,7 +65,7 @@ As usual, `p_load()` of **pacman** package will be used to check if the necessar
 Five R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.
 
 ```{r}
-pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr)
+pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2)
 ```
 
 ## **The Data**
@@ -109,18 +109,6 @@ weekday_morning_peak <- odbus %>%
 kable(head(weekday_morning_peak))
 ```
 
-We will save the output in rds format for future used.
-
-```{r}
-write_rds(weekday_morning_peak, "data/rds/weekday_morning_peak.rds")
-```
-
-The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
-
-```{r}
-weekday_morning_peak <- read_rds("data/rds/weekday_morning_peak.rds")
-```
-
 For the **Weekday afternoon peak** (5pm to 8pm):
 
 ```{r}
@@ -133,18 +121,6 @@ weekday_afternoon_peak <- odbus %>%
 
 ```{r}
 kable(head(weekday_afternoon_peak))
-```
-
-We will save the output in rds format for future used.
-
-```{r}
-write_rds(weekday_afternoon_peak, "data/rds/weekday_afternoon_peak.rds")
-```
-
-The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
-
-```{r}
-weekday_afternoon_peak <- read_rds("data/rds/weekday_afternoon_peak.rds")
 ```
 
 For the **Weekend/holiday morning peak** (11am to 2pm):
@@ -161,18 +137,6 @@ weekend_morning_peak <- odbus %>%
 kable(head(weekend_morning_peak))
 ```
 
-We will save the output in rds format for future used.
-
-```{r}
-write_rds(weekend_morning_peak, "data/rds/weekend_morning_peak.rds")
-```
-
-The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
-
-```{r}
-weekend_morning_peak <- read_rds("data/rds/weekend_morning_peak.rds")
-```
-
 For the **Weekend/holiday evening peak** (4pm to 7pm):
 
 ```{r}
@@ -185,18 +149,6 @@ weekend_evening_peak <- odbus %>%
 
 ```{r}
 kable(head(weekend_evening_peak))
-```
-
-We will save the output in rds format for future used.
-
-```{r}
-write_rds(weekend_evening_peak, "data/rds/weekend_evening_peak.rds")
-```
-
-The code chunk below will be used to import the save weekday_morning_peak.rds into R environment.
-
-```{r}
-weekend_evening_peak <- read_rds("data/rds/weekend_evening_peak.rds")
 ```
 
 Remove unnecessary dataset **odbus** in R environment to avoid redundancy
@@ -317,12 +269,12 @@ hex_weekday_morning <- weekday_morning_trips %>%
 Merge the trip summary data back into the hexagon grid data frame
 
 ```{r}
+# Remove the geometry column temporarily for the join
+hex_weekday_morning_df <- hex_weekday_morning %>% 
+  st_set_geometry(NULL)
+# Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-    st_join(hex_weekday_morning, by = "hex_id")
-
-hex_grid_sf <- hex_grid_sf %>%
-  select(-hex_id.y) %>%
-  rename(hex_id = hex_id.x)
+  left_join(hex_weekday_morning_df, by = "hex_id")
 ```
 
 ```{r}
@@ -373,12 +325,13 @@ hex_weekday_afternoon <- weekday_afternoon_trips %>%
 Merge the trip summary data back into the hexagon grid data frame
 
 ```{r}
-hex_grid_sf <- hex_grid_sf %>%
-    st_join(hex_weekday_afternoon, by = "hex_id")
+# Remove the geometry column temporarily for the join
+hex_weekday_afternoon_df <- hex_weekday_afternoon %>% 
+  st_set_geometry(NULL)
 
+# Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  select(-hex_id.y) %>%
-  rename(hex_id = hex_id.x)
+  left_join(hex_weekday_afternoon_df, by = "hex_id")
 ```
 
 ```{r}
@@ -422,12 +375,13 @@ hex_weekend_morning <- weekend_morning_trips %>%
 ```
 
 ```{r}
-hex_grid_sf <- hex_grid_sf %>%
-    st_join(hex_weekend_morning, by = "hex_id")
+# Remove the geometry column temporarily for the join
+hex_weekend_morning_df <- hex_weekend_morning %>% 
+  st_set_geometry(NULL)
 
+# Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  select(-hex_id.y) %>%
-  rename(hex_id = hex_id.x)
+  left_join(hex_weekend_morning_df, by = "hex_id")
 ```
 
 ```{r}
@@ -471,12 +425,13 @@ hex_weekend_evening <- weekend_evening_trips %>%
 ```
 
 ```{r}
-hex_grid_sf <- hex_grid_sf %>%
-    st_join(hex_weekend_evening, by = "hex_id")
+# Remove the geometry column temporarily for the join
+hex_weekend_evening_df <- hex_weekend_evening %>% 
+  st_set_geometry(NULL)
 
+# Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  select(-hex_id.y) %>%
-  rename(hex_id = hex_id.x)
+  left_join(hex_weekend_evening_df, by = "hex_id")
 ```
 
 ```{r}
@@ -499,68 +454,54 @@ tm_shape(hex_grid_sf) +
 ```
 
 ```{r}
-rm(busstop_hex, hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
+rm(busstop_hex, hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, hex_weekday_afternoon_df, hex_weekday_morning_df, hex_weekend_evening_df, hex_weekend_morning_df, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
 ```
 
-## Create a Spatial Weights Matrix
-
-In this case, since contiguity-based weights (which only consider neighboring polygons that share a boundary) might not be appropriate due to the missing observations, distance-based weights could be more suitable. Distance-based weights consider the distance between the centroids of the hexagons to determine neighbors, which can capture spatial relationships even when hexagons are not directly adjacent.
-
-### Fixed Distance Weights
-
-In examining the spatial distribution of passenger trips originating from hexagonal zones, we assume that the influence of any given zone on its neighbors is consistent up to a specific threshold. This assumption is grounded in the regularity of urban transportation patterns, where the effect of a transport node is presumed to reach a limit beyond which it dissipates rapidly due to the availability of alternative nodes. Given the structured nature of urban layouts and the spacing of transport hubs, fixed distance weights provide a clear-cut criterion for delineating the sphere of influence for each zone. This approach allows for a simplified yet robust analysis of spatial autocorrelation, revealing clusters of high and low trip generation that are critical for transport planning and policy interventions.
+## **Global Measures of Spatial Association**
 
 ```{r}
-k1 <- knn2nb(knearneigh(coords))
-k1dists <- unlist(nbdists(k1, coords, longlat = TRUE))
-summary(k1dists)
+hex_grid_sf <- hex_grid_sf %>%
+  mutate(
+    weekday_morning_trips = replace_na(weekday_morning_trips, 0),
+    weekday_afternoon_trips = replace_na(weekday_afternoon_trips, 0),
+    weekend_morning_trips = replace_na(weekend_morning_trips, 0),
+    weekend_evening_trips = replace_na(weekend_evening_trips, 0)
+  )
 ```
 
-The summary report shows that the largest first nearest neighbour distance is 67.5 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.
+## **Deriving Contiguity Spatial Weights**
 
-### Computing Fixed-Distance Weights Matrix
-
-Now, we will compute the distance weight matrix by using *dnearneigh()* as shown in the code chunk below.
+### **Deriving fixed distance weights**
 
 ```{r}
-wm_d68 <- dnearneigh(coords, 0, 68, longlat = TRUE)
-wm_d68
-```
-
-Next, we will use *str()* to display the content of wm_d68 weight matrix.
-
-```{r}
-str(wm_d68)
+geo <- sf::st_geometry(hex_grid_sf)
+nb <- st_knn(geo, longlat = TRUE)
+dists <- unlist(st_nb_dists(geo, nb))
 ```
 
 ```{r}
-n_comp <- n.comp.nb(wm_d68)
-table(n_comp$comp.id)
+summary(dists)
 ```
 
 ```{r}
-summary(wm_d68)
+wm_fd <- hex_grid_sf %>%
+  mutate(nb = st_dist_band(geometry,
+                           upper = 4042),
+               wt = st_weights(nb),
+               .before = 1)
 ```
 
-### **Computing adaptive distance weight matrix**
-
-One of the characteristics of fixed distance weight matrix is that more densely settled areas (usually the urban areas) tend to have more neighbours and the less densely settled areas (usually the rural counties) tend to have lesser neighbours. Having many neighbours smoothes the neighbour relationship across more neighbours.
-
-It is possible to control the numbers of neighbours directly using k-nearest neighbours, either accepting asymmetric neighbours or imposing symmetry as shown in the code chunk below.
+### **Deriving adaptive distance weights**
 
 ```{r}
 wm_ad <- hex_grid_sf %>% 
   mutate(nb = st_knn(geometry,
-                     k=8),
+                     k=6),
          wt = st_weights(nb),
                .before = 1)
 ```
 
-```{r}
-str(wm_ad)
-```
-
-## **Weights based on IDW**
+### **Calculate inverse distance weights**
 
 ```{r}
 wm_idw <- hex_grid_sf %>%
@@ -570,6 +511,244 @@ wm_idw <- hex_grid_sf %>%
                                    alpha = 1),
          .before = 1)
 ```
+
+### **Performing Global Moran'sI test**
+
+In general, Moran's I test will be performed instead of just computing the Moran's I statistics. With sfdep package, Moran's I test can be performed by using [`global_moran_test()`](https://sfdep.josiahparry.com/reference/global_moran_test.html) as shown in the code chunk below.
+
+```{r}
+global_moran_test(wm_idw$weekday_morning_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE)
+```
+
+```{r}
+global_moran_test(wm_idw$weekday_afternoon_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE)
+```
+
+```{r}
+global_moran_test(wm_idw$weekend_morning_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE)
+```
+
+```{r}
+global_moran_test(wm_idw$weekend_evening_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE)
+```
+
+### **Performing Global Moran'I permutation test**
+
+It is always a good practice to use `set.seed()` before performing simulation. This is to ensure that the computation is reproducible.
+
+```{r}
+set.seed(1234)
+```
+
+Next, `global_moran_perm()` is used to perform Monte Carlo simulation.
+
+```{r}
+global_moran_perm(wm_idw$weekday_morning_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE,
+                  nsim = 99)
+```
+
+```{r}
+global_moran_perm(wm_idw$weekday_afternoon_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE,
+                  nsim = 99)
+```
+
+```{r}
+global_moran_perm(wm_idw$weekend_morning_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE,
+                  nsim = 99)
+```
+
+```{r}
+global_moran_perm(wm_idw$weekend_evening_trips,
+                       wm_idw$nb,
+                       wm_idw$wts,
+                       zero.policy = TRUE,
+                  nsim = 99)
+```
+
+## **Compute and Visualize local Moran's I**
+
+```{r}
+lisa_wdm <- wm_idw %>% 
+  mutate(local_moran = local_moran(
+    weekday_morning_trips, nb, wts, nsim = 99, zero.policy = TRUE),
+         .before = 1) %>%
+  unnest(local_moran)
+```
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa_wdm) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of Weekday Morning Trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa_wdm) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+```{r}
+lisa_wdm_sig <- lisa_wdm  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+tm_shape(lisa_wdm) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_wdm_sig) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+```
+
+```{r}
+lisa_wda <- wm_idw %>% 
+  mutate(local_moran = local_moran(
+    weekday_afternoon_trips, nb, wts, nsim = 99, zero.policy = TRUE),
+         .before = 1) %>%
+  unnest(local_moran)
+```
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa_wda) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of Weekday Afternoon Trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa_wda) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+```{r}
+lisa_wda_sig <- lisa_wda  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+tm_shape(lisa_wda) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_wdm_sig) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+```
+
+```{r}
+lisa_wem <- wm_idw %>% 
+  mutate(local_moran = local_moran(
+    weekend_morning_trips, nb, wts, nsim = 99, zero.policy = TRUE),
+         .before = 1) %>%
+  unnest(local_moran)
+```
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa_wem) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of Weekend Morning Trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa_wem) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+```{r}
+lisa_wem_sig <- lisa_wem  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+tm_shape(lisa_wem) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_wem_sig) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+```
+
+```{r}
+lisa_wee <- wm_idw %>% 
+  mutate(local_moran = local_moran(
+    weekend_evening_trips, nb, wts, nsim = 99, zero.policy = TRUE),
+         .before = 1) %>%
+  unnest(local_moran)
+```
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa_wee) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of Weekend Evening Trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa_wee) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+```{r}
+lisa_wee_sig <- lisa_wee  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+tm_shape(lisa_wee) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_wee_sig) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+```
+
+# **Emerging Hot Spot Analysis**
 
 ## Reference
 
