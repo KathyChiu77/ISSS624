@@ -65,7 +65,7 @@ As usual, `p_load()` of **pacman** package will be used to check if the necessar
 Five R packages are need for this take-home exercise, they are: sf, sfdep, tmap, plotly and tidyverse.
 
 ```{r}
-pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2)
+pacman::p_load(sf, dplyr, sfdep, spdep, mapview, tmap, plotly, tidyverse, knitr, ggplot2, spacetime, lubridate)
 ```
 
 ## **The Data**
@@ -102,7 +102,8 @@ weekday_morning_peak <- odbus %>%
   filter(DAY_TYPE == "WEEKDAY") %>%
   filter(TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9) %>%
   group_by(ORIGIN_PT_CODE) %>%
-  summarise(TRIPS = sum(TOTAL_TRIPS))
+  summarise(TRIPS = sum(TOTAL_TRIPS)) %>%
+  mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
 ```{r}
@@ -116,7 +117,8 @@ weekday_afternoon_peak <- odbus %>%
   filter(DAY_TYPE == "WEEKDAY") %>%
   filter(TIME_PER_HOUR >= 17 & TIME_PER_HOUR <= 20) %>%
   group_by(ORIGIN_PT_CODE) %>%
-  summarise(TRIPS = sum(TOTAL_TRIPS))
+  summarise(TRIPS = sum(TOTAL_TRIPS)) %>%
+  mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
 ```{r}
@@ -130,7 +132,8 @@ weekend_morning_peak <- odbus %>%
   filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
   filter(TIME_PER_HOUR >= 11 & TIME_PER_HOUR <= 14) %>%
   group_by(ORIGIN_PT_CODE) %>%
-  summarise(TRIPS = sum(TOTAL_TRIPS))
+  summarise(TRIPS = sum(TOTAL_TRIPS)) %>%
+  mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
 ```{r}
@@ -144,11 +147,30 @@ weekend_evening_peak <- odbus %>%
   filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
   filter(TIME_PER_HOUR >= 16 & TIME_PER_HOUR <= 19) %>%
   group_by(ORIGIN_PT_CODE) %>%
-  summarise(TRIPS = sum(TOTAL_TRIPS))
+  summarise(TRIPS = sum(TOTAL_TRIPS)) %>%
+  mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
 ```{r}
 kable(head(weekend_evening_peak))
+```
+
+Create the trips by hour for each origin stop in weekdays
+
+```{r}
+weekday_trips <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  group_by(ORIGIN_PT_CODE, TIME_PER_HOUR) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS, na.rm = TRUE)) %>%
+  mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
+```
+
+```{r}
+weekend_trips <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  group_by(ORIGIN_PT_CODE, TIME_PER_HOUR) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS, na.rm = TRUE)) %>%
+  mutate(TRIPS = ifelse(is.na(TRIPS), 0, TRIPS))
 ```
 
 Remove unnecessary dataset **odbus** in R environment to avoid redundancy
@@ -228,7 +250,11 @@ map_hexagon
 Remove unnecessary dataset **hex_grid map_hexagon** in R environment to avoid redundancy
 
 ```{r}
-rm(hex_grid, map_hexagon)
+st_write(hex_grid_sf, "data/geospatial/hex_layer.shp", append = FALSE)
+```
+
+```{r}
+rm(map_hexagon, hex_grid)
 ```
 
 ## Combine Passenger Trips and Hexagon Layer
@@ -263,7 +289,8 @@ Aggregate trip data by hexagon grid cells
 ```{r}
 hex_weekday_morning <- weekday_morning_trips %>%
   group_by(hex_id) %>%
-  summarise(weekday_morning_trips = sum(TRIPS, na.rm = TRUE))
+  summarise(weekday_morning_trips = sum(TRIPS, na.rm = TRUE)) %>%
+  mutate(weekday_morning_trips = ifelse(is.na(weekday_morning_trips), 0, weekday_morning_trips))
 ```
 
 Merge the trip summary data back into the hexagon grid data frame
@@ -274,7 +301,7 @@ hex_weekday_morning_df <- hex_weekday_morning %>%
   st_set_geometry(NULL)
 # Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  left_join(hex_weekday_morning_df, by = "hex_id")
+  inner_join(hex_weekday_morning_df, by = "hex_id")
 ```
 
 ```{r}
@@ -319,7 +346,8 @@ Aggregate trip data by hexagon grid cells
 ```{r}
 hex_weekday_afternoon <- weekday_afternoon_trips %>%
   group_by(hex_id) %>%
-  summarise(weekday_afternoon_trips = sum(TRIPS, na.rm = TRUE))
+  summarise(weekday_afternoon_trips = sum(TRIPS, na.rm = TRUE)) %>%
+  mutate(weekday_afternoon_trips = ifelse(is.na(weekday_afternoon_trips), 0, weekday_afternoon_trips))
 ```
 
 Merge the trip summary data back into the hexagon grid data frame
@@ -331,7 +359,7 @@ hex_weekday_afternoon_df <- hex_weekday_afternoon %>%
 
 # Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  left_join(hex_weekday_afternoon_df, by = "hex_id")
+  inner_join(hex_weekday_afternoon_df, by = "hex_id")
 ```
 
 ```{r}
@@ -371,7 +399,8 @@ glimpse(duplicate)
 ```{r}
 hex_weekend_morning <- weekend_morning_trips %>%
   group_by(hex_id) %>%
-  summarise(weekend_morning_trips = sum(TRIPS, na.rm = TRUE))
+  summarise(weekend_morning_trips = sum(TRIPS, na.rm = TRUE)) %>%
+  mutate(weekend_morning_trips = ifelse(is.na(weekend_morning_trips), 0, weekend_morning_trips))
 ```
 
 ```{r}
@@ -381,7 +410,7 @@ hex_weekend_morning_df <- hex_weekend_morning %>%
 
 # Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  left_join(hex_weekend_morning_df, by = "hex_id")
+  inner_join(hex_weekend_morning_df, by = "hex_id")
 ```
 
 ```{r}
@@ -421,7 +450,8 @@ glimpse(duplicate)
 ```{r}
 hex_weekend_evening <- weekend_evening_trips %>%
   group_by(hex_id) %>%
-  summarise(weekend_evening_trips = sum(TRIPS, na.rm = TRUE))
+  summarise(weekend_evening_trips = sum(TRIPS, na.rm = TRUE)) %>%
+  mutate(weekend_evening_trips = ifelse(is.na(weekend_evening_trips), 0, weekend_evening_trips))
 ```
 
 ```{r}
@@ -431,7 +461,7 @@ hex_weekend_evening_df <- hex_weekend_evening %>%
 
 # Perform the join using dplyr's left_join
 hex_grid_sf <- hex_grid_sf %>%
-  left_join(hex_weekend_evening_df, by = "hex_id")
+  inner_join(hex_weekend_evening_df, by = "hex_id")
 ```
 
 ```{r}
@@ -454,22 +484,10 @@ tm_shape(hex_grid_sf) +
 ```
 
 ```{r}
-rm(busstop_hex, hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, hex_weekday_afternoon_df, hex_weekday_morning_df, hex_weekend_evening_df, hex_weekend_morning_df, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
+rm(hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, hex_weekday_afternoon_df, hex_weekday_morning_df, hex_weekend_evening_df, hex_weekend_morning_df, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
 ```
 
 ## **Global Measures of Spatial Association**
-
-```{r}
-hex_grid_sf <- hex_grid_sf %>%
-  mutate(
-    weekday_morning_trips = replace_na(weekday_morning_trips, 0),
-    weekday_afternoon_trips = replace_na(weekday_afternoon_trips, 0),
-    weekend_morning_trips = replace_na(weekend_morning_trips, 0),
-    weekend_evening_trips = replace_na(weekend_evening_trips, 0)
-  )
-```
-
-## **Deriving Contiguity Spatial Weights**
 
 ### **Deriving fixed distance weights**
 
@@ -486,7 +504,7 @@ summary(dists)
 ```{r}
 wm_fd <- hex_grid_sf %>%
   mutate(nb = st_dist_band(geometry,
-                           upper = 4042),
+                           upper = 4359),
                wt = st_weights(nb),
                .before = 1)
 ```
@@ -748,7 +766,94 @@ tm_shape(lisa_wee_sig) +
   tm_borders(alpha = 0.4)
 ```
 
+```{r}
+rm(lisa_wda, lisa_wda_sig, lisa_wdm, lisa_wdm_sig, lisa_wee, lisa_wee_sig, lisa_wem, lisa_wem_sig, map1, map2, nb, wm_ad, wm_fd, wm_idw, dists)
+```
+
 # **Emerging Hot Spot Analysis**
+
+```{r}
+# Create a complete set of hours for each ORIGIN_PT_CODE
+hours <- data.frame(TIME_PER_HOUR = 0:23)
+origin_pt_codes <- unique(weekday_trips$ORIGIN_PT_CODE)
+complete_hours <- expand.grid(ORIGIN_PT_CODE = origin_pt_codes, TIME_PER_HOUR = hours$TIME_PER_HOUR)
+
+# Merge the complete set of hours with the original data
+# and replace NA values with zero
+weekday_trips_complete <- merge(complete_hours, weekday_trips, by = c("ORIGIN_PT_CODE", "TIME_PER_HOUR"), all.x = TRUE)
+weekday_trips_complete$TRIPS[is.na(weekday_trips_complete$TRIPS)] <- 0
+```
+
+```{r}
+# Create a complete set of hours for each ORIGIN_PT_CODE
+origin_pt_codes <- unique(weekend_trips$ORIGIN_PT_CODE)
+complete_hours <- expand.grid(ORIGIN_PT_CODE = origin_pt_codes, TIME_PER_HOUR = hours$TIME_PER_HOUR)
+
+# Merge the complete set of hours with the original data
+# and replace NA values with zero
+weekend_trips_complete <- merge(complete_hours, weekend_trips, by = c("ORIGIN_PT_CODE", "TIME_PER_HOUR"), all.x = TRUE)
+weekend_trips_complete$TRIPS[is.na(weekend_trips_complete$TRIPS)] <- 0
+```
+
+```{r}
+weekday_trips_hex <- busstop_hex %>%
+  inner_join(weekday_trips_complete, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
+```
+
+```{r}
+weekday_trips_summary <- weekday_trips_hex %>%
+  group_by(hex_id, TIME_PER_HOUR) %>%
+  summarise(total_trips = sum(TRIPS, na.rm = TRUE))
+```
+
+```{r}
+# Create a complete set of hours for each ORIGIN_PT_CODE
+origin_pt_codes <- unique(weekend_trips$ORIGIN_PT_CODE)
+complete_hours <- expand.grid(ORIGIN_PT_CODE = origin_pt_codes, TIME_PER_HOUR = hours$TIME_PER_HOUR)
+
+# Merge the complete set of hours with the original data
+# and replace NA values with zero
+weekend_trips_complete <- merge(complete_hours, weekend_trips, by = c("ORIGIN_PT_CODE", "TIME_PER_HOUR"), all.x = TRUE)
+weekend_trips_complete$TRIPS[is.na(weekend_trips_complete$TRIPS)] <- 0
+```
+
+```{r}
+weekend_trips_hex <- busstop_hex %>%
+  inner_join(weekend_trips_complete, by = c("BUS_STOP_N" = "ORIGIN_PT_CODE"))
+```
+
+```{r}
+weekend_trips_summary <- weekend_trips_hex %>%
+  group_by(hex_id, TIME_PER_HOUR) %>%
+  summarise(total_trips = sum(TRIPS, na.rm = TRUE))
+```
+
+```{r}
+hex_grid_sf <- st_read(dsn = "data/geospatial", 
+                 layer = "hex_layer")
+```
+
+# **Creating a Time Series Cube**
+
+```{r}
+weekday_trips_st <- as_spacetime(weekday_trips_summary, hex_grid_sf,
+                      .loc_col = "hex_id",
+                      .time_col = "TIME_PER_HOUR")
+```
+
+```{r}
+is_spacetime_cube(weekday_trips_st)
+```
+
+```{r}
+weekend_trips_st <- as_spacetime(weekend_trips_summary, hex_grid_sf,
+                      .loc_col = "hex_id",
+                      .time_col = "TIME_PER_HOUR")
+```
+
+```{r}
+is_spacetime_cube(weekend_trips_st)
+```
 
 ## Reference
 
