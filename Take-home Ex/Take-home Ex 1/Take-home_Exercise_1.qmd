@@ -58,7 +58,7 @@ However, in practical applications, the utilization of this extensive location-a
 
 ## 1.**Installing and Loading the R Packages**
 
-In the opening of our analysis, we begin by loading all the necessary packages to ensure a seamless and comprehensive analysis of spatial patterns in bus passenger trips in Singapore. The R code utilizes the **`pacman`** package for efficient package management. With **`pacman::p_load`**, we conveniently load a suite of essential packages including:
+In the opening of our analysis, we begin by loading all the necessary packages to ensure a seamless and comprehensive analysis of spatial patterns in bus passenger trips in Singapore. The R code utilizes the **`pacman`** package for efficient package management. With `pacman::p_load`, we conveniently load a suite of essential packages including:
 
 -   **`sf`** for handling spatial data
 
@@ -443,6 +443,8 @@ tm_shape(hex_grid_sf) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
 ```
 
+The afternoon peak map for weekdays indicates a different pattern of passenger trips across Singapore compared to the morning peak. Notably, the overall trip counts appear to be higher in the afternoon, as suggested by a greater prevalence of darker blues, possibly due to people returning from work or school. The central areas remain highly active during both time slots, reflecting consistent transit usage in these urban hubs. However, there is a visible increase in activity in the outskirts in the afternoon, suggesting a movement of people towards residential areas after the workday. This contrast may reflect Singapore's daily work commute patterns, with morning peaks focused on entry into commercial districts and afternoon peaks dispersing towards suburban residential zones.
+
 ### 3.3Weekend Morning Peak
 
 The **weekend_morning_trips** dataframe compiles weekend morning data by joining **busstop_hex** with morning trip information, ensuring each bus stop's weekend activity is accounted for.
@@ -491,7 +493,7 @@ tm_shape(hex_grid_sf) +
           style = "quantile", 
           palette = "Blues",
           title = "Passenger trips") +
-  tm_layout(main.title = "Weekend Morning Peak Passenger Trips",
+  tm_layout(main.title = "Weekend & Holiday Morning Peak Passenger Trips",
             main.title.position = "center",
             main.title.size = 1.2,
             legend.height = 0.45, 
@@ -503,6 +505,8 @@ tm_shape(hex_grid_sf) +
   tm_grid(alpha =0.2) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
 ```
+
+The map for weekend & holiday morning peak passenger trips in Singapore exhibits a distinct distribution when compared to the weekday morning. The range of trip counts is generally lower, as evidenced by fewer areas with the darkest shade of blue, which could be indicative of a reduced volume of commuters traveling to work or school. There appears to be a more uniform spread of medium-density travel across the island, possibly reflecting leisure or non-work-related travel patterns. The decreased intensity in central business districts and increased activity in residential or recreational areas highlight a shift in transit use, corresponding with the non-working nature of weekends in Singapore.
 
 ### 3.4Weekend Evening Peak
 
@@ -552,7 +556,7 @@ tm_shape(hex_grid_sf) +
           style = "quantile", 
           palette = "Blues",
           title = "Passenger trips") +
-  tm_layout(main.title = "Weekend Evening Peak Passenger Trips",
+  tm_layout(main.title = "Weekend & Holiday Evening Peak Passenger Trips",
             main.title.position = "center",
             main.title.size = 1.2,
             legend.height = 0.45, 
@@ -564,6 +568,10 @@ tm_shape(hex_grid_sf) +
   tm_grid(alpha =0.2) +
   tm_credits("Source: LTA DataMall", position = c("left", "bottom"))
 ```
+
+The weekend and holiday evening peak passenger trip map for Singapore reveals a different dynamic compared to the weekday afternoon. The trip densities are more evenly distributed across the island, with fewer areas of intense dark blue, which may reflect a more recreational or social travel pattern as opposed to the work-related commutes seen on weekdays. There's also a notable presence of trips in areas that could be associated with leisure destinations or residential areas, which aligns with typical weekend and holiday evening activities. The lighter shades in the central business district areas suggest a lower volume of commuter traffic compared to the bustling weekday afternoons. This shift highlights the transition from work-focused movement to more leisurely and dispersed travel behavior in the evenings of weekends and holidays in Singapore.
+
+The code provided is removing a list of data frames and variables related to various analyses of bus trips during different times of the day and week. By executing this command, the user is clearing the R environment of these specific objects, which helps declutter the workspace, potentially freeing up memory, and makes it easier to focus on the remaining data and analyses without the distraction of no longer needed datasets.
 
 ```{r}
 rm(hex_weekday_afternoon, hex_weekday_morning, hex_weekend_evening, hex_weekend_morning, hex_weekday_afternoon_df, hex_weekday_morning_df, hex_weekend_evening_df, hex_weekend_morning_df, weekday_afternoon_peak, weekday_afternoon_trips, weekday_morning_peak, weekday_morning_trips, weekend_evening_peak, weekend_evening_trips, weekend_morning_peak, weekend_morning_trips)
