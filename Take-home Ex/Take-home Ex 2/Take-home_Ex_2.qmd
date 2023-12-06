@@ -1,0 +1,30 @@
+---
+title: "Take-home Ex 2"
+author: "QIU RUILIU"
+date: "6 Dec 2023"
+date-modified: "last-modified"
+format: html
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+## **Setting the Scene**
+
+The inquiry focuses on the key motivators prompting city residents to rise early for their daily commutes from home to work, and the consequences of discontinuing public bus services along specific routes. These issues represent significant challenges for transport operators and urban planners.
+
+Traditionally, understanding these dynamics involved conducting extensive commuter surveys. These surveys, however, are expensive, time-intensive, and laborious. Moreover, the data collected often requires extensive processing and analysis, leading to reports that are frequently outdated by the time they are completed.
+
+With the digitalization of urban infrastructure, including public buses, mass rapid transit systems, public utilities, and roads, new opportunities for data collection arise. The integration of pervasive computing technologies like GPS in vehicles and SMART cards among public transport users allows for detailed tracking of movement patterns across time and space.
+
+Despite this, the rapid accumulation of geospatial data has overwhelmed planners' capacity to effectively analyze and convert it into valuable insights. This inefficiency negatively impacts the return on investment in data collection and management.
+
+## **Motivation and Objective**
+
+The purpose of this take-home project is twofold. First, it addresses the gap in applied research demonstrating the integration, analysis, and modeling of the increasingly available open data for effective policy-making. Despite the abundance of such data, there is a noticeable absence of practical studies showcasing its potential use in policy decisions.
+
+Second, the project aims to fill the void in practical research illustrating the application of geospatial data science and analysis (GDSA) in decision-making processes.
+
+Therefore, the assignment involves conducting a case study to showcase the value of GDSA. This will involve synthesizing publicly accessible data from various sources to construct spatial interaction models. These models will be used to identify and analyze factors influencing the urban mobility patterns of public bus transit.
