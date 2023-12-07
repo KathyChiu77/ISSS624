@@ -28,3 +28,9 @@ The purpose of this take-home project is twofold. First, it addresses the gap in
 Second, the project aims to fill the void in practical research illustrating the application of geospatial data science and analysis (GDSA) in decision-making processes.
 
 Therefore, the assignment involves conducting a case study to showcase the value of GDSA. This will involve synthesizing publicly accessible data from various sources to construct spatial interaction models. These models will be used to identify and analyze factors influencing the urban mobility patterns of public bus transit.
+
+## Data Importing
+
+### Geospatial Data Importing
+
+### Aspatial Data Importing
