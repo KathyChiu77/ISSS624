@@ -16,7 +16,9 @@ website:
           - text: Hands-on Exercise 2C
             href: Hands-on Ex/Hands-on Ex 2/Hands-on Exercise 2C.html
           - text: Hands-on Exercise 3
-            href: Hands-on Ex/Hands-on Ex 3/Hands-on_Ex_3.html 
+            href: Hands-on Ex/Hands-on Ex 3/Hands-on_Ex_3.html
+          - text: Hands-on Exercise 4
+            href: Hands-on Ex/Hands-on_Ex4/Hands-on_Ex_4.html
       - text: In-class Exercises
         menu: 
           - text: "In-class Exercise 1"
