@@ -51,6 +51,9 @@ write.csv(not_found, file = "data/aspatial/not_found.csv")
 
 ## Converting an aspatial data into sf tribble data.frame
 
-```{r}
-
+```{r error=TRUE}
+schools_sf <- st_as_sf(schools,
+                       coords = c("longtitude","latitude"),
+                       crs=4326) %>%
+  st_transform(crs = 3414)
 ```
