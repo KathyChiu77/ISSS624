@@ -48,3 +48,9 @@ merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = 
 write.csv(merged, file = "data/aspatial/schools.csv")
 write.csv(not_found, file = "data/aspatial/not_found.csv")
 ```
+
+## Converting an aspatial data into sf tribble data.frame
+
+```{r}
+
+```

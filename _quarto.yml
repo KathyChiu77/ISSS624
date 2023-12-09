@@ -30,7 +30,9 @@ website:
           - text: "In-class Exercise 2: Emerging Hot Spot Analysis: sfdep methods"
             href: In-class Ex/In-class_Ex2/In-class Ex_2_EHSA.html
           - text: "In-class Exercise 3: Calibrating Spatial Interaction Models with R"
-            href: In-class Ex/In-class_Ex3/In-class_Ex3.html  
+            href: In-class Ex/In-class_Ex3/In-class_Ex3.html 
+          - text: "In-class Exercise 4: GeoSpatial Data Science with R"
+            href: In-class Ex/In-class_Ex4/In-class_Ex_4
       - text: Take-home Exercises
         menu: 
           - text: Take-home Exercise 1

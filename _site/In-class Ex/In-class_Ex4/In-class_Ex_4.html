@@ -173,6 +173,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class Ex/In-class_Ex3/In-class_Ex3.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 3: Calibrating Spatial Interaction Models with R</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class Ex/In-class_Ex4/In-class_Ex_4" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 4: GeoSpatial Data Science with R</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -218,6 +222,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
+  <li><a href="#geocoding-using-sla-api" id="toc-geocoding-using-sla-api" class="nav-link" data-scroll-target="#geocoding-using-sla-api">Geocoding using SLA API</a></li>
+  <li><a href="#converting-an-aspatial-data-into-sf-tribble-data.frame" id="toc-converting-an-aspatial-data-into-sf-tribble-data.frame" class="nav-link" data-scroll-target="#converting-an-aspatial-data-into-sf-tribble-data.frame">Converting an aspatial data into sf tribble data.frame</a></li>
   </ul>
 </nav>
     </div>
@@ -267,6 +273,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tmap, sf, tidyverse, httr, httr2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="geocoding-using-sla-api" class="level2">
+<h2 class="anchored" data-anchor-id="geocoding-using-sla-api">Geocoding using SLA API</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://www.onemap.gov.sg/api/common/elastic/search"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -302,6 +311,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(not_found, <span class="at">file =</span> <span class="st">"data/aspatial/not_found.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="converting-an-aspatial-data-into-sf-tribble-data.frame" class="level2">
+<h2 class="anchored" data-anchor-id="converting-an-aspatial-data-into-sf-tribble-data.frame">Converting an aspatial data into sf tribble data.frame</h2>
 
 
 </section>
