@@ -1,0 +1,50 @@
+---
+title: "In-class Exercise 4: GeoSpatial Data Science with R"
+author: "QIU RUILIU"
+date: "9 Dec 2023"
+date-modified: "last-modified"
+format: html
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+## Overview
+
+## Getting Started
+
+```{r}
+pacman::p_load(tmap, sf, tidyverse, httr, httr2)
+```
+
+## Geocoding using SLA API
+
+```{r error=TRUE}
+url <- "https://www.onemap.gov.sg/api/common/elastic/search"
+
+csv <- read_csv("data/aspatial/Generalinformationofschools.csv")
+postcodes <- csv$'postal_code'
+
+found <- data.frame()
+not_found <- data.frame()
+
+for (postcode in postcodes) {
+  query <- list('searchVal'=postcode, 'returnGeom'='Y', 'getAddDetails'='Y', 'pageNum'='1')
+  res <- GET(url, query=query)
+  
+  if((content(res)$found)!=0){
+    found <- rbind(found, data.frame(content(res))[4:13])
+  } else{
+    not_found = data.frame(postcode)
+  }
+  
+}
+```
+
+```{r error=TRUE}
+merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
+write.csv(merged, file = "data/aspatial/schools.csv")
+write.csv(not_found, file = "data/aspatial/not_found.csv")
+```

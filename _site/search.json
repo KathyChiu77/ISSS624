@@ -901,5 +901,54 @@
     "title": "ISSS624",
     "section": "",
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/In-class_Ex_4.html#getting-started",
+    "href": "In-class Ex/In-class_Ex4/In-class_Ex_4.html#getting-started",
+    "title": "In-class Exercise 4: GeoSpatial Data Science with R",
+    "section": "Getting Started",
+    "text": "Getting Started\n\npacman::p_load(tmap, sf, tidyverse, httr, httr2)\n\n\nurl &lt;- \"https://www.onemap.gov.sg/api/common/elastic/search\"\n\ncsv &lt;- read_csv(\"data/aspatial/Generalinformationofschools.csv\")\npostcodes &lt;- csv$'postal_code'\n\nfound &lt;- data.frame()\nnot_found &lt;- data.frame()\n\nfor (postcode in postcodes) {\n  query &lt;- list('searchVal'=postcode, 'returnGeom'='Y', 'getAddDetails'='Y', 'pageNum'='1')\n  res &lt;- GET(url, query=query)\n  \n  if((content(res)$found)!=0){\n    found &lt;- rbind(found, data.frame(content(res))[4:13])\n  } else{\n    not_found = data.frame(postcode)\n  }\n  \n}\n\nError in if ((content(res)$found) != 0) {: argument is of length zero\n\n\n\nmerged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)\n\nError in fix.by(by.y, y): 'by' must specify a uniquely valid column\n\nwrite.csv(merged, file = \"data/aspatial/schools.csv\")\n\nError in eval(expr, p): object 'merged' not found\n\nwrite.csv(not_found, file = \"data/aspatial/not_found.csv\")"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/data/geospatial/Retails.html",
+    "href": "In-class Ex/In-class_Ex4/data/geospatial/Retails.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/data/geospatial/FinServ.html",
+    "href": "In-class Ex/In-class_Ex4/data/geospatial/FinServ.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/data/geospatial/entertn.html",
+    "href": "In-class Ex/In-class_Ex4/data/geospatial/entertn.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/data/geospatial/Business.html",
+    "href": "In-class Ex/In-class_Ex4/data/geospatial/Business.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/data/geospatial/F&B.html",
+    "href": "In-class Ex/In-class_Ex4/data/geospatial/F&B.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "In-class Ex/In-class_Ex4/data/geospatial/Liesure&Recreation.html",
+    "href": "In-class Ex/In-class_Ex4/data/geospatial/Liesure&Recreation.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
   }
 ]
