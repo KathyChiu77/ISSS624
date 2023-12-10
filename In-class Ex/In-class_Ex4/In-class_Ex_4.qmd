@@ -1,5 +1,5 @@
 ---
-title: "In-class Exercise 4: GeoSpatial Data Science with R"
+title: "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables"
 author: "QIU RUILIU"
 date: "9 Dec 2023"
 date-modified: "last-modified"
@@ -13,47 +13,106 @@ editor: visual
 
 ## Overview
 
+A healthy baby need healthy food. Likewise, a well calibrated Spatial Interaction Model need conceptually logical and well prepared propulsiveness and attractiveness variables. In this in-class exercise, you will gain hands-on experience on preparing propulsiveness and attractiveness variables require for calibrating spatial interaction models. By the end of this in-class exercise, you will be able to:
+
+-   perform geocoding by using SLA OneMap API,
+
+-   convert an aspatial data into a simple feature tibble data.frame,
+
+-   perform point-in-polygon count analysis, and
+
+-   append the propulsiveness and attractiveness variables onto a flow data.
+
 ## Getting Started
 
+To get start, the following R packages will be loaded into R environment. They are:
+
+-   tidyverse, provide a family of modern R packages for data import, wrangling
+
 ```{r}
-pacman::p_load(tmap, sf, tidyverse, httr, httr2)
+pacman::p_load(tidyverse, sf, httr,
+               tmap)
 ```
+
+## **Counting number of schools in each URA Planning Subzone**
+
+### **Downloading General information of schools data from data.gov.sg**
+
+To get started, you are required to download *General information of schools* data set of School Directory and Information from [data.gov.sg](https://beta.data.gov.sg/).
 
 ## Geocoding using SLA API
 
-```{r error=TRUE}
-url <- "https://www.onemap.gov.sg/api/common/elastic/search"
+Address geocoding, or simply geocoding, is the process of taking a aspatial description of a location, such as an address or postcode, and returning geographic coordinates, frequently latitude/longitude pair, to identify a location on the Earth\'s surface.
 
-csv <- read_csv("data/aspatial/Generalinformationofschools.csv")
-postcodes <- csv$'postal_code'
+Singapore Land Authority (SLA) supports an online geocoding service called [OneMap API](https://www.onemap.gov.sg/apidocs/). The [Search](https://www.onemap.gov.sg/apidocs/apidocs) API looks up the address data or 6-digit postal code for an entered value. It then returns both latitude, longitude and x,y coordinates of the searched location.
 
-found <- data.frame()
-not_found <- data.frame()
+The code chunks below will perform geocoding using [SLA OneMap API](https://www.onemap.gov.sg/docs/#onemap-rest-apis). The input data will be in csv file format. It will be read into R Studio environment using *read_csv* function of **readr** package. A collection of http call functions of **httr** package of R will then be used to pass the individual records to the geocoding server at OneMap.
 
-for (postcode in postcodes) {
-  query <- list('searchVal'=postcode, 'returnGeom'='Y', 'getAddDetails'='Y', 'pageNum'='1')
-  res <- GET(url, query=query)
+Two tibble data.frames will be created if the geocoding process completed successfully. They are called `found` and `not_found`. `found` contains all records that are geocoded correctly and `not_found` contains postal that failed to be geocoded.
+
+Lastly, the found data table will joined with the initial csv data table by using a unique identifier (i.e. POSTAL) common to both data tables. The output data table will then save as an csv file called `found`.
+
+```{r}
+url<-"https://www.onemap.gov.sg/api/common/elastic/search"
+
+csv<-read_csv("data/aspatial/Generalinformationofschools.csv")
+postcodes<-csv$`postal_code`
+
+found<-data.frame()
+not_found<-data.frame()
+
+for(postcode in postcodes){
+  query<-list('searchVal'=postcode,'returnGeom'='Y','getAddrDetails'='Y','pageNum'='1')
+  res<- GET(url,query=query)
   
   if((content(res)$found)!=0){
-    found <- rbind(found, data.frame(content(res))[4:13])
+    found<-rbind(found,data.frame(content(res))[4:13])
   } else{
     not_found = data.frame(postcode)
   }
-  
 }
 ```
 
-```{r error=TRUE}
+Next, the code chunk below will be used to combine both *found* and *not_found* data.frames into a single tibble data.frame called *merged*. At the same time, we will write *merged* and *not_found* tibble data.frames into two separate csv files called *schools* and *not_found* respectively.
+
+```{r}
 merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
 write.csv(merged, file = "data/aspatial/schools.csv")
 write.csv(not_found, file = "data/aspatial/not_found.csv")
 ```
 
-## Converting an aspatial data into sf tribble data.frame
+### **Tidying schools data.frame**
 
-```{r error=TRUE}
-schools_sf <- st_as_sf(schools,
-                       coords = c("longtitude","latitude"),
+In this sub-section, you will import *schools.csv* into R environment and at the same time tidying the data by selecting only the necessary fields as well as rename some fields.
+
+```{r}
+schools <- read_csv("data/aspatial/schools.csv") %>%
+  rename(latitude = "results.LATITUDE",
+         longitude = "results.LONGITUDE")%>%
+  select(postal_code, school_name, latitude, longitude)
+```
+
+### **Converting an aspatial data into sf tibble data.frame**
+
+Next, you will convert schools tibble data.frame data into a simple feature tibble data.frame called *schools_sf* by using values in latitude and longitude fields.
+
+Refer to [st_as_sf()](https://r-spatial.github.io/sf/reference/st_as_sf.html) of sf package.
+
+```{r}
+schools_sf <- st_as_sf(schools, 
+                       coords = c("longitude", "latitude"),
                        crs=4326) %>%
+  st_transform(crs = 3414)
+```
+
+### **Plotting a point simple feature layer**
+
+To ensure that *schools* sf tibble data.frame has been projected and converted correctly, you can plot the schools point data for visual inspection.
+
+First, let us import *MPSZ-2019* shapefile into R environment and save it as an sf tibble data.frame called *mpsz*.
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial/",
+                layer = "MPSZ-2019") %>%
   st_transform(crs = 3414)
 ```
