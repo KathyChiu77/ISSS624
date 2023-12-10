@@ -42,7 +42,7 @@ To get started, you are required to download *General information of schools* 
 
 ## Geocoding using SLA API
 
-Address geocoding, or simply geocoding, is the process of taking a aspatial description of a location, such as an address or postcode, and returning geographic coordinates, frequently latitude/longitude pair, to identify a location on the Earth\'s surface.
+Address geocoding, or simply geocoding, is the process of taking a aspatial description of a location, such as an address or postcode, and returning geographic coordinates, frequently latitude/longitude pair, to identify a location on the Earth's surface.
 
 Singapore Land Authority (SLA) supports an online geocoding service called [OneMap API](https://www.onemap.gov.sg/apidocs/). The [Search](https://www.onemap.gov.sg/apidocs/apidocs) API looks up the address data or 6-digit postal code for an entered value. It then returns both latitude, longitude and x,y coordinates of the searched location.
 
@@ -99,9 +99,22 @@ Next, you will convert schools tibble data.frame data into a simple feature tibb
 Refer to [st_as_sf()](https://r-spatial.github.io/sf/reference/st_as_sf.html) of sf package.
 
 ```{r}
+schools <- schools[complete.cases(schools$longitude, schools$latitude), ]
 schools_sf <- st_as_sf(schools, 
                        coords = c("longitude", "latitude"),
                        crs=4326) %>%
+  st_transform(crs = 3414)
+```
+
+### **Plotting a point simple feature layer**
+
+To ensure that *schools* sf tibble data.frame has been projected and converted correctly, you can plot the schools point data for visual inspection.
+
+First, let us import *MPSZ-2019* shapefile into R environment and save it as an sf tibble data.frame called *mpsz*.
+
+```{r error=TRUE}
+mpsz <- st_read(dsn = "data/geospatial/",
+                layer = "MPSZ-2019") %>%
   st_transform(crs = 3414)
 ```
 
@@ -115,4 +128,120 @@ First, let us import *MPSZ-2019* shapefile into R environment and save it as an 
 mpsz <- st_read(dsn = "data/geospatial/",
                 layer = "MPSZ-2019") %>%
   st_transform(crs = 3414)
+```
+
+Using the steps you learned in previous exercises, create a point symbol map showing the location of schools with OSM as the background map.
+
+```{r error=TRUE}
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(schools_sf) +
+  tm_dots()
+```
+
+### **Performing point-in-polygon count process**
+
+Next, we will count the number of schools located inside the planning subzones.
+
+```{r}
+mpsz$`SCHOOL_COUNT`<- lengths(
+  st_intersects(
+    mpsz, schools_sf))
+```
+
+It is always a good practice to examine the summary statistics of the derived variable.
+
+```{r}
+summary(mpsz$SCHOOL_COUNT)
+```
+
+## **Data Integration and Final Touch-up**
+
+```{r}
+business_sf <- st_read(dsn = "data/geospatial",
+                      layer = "Business")
+```
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(business_sf) +
+  tm_dots()
+```
+
+```{r}
+mpsz$`BUSINESS_COUNT`<- lengths(
+  st_intersects(
+    mpsz, business_sf))
+```
+
+```{r}
+summary(mpsz$BUSINESS_COUNT)
+```
+
+Now, it is time for us to bring in the flow_data.rds saved after Hands-on Exercise 3.
+
+```{r}
+flow_data <- read_rds("data/rds/flow_data_tidy.rds")
+flow_data
+```
+
+Notice that this is an sf tibble data.frame and the features are polylines linking the centroid of origins and destination planning subzone.
+
+```{r}
+mpsz_tidy <- mpsz %>%
+  st_drop_geometry() %>%
+  select(SUBZONE_C, SCHOOL_COUNT, BUSINESS_COUNT)
+```
+
+Now, we will append SCHOOL_COUNT and BUSINESS_COUNT fields from mpsz_tidy data.frame into flow_data sf tibble data.frame by using the code chunk below.
+
+```{r}
+flow_data <- flow_data %>%
+  left_join(mpsz_tidy,
+            by = c("DESTIN_SZ" = "SUBZONE_C")) %>%
+  rename(TRIPS = MORNING_PEAK,
+         DIST = dist)
+```
+
+### **Checking for variables with zero values**
+
+Since Poisson Regression is based of log and log 0 is undefined, it is important for us to ensure that no 0 values in the explanatory variables.
+
+In the code chunk below, summary() of Base R is used to compute the summary statistics of all variables in *wd_od* data frame.
+
+```{r}
+summary(flow_data)
+```
+
+(The data processing below is only for reference as it is already the tidy version)
+
+The print report above reveals that variables *ORIGIN_AGE7_12*, *ORIGIN_AGE13_24*, *ORIGIN_AGE25_64*, *DESTIN_AGE7_12*, *DESTIN_AGE13_24*, *DESTIN_AGE25_64* consist of 0 values.
+
+In view of this, code chunk below will be used to replace zero values to 0.99.
+
+```{r}
+#flow_data$SCHOOL_COUNT <- ifelse(
+ # flow_data$SCHOOL_COUNT == 0,
+  #0.99, flow_data$SCHOOL_COUNT)
+#flow_data$BUSINESS_COUNT <- ifelse(
+#  flow_data$BUSINESS_COUNT == 0,
+#  0.99, flow_data$BUSINESS_COUNT)
+```
+
+You can run the summary() again.
+
+```{r}
+summary(flow_data)
+```
+
+Notice that all the 0 values have been replaced by 0.99.
+
+Before we move on to calibrate the Spatial Interaction Models, let us save flow_data sf tibble data.frame into an rds file. Call the file *flow_data_tidy*.
+
+```{r}
+#write_rds(flow_data,
+#          "data/rds/flow_data_tidy.rds")
 ```
