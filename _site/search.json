@@ -25,7 +25,7 @@
     "href": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#data-importing",
     "title": "Take-home Ex 2",
     "section": "Data Importing",
-    "text": "Data Importing\n\nGeospatial Data Importing\n\n\nAspatial Data Importing"
+    "text": "Data Importing\n\nGeospatial Data Importing\n\nbusstop &lt;- st_read(dsn = \"data/geospatial\",\n                   layer = \"BusStop\") %&gt;%\n  st_transform(crs = 3414)\n\nReading layer `BusStop' from data source \n  `D:\\KathyChiu77\\ISSS624\\Take-home Ex\\Take-home Ex 2\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 5161 features and 3 fields\nGeometry type: POINT\nDimension:     XY\nBounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48284.56 ymax: 52983.82\nProjected CRS: SVY21\n\n\n\nmpsz &lt;- st_read(dsn = \"data/geospatial\",\n                   layer = \"MPSZ-2019\") %&gt;%\n  st_transform(crs = 3414)\n\nReading layer `MPSZ-2019' from data source \n  `D:\\KathyChiu77\\ISSS624\\Take-home Ex\\Take-home Ex 2\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84\n\n\n\nmpsz\n\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21 / Singapore TM\nFirst 10 features:\n                 SUBZONE_N SUBZONE_C       PLN_AREA_N PLN_AREA_C       REGION_N\n1              MARINA EAST    MESZ01      MARINA EAST         ME CENTRAL REGION\n2         INSTITUTION HILL    RVSZ05     RIVER VALLEY         RV CENTRAL REGION\n3           ROBERTSON QUAY    SRSZ01  SINGAPORE RIVER         SR CENTRAL REGION\n4  JURONG ISLAND AND BUKOM    WISZ01  WESTERN ISLANDS         WI    WEST REGION\n5             FORT CANNING    MUSZ02           MUSEUM         MU CENTRAL REGION\n6         MARINA EAST (MP)    MPSZ05    MARINE PARADE         MP CENTRAL REGION\n7                   SUDONG    WISZ03  WESTERN ISLANDS         WI    WEST REGION\n8                  SEMAKAU    WISZ02  WESTERN ISLANDS         WI    WEST REGION\n9           SOUTHERN GROUP    SISZ02 SOUTHERN ISLANDS         SI CENTRAL REGION\n10                 SENTOSA    SISZ01 SOUTHERN ISLANDS         SI CENTRAL REGION\n   REGION_C                       geometry\n1        CR MULTIPOLYGON (((33222.98 29...\n2        CR MULTIPOLYGON (((28481.45 30...\n3        CR MULTIPOLYGON (((28087.34 30...\n4        WR MULTIPOLYGON (((14557.7 304...\n5        CR MULTIPOLYGON (((29542.53 31...\n6        CR MULTIPOLYGON (((35279.55 30...\n7        WR MULTIPOLYGON (((15772.59 21...\n8        WR MULTIPOLYGON (((19843.41 21...\n9        CR MULTIPOLYGON (((30870.53 22...\n10       CR MULTIPOLYGON (((26879.04 26...\n\n\n\nmpsz &lt;- write_rds(mpsz, \"data/rds/mpsz.rds\")\n\n\n\nAspatial Data Importing\n\nodbus &lt;- read_csv(\"data/aspatial/origin_destination_bus_202310.csv\")\n\n\nglimpse(odbus)\n\nRows: 5,694,297\nColumns: 7\n$ YEAR_MONTH          &lt;chr&gt; \"2023-10\", \"2023-10\", \"2023-10\", \"2023-10\", \"2023-…\n$ DAY_TYPE            &lt;chr&gt; \"WEEKENDS/HOLIDAY\", \"WEEKDAY\", \"WEEKENDS/HOLIDAY\",…\n$ TIME_PER_HOUR       &lt;dbl&gt; 16, 16, 14, 14, 17, 17, 17, 7, 14, 14, 10, 20, 20,…\n$ PT_TYPE             &lt;chr&gt; \"BUS\", \"BUS\", \"BUS\", \"BUS\", \"BUS\", \"BUS\", \"BUS\", \"…\n$ ORIGIN_PT_CODE      &lt;chr&gt; \"04168\", \"04168\", \"80119\", \"80119\", \"44069\", \"2028…\n$ DESTINATION_PT_CODE &lt;chr&gt; \"10051\", \"10051\", \"90079\", \"90079\", \"17229\", \"2014…\n$ TOTAL_TRIPS         &lt;dbl&gt; 3, 5, 3, 5, 4, 1, 24, 2, 1, 7, 3, 2, 5, 1, 1, 1, 1…\n\n\n\nodbus$ORIGIN_PT_CODE &lt;- as.factor(odbus$ORIGIN_PT_CODE)\nodbus$DESTINATION_PT_CODE &lt;- as.factor(odbus$DESTINATION_PT_CODE) \n\n\n\nExtracting the Study Data\n\nweekday6_9 &lt;- odbus %&gt;%\n  filter(DAY_TYPE == \"WEEKDAY\") %&gt;%\n  filter(TIME_PER_HOUR &gt;= 6 &\n           TIME_PER_HOUR &lt;= 9) %&gt;%\n  group_by(ORIGIN_PT_CODE,\n           DESTINATION_PT_CODE) %&gt;%\n  summarise(TRIPS = sum(TOTAL_TRIPS))\n\n\ndatatable(weekday6_9)\n\n\n\n\n\n\nWe will save the output in rds format for future used.\n\nwrite_rds(weekday6_9, \"data/rds/weekday6_9.rds\")\n\nThe code chunk below will be used to import the save weekday6_9.rds into R environment.\n\nweekday6_9 &lt;- read_rds(\"data/rds/weekday6_9.rds\")"
   },
   {
     "objectID": "Take-home Ex/Take-home Ex 2/data/geospatial/Liesure&Recreation.html",
@@ -1034,5 +1034,26 @@
     "title": "ISSS624",
     "section": "",
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#getting-started",
+    "href": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#getting-started",
+    "title": "Take-home Ex 2",
+    "section": "Getting Started",
+    "text": "Getting Started\n\npacman::p_load(tmap, sf, DT, stplanr,\n               performance, mapview,\n               ggpubr, tidyverse)"
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#geospatial-data-wrangling",
+    "href": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#geospatial-data-wrangling",
+    "title": "Take-home Ex 2",
+    "section": "Geospatial Data Wrangling",
+    "text": "Geospatial Data Wrangling\n\nCombining Busstop and mpsz\n\nbusstop_mpsz &lt;- st_intersection(busstop, mpsz) %&gt;%\n  select(BUS_STOP_N, SUBZONE_C)\n\n\nmapview(busstop_mpsz)"
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 2/data/geospatial/MPSZ-2019.html",
+    "href": "Take-home Ex/Take-home Ex 2/data/geospatial/MPSZ-2019.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   }
 ]

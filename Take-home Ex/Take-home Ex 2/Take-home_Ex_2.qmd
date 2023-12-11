@@ -29,8 +29,90 @@ Second, the project aims to fill the void in practical research illustrating the
 
 Therefore, the assignment involves conducting a case study to showcase the value of GDSA. This will involve synthesizing publicly accessible data from various sources to construct spatial interaction models. These models will be used to identify and analyze factors influencing the urban mobility patterns of public bus transit.
 
+## Getting Started
+
+```{r}
+pacman::p_load(tmap, sf, DT, stplanr,
+               performance, mapview,
+               ggpubr, tidyverse)
+```
+
 ## Data Importing
 
 ### Geospatial Data Importing
 
+```{r}
+busstop <- st_read(dsn = "data/geospatial",
+                   layer = "BusStop") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial",
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+mpsz
+```
+
+```{r}
+mpsz <- write_rds(mpsz, "data/rds/mpsz.rds")
+```
+
 ### Aspatial Data Importing
+
+```{r}
+odbus <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
+```
+
+```{r}
+glimpse(odbus)
+```
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE) 
+```
+
+### **Extracting the Study Data**
+
+```{r}
+weekday6_9 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 6 &
+           TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+datatable(weekday6_9)
+```
+
+We will save the output in rds format for future used.
+
+```{r}
+write_rds(weekday6_9, "data/rds/weekday6_9.rds")
+```
+
+The code chunk below will be used to import the save weekday6_9.rds into R environment.
+
+```{r}
+weekday6_9 <- read_rds("data/rds/weekday6_9.rds")
+```
+
+## **Geospatial Data Wrangling**
+
+### **Combining Busstop and mpsz**
+
+```{r}
+busstop_mpsz <- st_intersection(busstop, mpsz) %>%
+  select(BUS_STOP_N, SUBZONE_C)
+```
+
+```{r}
+mapview(busstop_mpsz)
+```
