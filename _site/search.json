@@ -1055,5 +1055,12 @@
     "title": "ISSS624",
     "section": "",
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
+  },
+  {
+    "objectID": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#creating-hexagon-data",
+    "href": "Take-home Ex/Take-home Ex 2/Take-home_Ex_2.html#creating-hexagon-data",
+    "title": "Take-home Ex 2",
+    "section": "Creating Hexagon Data",
+    "text": "Creating Hexagon Data\nCreate hexagonal grid based on the extent of mpsz dataset\n\nhex_grid &lt;- st_make_grid(mpsz, cellsize = 2 * 375 / sqrt(3), square = FALSE)\n\nConvert the grid to an sf object and add an ID for each hexagon\n\nhex_grid_sf &lt;- st_sf(geometry = hex_grid) %&gt;%\n  mutate(hex_id = 1:length(hex_grid))\n\nCount the number of bus stops in each hexagon\n\nbusstop_counts &lt;- st_intersects(hex_grid_sf, busstop_mpsz, sparse = FALSE) %&gt;% \n  apply(1, function(x) sum(x, na.rm = TRUE))\n\nAdd bus stop count to hex grid sf object\n\nhex_grid_sf$bus_stop_count &lt;- busstop_counts\n\nFilter out hexagons with no bus stops\n\nhex_grid_sf &lt;- hex_grid_sf %&gt;%\n  filter(bus_stop_count &gt; 0)\n\n\nhex_busstop_mpsz &lt;- st_intersection(hex_grid_sf, busstop_mpsz)\n\n\ntmap_options(check.and.fix = TRUE)\n\nmap_hexagon &lt;- tm_shape(hex_grid_sf) +\n  tm_polygons(\n    col = \"bus_stop_count\",\n    palette = \"Purples\",\n    style = \"cont\",\n    title = \"Number of Bus Stops\",\n    id = \"hex_id\",\n    showNA = FALSE,\n    alpha = 0.6,\n    popup.vars = c(\"Number of Bus Stops\" = \"bus_stop_count\"),\n    popup.format = list(bus_stop_count = list(format = \"f\", digits = 0))\n  ) +\n  tm_shape(mpsz) + \n  tm_borders(col = \"grey75\", lwd = 0.7) + # Draw subzone boundaries\n  tm_layout() +\n  tm_view(view.legend.position = c(\"left\", \"bottom\")) # Set the legend position for view mode\n\nmap_hexagon\n\n\n\n\nNext, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus6_9 data frame."
   }
 ]

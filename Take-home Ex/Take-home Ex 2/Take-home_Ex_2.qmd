@@ -116,3 +116,67 @@ busstop_mpsz <- st_intersection(busstop, mpsz) %>%
 ```{r}
 mapview(busstop_mpsz)
 ```
+
+## Creating Hexagon Data
+
+Create hexagonal grid based on the extent of mpsz dataset
+
+```{r}
+hex_grid <- st_make_grid(mpsz, cellsize = 2 * 375 / sqrt(3), square = FALSE)
+```
+
+Convert the grid to an sf object and add an ID for each hexagon
+
+```{r}
+hex_grid_sf <- st_sf(geometry = hex_grid) %>%
+  mutate(hex_id = 1:length(hex_grid))
+```
+
+Count the number of bus stops in each hexagon
+
+```{r}
+busstop_counts <- st_intersects(hex_grid_sf, busstop_mpsz, sparse = FALSE) %>% 
+  apply(1, function(x) sum(x, na.rm = TRUE))
+```
+
+Add bus stop count to hex grid sf object
+
+```{r}
+hex_grid_sf$bus_stop_count <- busstop_counts
+```
+
+Filter out hexagons with no bus stops
+
+```{r}
+hex_grid_sf <- hex_grid_sf %>%
+  filter(bus_stop_count > 0)
+```
+
+```{r}
+hex_busstop_mpsz <- st_intersection(hex_grid_sf, busstop_mpsz)
+```
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+
+map_hexagon <- tm_shape(hex_grid_sf) +
+  tm_polygons(
+    col = "bus_stop_count",
+    palette = "Purples",
+    style = "cont",
+    title = "Number of Bus Stops",
+    id = "hex_id",
+    showNA = FALSE,
+    alpha = 0.6,
+    popup.vars = c("Number of Bus Stops" = "bus_stop_count"),
+    popup.format = list(bus_stop_count = list(format = "f", digits = 0))
+  ) +
+  tm_shape(mpsz) + 
+  tm_borders(col = "grey75", lwd = 0.7) + # Draw subzone boundaries
+  tm_layout() +
+  tm_view(view.legend.position = c("left", "bottom")) # Set the legend position for view mode
+
+map_hexagon
+```
+
+Next, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus6_9 data frame.
