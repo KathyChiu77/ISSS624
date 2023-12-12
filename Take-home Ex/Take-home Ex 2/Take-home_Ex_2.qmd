@@ -117,7 +117,7 @@ busstop_mpsz <- st_intersection(busstop, mpsz) %>%
 mapview(busstop_mpsz)
 ```
 
-## Creating Hexagon Data
+### Creating Hexagon Data
 
 Create hexagonal grid based on the extent of mpsz dataset
 
@@ -153,10 +153,6 @@ hex_grid_sf <- hex_grid_sf %>%
 ```
 
 ```{r}
-hex_busstop_mpsz <- st_intersection(hex_grid_sf, busstop_mpsz)
-```
-
-```{r}
 tmap_options(check.and.fix = TRUE)
 
 map_hexagon <- tm_shape(hex_grid_sf) +
@@ -180,3 +176,20 @@ map_hexagon
 ```
 
 Next, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus6_9 data frame.
+
+## Preparing Flow Data
+
+```{r}
+busstop_mpsz <- busstop_mpsz %>%
+  st_drop_geometry()
+```
+
+```{r}
+datatable(busstop_mpsz)
+```
+
+Before moving to the next step, it is wise to save the output into rds format.
+
+```{r}
+write_rds(busstop_mpsz, "data/rds/busstop_mpsz.rds")  
+```
