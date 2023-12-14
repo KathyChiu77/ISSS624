@@ -32,8 +32,8 @@ Therefore, the assignment involves conducting a case study to showcase the value
 ## Getting Started
 
 ```{r}
-pacman::p_load(tmap, sf, DT, stplanr,
-               performance, mapview,
+pacman::p_load(tmap, sf, dplyr, DT,
+               stplanr, performance, mapview,
                ggpubr, tidyverse)
 ```
 
@@ -177,30 +177,38 @@ map_hexagon
 
 Next, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus6_9 data frame.
 
+```{r}
+intersections <- st_intersects(busstop, hex_grid_sf)
+```
+
+```{r}
+bus_hex_association <- data.frame(
+  BUS_STOP_N = rep(busstop$BUS_STOP_N, lengths(intersections)),
+  hex_id = unlist(intersections, use.names = FALSE)
+)
+```
+
+```{r}
+bus_hex_association <- na.omit(bus_hex_association)
+```
+
+```{r}
+bus_hex_association <- bus_hex_association[order(bus_hex_association$hex_id), ]
+```
+
+```{r}
+head(bus_hex_association)
+```
+
 ## Preparing Flow Data
-
-```{r}
-busstop_mpsz <- busstop_mpsz %>%
-  st_drop_geometry()
-```
-
-```{r}
-datatable(busstop_mpsz)
-```
-
-Before moving to the next step, it is wise to save the output into rds format.
-
-```{r}
-write_rds(busstop_mpsz, "data/rds/busstop_mpsz.rds")  
-```
 
 Creating Flow Data
 
 ```{r}
-weekday_morning_od <- left_join(weekday6_9 , busstop_mpsz,
+weekday_morning_od <- left_join(weekday6_9 , bus_hex_association,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
-         ORIGIN_SZ = SUBZONE_C,
+         ORIGIN_HEX = hex_id,
          DESTIN_BS = DESTINATION_PT_CODE)
 ```
 
@@ -217,4 +225,62 @@ If duplicated records are found, the code chunk below will be used to retain the
 
 ```{r}
 weekday_morning_od <- unique(weekday_morning_od)
+```
+
+```{r}
+weekday_morning_od <- left_join(weekday_morning_od , bus_hex_association,
+            by = c("DESTIN_BS" = "BUS_STOP_N"))
+```
+
+```{r}
+duplicate <- weekday_morning_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekday_morning_od <- unique(weekday_morning_od)
+```
+
+```{r}
+weekday_morning_od <- weekday_morning_od %>%
+  rename(DESTIN_HEX = hex_id) %>%
+  drop_na() %>%
+  group_by(ORIGIN_HEX, DESTIN_HEX) %>%
+  summarise(WEEKDAY_MORNING_PEAK = sum(TRIPS))
+```
+
+It is time to save the output into an rds file format.
+
+```{r}
+write_rds(weekday_morning_od, "data/rds/weekday_morning_od.rds")
+```
+
+```{r}
+weekday_morning_od <- read_rds("data/rds/weekday_morning_od.rds")
+```
+
+## **Visualising Spatial Interaction**
+
+### **Removing Intra-zonal Flows and Creating Desire Lines**
+
+```{r}
+weekday_morning_flowLine <- weekday_morning_od %>%
+  # Exclude intra-zonal flows
+  filter(ORIGIN_HEX != DESTIN_HEX) %>%
+  # Exclude flows with non-matching origin hex IDs
+  filter(ORIGIN_HEX %in% hex_grid_sf$hex_id) %>%
+  # Exclude flows with non-matching destination hex IDs
+  filter(DESTIN_HEX %in% hex_grid_sf$hex_id) %>%
+  # Create desire lines with the od2line() function
+  od2line(zones = hex_grid_sf, zone_code = "hex_id")
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```
