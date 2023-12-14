@@ -193,3 +193,28 @@ Before moving to the next step, it is wise to save the output into rds format.
 ```{r}
 write_rds(busstop_mpsz, "data/rds/busstop_mpsz.rds")  
 ```
+
+Creating Flow Data
+
+```{r}
+weekday_morning_od <- left_join(weekday6_9 , busstop_mpsz,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = SUBZONE_C,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+Before continue, it is a good practice for us to check for duplicating records.
+
+```{r}
+duplicate <- weekday_morning_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+If duplicated records are found, the code chunk below will be used to retain the unique records.
+
+```{r}
+weekday_morning_od <- unique(weekday_morning_od)
+```
