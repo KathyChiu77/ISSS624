@@ -1,5 +1,5 @@
 ---
-title: "Take-home Ex 2"
+title: "Take-home Exercise 2"
 author: "QIU RUILIU"
 date: "6 Dec 2023"
 date-modified: "last-modified"
@@ -104,6 +104,72 @@ The code chunk below will be used to import the save weekday6_9.rds into R envir
 weekday6_9 <- read_rds("data/rds/weekday6_9.rds")
 ```
 
+```{r}
+weekday17_20 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 17 &
+           TIME_PER_HOUR <= 20) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+datatable(weekday17_20)
+```
+
+```{r}
+write_rds(weekday17_20, "data/rds/weekday17_20.rds")
+```
+
+```{r}
+weekday17_20 <- read_rds("data/rds/weekday17_20.rds")
+```
+
+```{r}
+weekend11_14 <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  filter(TIME_PER_HOUR >= 11 &
+           TIME_PER_HOUR <= 14) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+datatable(weekend11_14)
+```
+
+```{r}
+write_rds(weekend11_14, "data/rds/weekend11_14.rds")
+```
+
+```{r}
+weekend11_14 <- read_rds("data/rds/weekend11_14.rds")
+```
+
+```{r}
+weekend16_19 <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  filter(TIME_PER_HOUR >= 16 &
+           TIME_PER_HOUR <= 19) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+datatable(weekend16_19)
+```
+
+```{r}
+write_rds(weekend16_19, "data/rds/weekend16_19.rds")
+```
+
+```{r}
+weekend16_19 <- read_rds("data/rds/weekend16_19.rds")
+```
+
 ## **Geospatial Data Wrangling**
 
 ### **Combining Busstop and mpsz**
@@ -154,7 +220,6 @@ hex_grid_sf <- hex_grid_sf %>%
 
 ```{r}
 tmap_options(check.and.fix = TRUE)
-
 map_hexagon <- tm_shape(hex_grid_sf) +
   tm_polygons(
     col = "bus_stop_count",
@@ -168,9 +233,18 @@ map_hexagon <- tm_shape(hex_grid_sf) +
     popup.format = list(bus_stop_count = list(format = "f", digits = 0))
   ) +
   tm_shape(mpsz) + 
-  tm_borders(col = "grey75", lwd = 0.7) + # Draw subzone boundaries
-  tm_layout() +
-  tm_view(view.legend.position = c("left", "bottom")) # Set the legend position for view mode
+  tm_borders(col = "grey75", lwd = 0.7) +
+  tm_layout(
+    main.title = "Bus Stop Distribution in Singapore",
+    main.title.size = 1.5,
+    legend.title.size = 1,
+    legend.text.size = 0.8,
+    legend.position = c("left", "bottom"),
+    frame = FALSE,
+    inner.margins = c(0.05, 0.05, 0.05, 0.05)
+  ) +
+  tm_credits("Data Source: LTA DataMall, Data.gov.sg", position = c("RIGHT", "BOTTOM"), size = 0.8) +
+  tm_view(view.legend.position = c("left", "bottom"))
 
 map_hexagon
 ```
@@ -178,26 +252,21 @@ map_hexagon
 Next, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus6_9 data frame.
 
 ```{r}
-intersections <- st_intersects(busstop, hex_grid_sf)
+busstop_hex <- st_intersection(busstop, hex_grid_sf) %>%
+  select(BUS_STOP_N, hex_id) %>%
+  st_drop_geometry()
 ```
 
 ```{r}
-bus_hex_association <- data.frame(
-  BUS_STOP_N = rep(busstop$BUS_STOP_N, lengths(intersections)),
-  hex_id = unlist(intersections, use.names = FALSE)
-)
+busstop_hex <- na.omit(busstop_hex)
 ```
 
 ```{r}
-bus_hex_association <- na.omit(bus_hex_association)
+head(busstop_hex)
 ```
 
 ```{r}
-bus_hex_association <- bus_hex_association[order(bus_hex_association$hex_id), ]
-```
-
-```{r}
-head(bus_hex_association)
+write_rds(busstop_hex, "data/rds/busstop_hex.rds")  
 ```
 
 ## Preparing Flow Data
@@ -205,7 +274,7 @@ head(bus_hex_association)
 Creating Flow Data
 
 ```{r}
-weekday_morning_od <- left_join(weekday6_9 , bus_hex_association,
+weekday_morning_od <- left_join(weekday6_9 , busstop_hex,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
          ORIGIN_HEX = hex_id,
@@ -228,7 +297,7 @@ weekday_morning_od <- unique(weekday_morning_od)
 ```
 
 ```{r}
-weekday_morning_od <- left_join(weekday_morning_od , bus_hex_association,
+weekday_morning_od <- left_join(weekday_morning_od , busstop_hex,
             by = c("DESTIN_BS" = "BUS_STOP_N"))
 ```
 
@@ -261,26 +330,351 @@ write_rds(weekday_morning_od, "data/rds/weekday_morning_od.rds")
 weekday_morning_od <- read_rds("data/rds/weekday_morning_od.rds")
 ```
 
+```{r}
+weekday_afternoon_od <- left_join(weekday17_20 , busstop_hex,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_HEX = hex_id,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+```{r}
+duplicate <- weekday_afternoon_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekday_afternoon_od <- unique(weekday_afternoon_od)
+```
+
+```{r}
+weekday_afternoon_od <- left_join(weekday_afternoon_od , busstop_hex,
+            by = c("DESTIN_BS" = "BUS_STOP_N"))
+```
+
+```{r}
+duplicate <- weekday_afternoon_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekday_afternoon_od <- unique(weekday_afternoon_od)
+```
+
+```{r}
+weekday_afternoon_od <- weekday_afternoon_od %>%
+  rename(DESTIN_HEX = hex_id) %>%
+  drop_na() %>%
+  group_by(ORIGIN_HEX, DESTIN_HEX) %>%
+  summarise(WEEKDAY_AFTERNOON_PEAK = sum(TRIPS))
+```
+
+```{r}
+write_rds(weekday_afternoon_od, "data/rds/weekday_afternoon_od.rds")
+```
+
+```{r}
+weekday_afternoon_od <- read_rds("data/rds/weekday_afternoon_od.rds")
+```
+
+### Weekend Morning Peak
+
+```{r}
+weekend_morning_od <- left_join(weekend11_14 , busstop_hex,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_HEX = hex_id,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+```{r}
+duplicate <- weekend_morning_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekend_morning_od <- unique(weekend_morning_od)
+```
+
+```{r}
+weekend_morning_od <- left_join(weekend_morning_od , busstop_hex,
+            by = c("DESTIN_BS" = "BUS_STOP_N"))
+```
+
+```{r}
+duplicate <- weekend_morning_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekend_morning_od <- unique(weekend_morning_od)
+```
+
+```{r}
+weekend_morning_od <- weekend_morning_od %>%
+  rename(DESTIN_HEX = hex_id) %>%
+  drop_na() %>%
+  group_by(ORIGIN_HEX, DESTIN_HEX) %>%
+  summarise(WEEKEND_MORNING_PEAK = sum(TRIPS))
+```
+
+```{r}
+write_rds(weekend_morning_od, "data/rds/weekend_morning_od.rds")
+```
+
+```{r}
+weekend_morning_od <- read_rds("data/rds/weekend_morning_od.rds")
+```
+
+### Weekend Evening Peak
+
+```{r}
+weekend_evening_od <- left_join(weekend16_19 , busstop_hex,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_HEX = hex_id,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+```{r}
+duplicate <- weekend_evening_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekend_evening_od <- unique(weekend_evening_od)
+```
+
+```{r}
+weekend_evening_od <- left_join(weekend_evening_od , busstop_hex,
+            by = c("DESTIN_BS" = "BUS_STOP_N"))
+```
+
+```{r}
+duplicate <- weekend_evening_od %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+weekend_evening_od <- unique(weekend_evening_od)
+```
+
+```{r}
+weekend_evening_od <- weekend_evening_od %>%
+  rename(DESTIN_HEX = hex_id) %>%
+  drop_na() %>%
+  group_by(ORIGIN_HEX, DESTIN_HEX) %>%
+  summarise(WEEKEND_EVENING_PEAK = sum(TRIPS))
+```
+
+```{r}
+write_rds(weekend_evening_od, "data/rds/weekend_evening_od.rds")
+```
+
+```{r}
+weekend_evening_od <- read_rds("data/rds/weekend_evening_od.rds")
+```
+
 ## **Visualising Spatial Interaction**
 
-### **Removing Intra-zonal Flows and Creating Desire Lines**
+### **Removing Intra-zonal Flows**
 
 ```{r}
-weekday_morning_flowLine <- weekday_morning_od %>%
-  # Exclude intra-zonal flows
-  filter(ORIGIN_HEX != DESTIN_HEX) %>%
-  # Exclude flows with non-matching origin hex IDs
-  filter(ORIGIN_HEX %in% hex_grid_sf$hex_id) %>%
-  # Exclude flows with non-matching destination hex IDs
-  filter(DESTIN_HEX %in% hex_grid_sf$hex_id) %>%
-  # Create desire lines with the od2line() function
-  od2line(zones = hex_grid_sf, zone_code = "hex_id")
+weekday_morning_od1 <- weekday_morning_od[weekday_morning_od$ORIGIN_HEX!=weekday_morning_od$DESTIN_HEX,]
 ```
 
 ```{r}
-
+weekday_afternoon_od1 <- weekday_afternoon_od[weekday_afternoon_od$ORIGIN_HEX!=weekday_afternoon_od$DESTIN_HEX,]
 ```
 
 ```{r}
+weekend_morning_od1 <- weekend_morning_od[weekend_morning_od$ORIGIN_HEX!=weekend_morning_od$DESTIN_HEX,]
+```
 
+```{r}
+weekend_evening_od1 <- weekend_evening_od[weekend_evening_od$ORIGIN_HEX!=weekend_evening_od$DESTIN_HEX,]
+```
+
+### Creating Desire Lines
+
+```{r}
+weekday_morning_flowLine <- od2line(flow = weekday_morning_od1, 
+                    zones = hex_grid_sf,
+                    zone_code = "hex_id")
+```
+
+```{r}
+weekday_afternoon_flowLine <- od2line(flow = weekday_afternoon_od1, 
+                    zones = hex_grid_sf,
+                    zone_code = "hex_id")
+```
+
+```{r}
+weekend_morning_flowLine <- od2line(flow = weekend_morning_od1, 
+                    zones = hex_grid_sf,
+                    zone_code = "hex_id")
+```
+
+```{r}
+weekend_evening_flowLine <- od2line(flow = weekend_evening_od1, 
+                    zones = hex_grid_sf,
+                    zone_code = "hex_id")
+```
+
+### Visualising the Desire Lines
+
+```{r}
+tm_shape(hex_grid_sf) +
+  tm_polygons(
+    border.col = "grey50", 
+    border.alpha = 0.6, 
+    alpha = 0.1
+  ) +
+  tm_shape(weekday_morning_flowLine %>% 
+             filter(WEEKDAY_MORNING_PEAK >= 5000)) +
+  tm_lines(
+    lwd = "WEEKDAY_MORNING_PEAK",
+    style = "quantile",
+    scale = c(0.1, 1, 3, 5, 7, 10),
+    n = 6,
+    alpha = 0.5,
+    palette = "Blues"
+  ) +
+  tm_shape(mpsz) +
+  tm_borders(
+    col = "darkblue", 
+    alpha = 0.1,
+    lwd = 1.5
+  ) +
+  tm_layout(
+    main.title = "Weekday Morning Commute Flows in Singapore",
+    main.title.position = "center",
+    main.title.size = 1.0,
+    legend.title.size = 0.8,
+    legend.text.size = 0.7,
+    legend.position = c("left", "bottom"),
+    frame = FALSE,
+    inner.margins = c(0.05, 0.05, 0.05, 0.05)
+  ) +
+  tm_credits("Source: LTA DataMall", position = c("RIGHT", "BOTTOM"), size = 0.5)
+```
+
+```{r}
+tm_shape(hex_grid_sf) +
+  tm_polygons(
+    border.col = "grey50", 
+    border.alpha = 0.6, 
+    alpha = 0.1
+  ) +
+  tm_shape(weekday_afternoon_flowLine %>% 
+             filter(WEEKDAY_AFTERNOON_PEAK >= 5000)) +
+  tm_lines(
+    lwd = "WEEKDAY_AFTERNOON_PEAK",
+    style = "quantile",
+    scale = c(0.1, 1, 3, 5, 7, 10),
+    n = 6,
+    alpha = 0.5,
+    palette = "Blues"
+  ) +
+  tm_shape(mpsz) +
+  tm_borders(
+    col = "darkblue", 
+    alpha = 0.1,
+    lwd = 1.5
+  ) +
+  tm_layout(
+    main.title = "Weekday Afternoon Commute Flows in Singapore",
+    main.title.position = "center",
+    main.title.size = 1.0,
+    legend.title.size = 0.8,
+    legend.text.size = 0.7,
+    legend.position = c("left", "bottom"),
+    frame = FALSE,
+    inner.margins = c(0.05, 0.05, 0.05, 0.05)
+  ) +
+  tm_credits("Source: LTA DataMall", position = c("RIGHT", "BOTTOM"), size = 0.5)
+```
+
+```{r}
+tm_shape(hex_grid_sf) +
+  tm_polygons(
+    border.col = "grey50", 
+    border.alpha = 0.6, 
+    alpha = 0.1
+  ) +
+  tm_shape(weekend_morning_flowLine %>% 
+             filter(WEEKEND_MORNING_PEAK >= 5000)) +
+  tm_lines(
+    lwd = "WEEKEND_MORNING_PEAK",
+    style = "quantile",
+    scale = c(0.1, 1, 3, 5, 7, 10),
+    n = 6,
+    alpha = 0.5,
+    palette = "Blues"
+  ) +
+  tm_shape(mpsz) +
+  tm_borders(
+    col = "darkblue", 
+    alpha = 0.1,
+    lwd = 1.5
+  ) +
+  tm_layout(
+    main.title = "Weekend Morning Commute Flows in Singapore",
+    main.title.position = "center",
+    main.title.size = 1.0,
+    legend.title.size = 0.8,
+    legend.text.size = 0.7,
+    legend.position = c("left", "bottom"),
+    frame = FALSE,
+    inner.margins = c(0.05, 0.05, 0.05, 0.05)
+  ) +
+  tm_credits("Source: LTA DataMall", position = c("RIGHT", "BOTTOM"), size = 0.5)
+```
+
+```{r}
+tm_shape(hex_grid_sf) +
+  tm_polygons(
+    border.col = "grey50", 
+    border.alpha = 0.6, 
+    alpha = 0.1
+  ) +
+  tm_shape(weekend_evening_flowLine %>% 
+             filter(WEEKEND_EVENING_PEAK >= 5000)) +
+  tm_lines(
+    lwd = "WEEKEND_EVENING_PEAK",
+    style = "quantile",
+    scale = c(0.1, 1, 3, 5, 7, 9, 11, 13, 15),
+    n = 9,
+    alpha = 0.5,
+    palette = "Blues"
+  ) +
+  tm_shape(mpsz) +
+  tm_borders(
+    col = "darkblue", 
+    alpha = 0.1,
+    lwd = 1.5
+  ) +
+  tm_layout(
+    main.title = "Weekend Evening Commute Flows in Singapore",
+    main.title.position = "center",
+    main.title.size = 1.0,
+    legend.title.size = 0.8,
+    legend.text.size = 0.7,
+    legend.position = c("left", "bottom"),
+    frame = FALSE,
+    inner.margins = c(0.05, 0.05, 0.05, 0.05)
+  ) +
+  tm_credits("Source: LTA DataMall", position = c("RIGHT", "BOTTOM"), size = 0.5)
 ```
