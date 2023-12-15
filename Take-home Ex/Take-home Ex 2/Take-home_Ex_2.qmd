@@ -56,7 +56,7 @@ Inside the `p_load` function, several packages are listed:
 ```{r}
 pacman::p_load(tmap, sf, dplyr, DT,
                stplanr, performance, mapview,
-               ggpubr, tidyverse)
+               ggpubr, tidyverse, httr)
 ```
 
 ## 2.Data Importing
@@ -291,6 +291,10 @@ head(busstop_hex)
 write_rds(busstop_hex, "data/rds/busstop_hex.rds")  
 ```
 
+```{r}
+rm(hex_grid, map_hexagon, odbus, busstop_counts)
+```
+
 ## 5.Preparing Commute Flow Data
 
 ### 5.1Weekday Morning Peak
@@ -511,6 +515,10 @@ write_rds(weekend_evening_od, "data/rds/weekend_evening_od.rds")
 weekend_evening_od <- read_rds("data/rds/weekend_evening_od.rds")
 ```
 
+```{r}
+rm(weekday6_9, weekday17_20, weekend11_14, weekend16_19)
+```
+
 ## **6.Visualising Spatial Interaction**
 
 ### **6.1Removing Intra-zonal Flows**
@@ -639,12 +647,12 @@ tm_shape(hex_grid_sf) +
     alpha = 0.1
   ) +
   tm_shape(weekend_morning_flowLine %>% 
-             filter(WEEKEND_MORNING_PEAK >= 5000)) +
+             filter(WEEKEND_MORNING_PEAK >= 3000)) +
   tm_lines(
     lwd = "WEEKEND_MORNING_PEAK",
     style = "quantile",
-    scale = c(0.1, 1, 3, 5, 7, 10),
-    n = 6,
+    scale = c(0.1, 1, 3, 5, 7, 13, 15),
+    n = 7,
     alpha = 0.5,
     palette = "Blues"
   ) +
@@ -675,12 +683,12 @@ tm_shape(hex_grid_sf) +
     alpha = 0.1
   ) +
   tm_shape(weekend_evening_flowLine %>% 
-             filter(WEEKEND_EVENING_PEAK >= 5000)) +
+             filter(WEEKEND_EVENING_PEAK >= 3000)) +
   tm_lines(
     lwd = "WEEKEND_EVENING_PEAK",
     style = "quantile",
-    scale = c(0.1, 1, 3, 5, 7, 9, 11, 13, 15),
-    n = 9,
+    scale = c(0.1, 1, 3, 5, 7, 10),
+    n = 6,
     alpha = 0.5,
     palette = "Blues"
   ) +
@@ -701,4 +709,167 @@ tm_shape(hex_grid_sf) +
     inner.margins = c(0.05, 0.05, 0.05, 0.05)
   ) +
   tm_credits("Source: LTA DataMall", position = c("RIGHT", "BOTTOM"), size = 0.5)
+```
+
+```{r}
+rm(duplicate, weekday_morning_flowLine, weekday_morning_od, weekday_morning_od1,
+   weekend_morning_flowLine, weekend_morning_od, weekend_morning_od1,
+   weekend_evening_flowLine, weekend_evening_od, weekend_evening_od1)
+```
+
+## 7.Attractiveness Factors
+
+### 7.1Data Integration
+
+```{r}
+entertn <- st_read(dsn = "data/geospatial",
+                      layer = "entertn")
+```
+
+```{r}
+hex_grid_sf$entertn_count <- lengths(st_intersects(hex_grid_sf, entertn))
+```
+
+```{r}
+FB <- st_read(dsn = "data/geospatial",
+                   layer = "F&B")
+```
+
+```{r}
+hex_grid_sf$FB_count <- lengths(st_intersects(hex_grid_sf, FB))
+```
+
+```{r}
+lere <- st_read(dsn = "data/geospatial",
+                   layer = "Liesure&Recreation")
+```
+
+```{r}
+hex_grid_sf$lere_count <- lengths(st_intersects(hex_grid_sf, lere))
+```
+
+```{r}
+retail <- st_read(dsn = "data/geospatial",
+                  layer = "Retails")
+```
+
+```{r}
+hex_grid_sf$retail_count <- lengths(st_intersects(hex_grid_sf, retail))
+```
+
+```{r}
+trainexits <- st_read(dsn = "data/geospatial",
+                      layer = "Train_Station_Exit_Layer")
+```
+
+```{r}
+trainexits <- st_transform(trainexits, st_crs(hex_grid_sf))
+hex_grid_sf$trainexits_count <- lengths(st_intersects(hex_grid_sf, trainexits))
+```
+
+```{r}
+hdb <- read_csv("data/aspatial/hdb.csv")
+```
+
+```{r}
+residential <- hdb %>%
+  filter(residential == "Y") %>%
+  select(lat, lng, total_dwelling_units) %>%
+  na.omit()
+```
+
+```{r}
+residential <- st_as_sf(residential, 
+                           coords = c("lng", "lat"), 
+                           crs = 4326) %>%
+  st_transform(crs = st_crs(hex_grid_sf))
+```
+
+```{r}
+intersections <- st_intersects(hex_grid_sf, residential, sparse = TRUE)
+hex_grid_sf$residential_count <- mapply(function(index, residential) {
+  sum(residential$total_dwelling_units[index], na.rm = TRUE)
+}, intersections, MoreArgs = list(residential = residential))
+```
+
+```{r}
+rm(intersections)
+```
+
+## 8.Propulsive Factors
+
+### 8.1Data Integration
+
+```{r}
+business <- st_read(dsn = "data/geospatial",
+                      layer = "Business")
+```
+
+```{r}
+hex_grid_sf$business_count <- lengths(st_intersects(hex_grid_sf, business))
+```
+
+```{r}
+url<-"https://www.onemap.gov.sg/api/common/elastic/search"
+
+csv<-read_csv("data/aspatial/Generalinformationofschools.csv")
+postcodes<-csv$`postal_code`
+
+found<-data.frame()
+not_found<-data.frame()
+
+for(postcode in postcodes){
+  query<-list('searchVal'=postcode,'returnGeom'='Y','getAddrDetails'='Y','pageNum'='1')
+  res<- GET(url,query=query)
+  
+  if((content(res)$found)!=0){
+    found<-rbind(found,data.frame(content(res))[4:13])
+  } else{
+    not_found = data.frame(postcode)
+  }
+}
+```
+
+```{r}
+merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
+write.csv(merged, file = "data/aspatial/schools.csv")
+write.csv(not_found, file = "data/aspatial/not_found.csv")
+```
+
+```{r}
+schools <- read_csv("data/aspatial/schools.csv") %>%
+  rename(latitude = "results.LATITUDE",
+         longitude = "results.LONGITUDE")%>%
+  select(postal_code, school_name, latitude, longitude)
+```
+
+```{r}
+schools <- schools %>%
+  filter(!is.na(longitude) & !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+hex_grid_sf$school_count <- lengths(st_intersects(hex_grid_sf, schools))
+```
+
+```{r}
+rm(csv, found, merged, not_found, query, res,
+   postcode, postcodes, url)
+```
+
+```{r}
+finserv <- st_read(dsn = "data/geospatial",
+                      layer = "FinServ")
+```
+
+```{r}
+hex_grid_sf$finserv_count <- lengths(st_intersects(hex_grid_sf, finserv))
+```
+
+### 8.2Final Check
+
+```{r}
+datatable(hex_grid_sf)
 ```
