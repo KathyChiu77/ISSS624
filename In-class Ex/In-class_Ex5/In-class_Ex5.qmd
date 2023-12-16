@@ -1,0 +1,184 @@
+---
+title: "In-class Exercise 5"
+author: "QIU RUILIU"
+date: "16 Dec 2023"
+date-modified: "last-modified"
+format: html
+execute: 
+  eval: false
+  echo: true
+  warning: false
+editor: visual
+---
+
+## Getting Started
+
+```{r}
+devtools::install_github("LukeCe/spflow")
+```
+
+Next, we will load spflow and other R packages into R environment.
+
+```{r}
+pacman::p_load(tmap, sf, spdep, sp, Matrix,
+               spflow, reshape2, knitr,
+               tidyverse)
+```
+
+## Data Preparation
+
+Before we can calibrate Spatial Econometric Interaction Models by using **spflow** package, three data sets are required. They are:
+
+-   a spatial weight
+
+-   a tibble data.frame consists of the origins, destinations, flows and distances between the origins and destinations
+
+-   a tibble data.frame consists of the explanatory variables
+
+Building Geographical Area
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial",
+                layer = "MPSZ-2019") %>%
+    st_transform(crs = 3414)
+```
+
+```{r}
+busstop <- st_read(dsn = "data/geospatial",
+                   layer = "BusStop") %>%
+    st_transform(crs = 3414)
+```
+
+```{r}
+mpsz$`BUSSTOP_COUNT` <- lengths(
+    st_intersects(
+      mpsz, busstop
+    )
+)
+```
+
+```{r}
+busstop_mpsz <- st_intersection(busstop, mpsz) %>%
+  select(BUS_STOP_N, SUBZONE_C) %>%
+  st_drop_geometry()
+```
+
+```{r}
+centroids <- suppressWarnings({
+  st_point_on_surface(st_geometry(mpsz_busstop))
+})
+```
+
+```{r}
+mpsz_nb <- list(
+  "by_contiguity" = poly2nb(mpsz_busstop),
+  "by_distance" = dnearneigh(centroids,
+                             d1 = 0, d2 = 5000),
+  "by_knn" = knn2nb(knearneigh(centroids, 3))
+)
+```
+
+```{r}
+write_rds(mpsz_nb,"data/rds/mpsz_nb.rds")
+```
+
+```{r}
+odbus6_9 <- read_rds("data/rds/odbus6_9.rds")
+```
+
+## Preparing splow Objects
+
+```{r}
+mpsz_nb <- read_rds("data/rds/mpsz_nb.rds")
+mpsz_flow <- read_rds("data/rds/mpsz_flow.rds")
+mpsz_var <- read_rds("data/rds/mpsz_var.rds")
+```
+
+###Creating `spflow_network-class` objects
+`spflow_network-class` is an S4 class that contains all information on a spatial network which is composed by a set of 
+
+For our model, we choose the contifuity `based neighborhood structure.
+
+```{r}
+mpsz_net <- spflow_network(
+  id_net = "sg",
+  node_neighborhood =
+  nb2mat(mpsz_nb$by_contiguity),
+    node_data = mpsz_var,
+    node_key_column = "SZ_CODE")
+
+mpsz_net
+```
+
+```{r}
+mpsz_net_pairs <- spflow_network_pair(
+  id_orig_net = "sg",
+  id_dest_net = "sg",
+  pair_data = mpsz_flow,
+  orig_key_column = "ORIGIN_SZ",
+  dest_key_column = "DESTIN_SZ")
+
+mpsz_net_pairs
+```
+
+
+```{r}
+mpsz_multi_net <- spflow_network_multi(mpsz_net,
+                                       mpsz_net_pairs)
+mpsz_multi_net
+```
+
+```{r}
+cor_formula <- log(1 + TRIPS)~
+    BUSSTOP_COUNT +
+    AGE7_12 +
+    AGE13_24 +
+    AGE25_64 +
+    SCHOOL_COUNT +
+    BUSINESS_COUNT +
+    RETAILS_COUNT +
+    FINSERV_COUNT +
+    P_(log(DISTANCE+1))
+```
+
+
+```{r}
+cor_mat <- pair_cor(
+  mpsz_multi_net,
+  spflow_formula = cor_formula,
+  add_lags_x = FALSE)
+
+colnames(cor_mat) <- p
+```
+
+
+```{r}
+
+base_model <- spflow(
+  spflow_formula = log(1+TRIPS) ~
+    0_(BUSSTOP_COUNT +
+         AGE25_64) +
+    D_(SCHOOL_COUNT +
+    BUSINESS_COUNT +
+    RETAILS_COUNT +
+    FINSERV_COUNT) +
+    P_(log(DISTANCE + 1)),
+  spflow_networks = mpsz_multi_net)
+
+base_model
+```
+
+
+```{r}
+model_control <- spflow_control(
+  estimation_method = "mle",
+  model = "model_1"
+)
+
+mle_model <- spflow(
+  spflow_formula,
+  spflow_networks = mpsz_multi_net,
+  estimation_control = model_control)
+```
+
+
