@@ -54,9 +54,10 @@ Inside the `p_load` function, several packages are listed:
 -   **`tidyverse`**: A collection of R packages designed for data science, including data manipulation, exploration, and visualization.
 
 ```{r}
-pacman::p_load(tmap, sf, dplyr, DT,
+pacman::p_load(tmap, sf, dplyr, DT, sp,
                stplanr, performance, mapview,
-               ggpubr, tidyverse, httr)
+               ggpubr, tidyverse, httr,
+               units, reshape2)
 ```
 
 ## 2.Data Importing
@@ -116,7 +117,7 @@ datatable(weekday6_9)
 
 We will save the output in rds format for future used.
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekday6_9, "data/rds/weekday6_9.rds")
 ```
 
@@ -140,7 +141,7 @@ weekday17_20 <- odbus %>%
 datatable(weekday17_20)
 ```
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekday17_20, "data/rds/weekday17_20.rds")
 ```
 
@@ -162,7 +163,7 @@ weekend11_14 <- odbus %>%
 datatable(weekend11_14)
 ```
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekend11_14, "data/rds/weekend11_14.rds")
 ```
 
@@ -184,7 +185,7 @@ weekend16_19 <- odbus %>%
 datatable(weekend16_19)
 ```
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekend16_19, "data/rds/weekend16_19.rds")
 ```
 
@@ -299,7 +300,7 @@ rm(hex_grid, map_hexagon, odbus, busstop_counts)
 
 ### 5.1Weekday Morning Peak
 
-```{r}
+```{r eval=FALSE}
 weekday_morning_od <- left_join(weekday6_9 , busstop_hex,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
@@ -309,7 +310,7 @@ weekday_morning_od <- left_join(weekday6_9 , busstop_hex,
 
 Before continue, it is a good practice for us to check for duplicating records.
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekday_morning_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
@@ -318,27 +319,27 @@ duplicate <- weekday_morning_od %>%
 
 If duplicated records are found, the code chunk below will be used to retain the unique records.
 
-```{r}
+```{r eval=FALSE}
 weekday_morning_od <- unique(weekday_morning_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_morning_od <- left_join(weekday_morning_od , busstop_hex,
             by = c("DESTIN_BS" = "BUS_STOP_N"))
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekday_morning_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_morning_od <- unique(weekday_morning_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_morning_od <- weekday_morning_od %>%
   rename(DESTIN_HEX = hex_id) %>%
   drop_na() %>%
@@ -348,7 +349,7 @@ weekday_morning_od <- weekday_morning_od %>%
 
 It is time to save the output into an rds file format.
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekday_morning_od, "data/rds/weekday_morning_od.rds")
 ```
 
@@ -358,7 +359,7 @@ weekday_morning_od <- read_rds("data/rds/weekday_morning_od.rds")
 
 ### 5.2Weekday Afternoon Peak
 
-```{r}
+```{r eval=FALSE}
 weekday_afternoon_od <- left_join(weekday17_20 , busstop_hex,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
@@ -366,34 +367,34 @@ weekday_afternoon_od <- left_join(weekday17_20 , busstop_hex,
          DESTIN_BS = DESTINATION_PT_CODE)
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekday_afternoon_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_afternoon_od <- unique(weekday_afternoon_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_afternoon_od <- left_join(weekday_afternoon_od , busstop_hex,
             by = c("DESTIN_BS" = "BUS_STOP_N"))
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekday_afternoon_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_afternoon_od <- unique(weekday_afternoon_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekday_afternoon_od <- weekday_afternoon_od %>%
   rename(DESTIN_HEX = hex_id) %>%
   drop_na() %>%
@@ -401,7 +402,7 @@ weekday_afternoon_od <- weekday_afternoon_od %>%
   summarise(WEEKDAY_AFTERNOON_PEAK = sum(TRIPS))
 ```
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekday_afternoon_od, "data/rds/weekday_afternoon_od.rds")
 ```
 
@@ -411,7 +412,7 @@ weekday_afternoon_od <- read_rds("data/rds/weekday_afternoon_od.rds")
 
 ### 5.3Weekend Morning Peak
 
-```{r}
+```{r eval=FALSE}
 weekend_morning_od <- left_join(weekend11_14 , busstop_hex,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
@@ -419,34 +420,34 @@ weekend_morning_od <- left_join(weekend11_14 , busstop_hex,
          DESTIN_BS = DESTINATION_PT_CODE)
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekend_morning_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_morning_od <- unique(weekend_morning_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_morning_od <- left_join(weekend_morning_od , busstop_hex,
             by = c("DESTIN_BS" = "BUS_STOP_N"))
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekend_morning_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_morning_od <- unique(weekend_morning_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_morning_od <- weekend_morning_od %>%
   rename(DESTIN_HEX = hex_id) %>%
   drop_na() %>%
@@ -454,7 +455,7 @@ weekend_morning_od <- weekend_morning_od %>%
   summarise(WEEKEND_MORNING_PEAK = sum(TRIPS))
 ```
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekend_morning_od, "data/rds/weekend_morning_od.rds")
 ```
 
@@ -464,7 +465,7 @@ weekend_morning_od <- read_rds("data/rds/weekend_morning_od.rds")
 
 ### 5.4Weekend Evening Peak
 
-```{r}
+```{r eval=FALSE}
 weekend_evening_od <- left_join(weekend16_19 , busstop_hex,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
@@ -472,34 +473,34 @@ weekend_evening_od <- left_join(weekend16_19 , busstop_hex,
          DESTIN_BS = DESTINATION_PT_CODE)
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekend_evening_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_evening_od <- unique(weekend_evening_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_evening_od <- left_join(weekend_evening_od , busstop_hex,
             by = c("DESTIN_BS" = "BUS_STOP_N"))
 ```
 
-```{r}
+```{r eval=FALSE}
 duplicate <- weekend_evening_od %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_evening_od <- unique(weekend_evening_od)
 ```
 
-```{r}
+```{r eval=FALSE}
 weekend_evening_od <- weekend_evening_od %>%
   rename(DESTIN_HEX = hex_id) %>%
   drop_na() %>%
@@ -507,7 +508,7 @@ weekend_evening_od <- weekend_evening_od %>%
   summarise(WEEKEND_EVENING_PEAK = sum(TRIPS))
 ```
 
-```{r}
+```{r eval=FALSE}
 write_rds(weekend_evening_od, "data/rds/weekend_evening_od.rds")
 ```
 
@@ -872,4 +873,237 @@ hex_grid_sf$finserv_count <- lengths(st_intersects(hex_grid_sf, finserv))
 
 ```{r}
 datatable(hex_grid_sf)
+```
+
+## 9.Computing Distance Matrix
+
+### **9.1Converting from sf data.table to SpatialPolygonsDataFrame**
+
+```{r}
+hex_grid_sp <- as(hex_grid_sf, "Spatial")
+hex_grid_sp
+```
+
+### **9.2 Computing the distance matrix**
+
+```{r}
+dist <- spDists(hex_grid_sp, 
+                longlat = FALSE)
+head(dist, n=c(10, 10))
+```
+
+### **9.3Labeling Column and Row Headers of a Distance Matrix**
+
+```{r}
+hex_names <- hex_grid_sf$hex_id
+```
+
+```{r}
+colnames(dist) <- paste0(hex_names)
+rownames(dist) <- paste0(hex_names)
+```
+
+### **9.4Pivoting Distance Value by HEX_ID**
+
+```{r}
+distPair <- melt(dist) %>%
+  rename(dist = value)
+head(distPair, 10)
+```
+
+### **9.5Updating Intra-zonal Distances**
+
+```{r}
+distPair %>%
+  filter(dist > 0) %>%
+  summary()
+```
+
+```{r}
+distPair$dist <- ifelse(distPair$dist == 0,
+                        200, distPair$dist)
+```
+
+```{r}
+distPair %>%
+  summary()
+```
+
+```{r}
+distPair <- distPair %>%
+  rename(orig = Var1,
+         dest = Var2)
+```
+
+```{r}
+write_rds(distPair, "data/rds/distPair.rds") 
+```
+
+## 10.Combining Passenger Volume Data with Distance Value
+
+```{r}
+weekday_afternoon_od1$ORIGIN_HEX <- as.factor(weekday_afternoon_od1$ORIGIN_HEX)
+weekday_afternoon_od1$DESTIN_HEX <- as.factor(weekday_afternoon_od1$DESTIN_HEX)
+distPair$orig <- as.factor(distPair$orig)
+distPair$dest <- as.factor(distPair$dest)
+```
+
+```{r}
+weekday_afternoon_od2 <- weekday_afternoon_od1 %>%
+  left_join (distPair,
+             by = c("ORIGIN_HEX" = "orig",
+                    "DESTIN_HEX" = "dest"))
+```
+
+```{r}
+hex_grid_df <- as.data.frame(hex_grid_sf) %>%
+  select(hex_id, bus_stop_count, business_count, school_count, finserv_count, 
+         entertn_count, FB_count, lere_count, retail_count, trainexits_count, residential_count) %>%
+  mutate(hex_id = as.character(hex_id))
+```
+
+```{r}
+origin_factors <- hex_grid_df %>%
+  select(hex_id, bus_stop_count, business_count, school_count, finserv_count)
+weekday_afternoon_od2 <- weekday_afternoon_od2 %>%
+  mutate(ORIGIN_HEX = as.character(ORIGIN_HEX),
+         DESTIN_HEX = as.character(DESTIN_HEX))
+```
+
+```{r}
+weekday_afternoon_od2_with_origin <- weekday_afternoon_od2 %>%
+  left_join(origin_factors, by = c("ORIGIN_HEX" = "hex_id"))
+```
+
+```{r}
+destin_factors <- hex_grid_df %>%
+  select(hex_id, entertn_count, FB_count, lere_count, retail_count, trainexits_count, residential_count)
+```
+
+```{r}
+weekday_afternoon_od2_complete <- weekday_afternoon_od2_with_origin %>%
+  left_join(destin_factors, by = c("DESTIN_HEX" = "hex_id"))
+```
+
+```{r}
+glimpse(weekday_afternoon_od2_complete)
+```
+
+```{r}
+write_rds(weekday_afternoon_od2_complete, "data/rds/SIM_data.rds")
+```
+
+```{r}
+rm(business, busstop, busstop_hex, busstop_mpsz, destin_factors, dist, distPair, entertn, FB, finserv, hdb, hex_grid_df, hex_grid_sf, hex_grid_sp, lere, mpsz, origin_factors, residential, retail, schools, trainexits, weekday_afternoon_flowLine, weekday_afternoon_od, weekday_afternoon_od1, weekday_afternoon_od2, weekday_afternoon_od2_complete, weekday_afternoon_od2_with_origin, hex_names)
+```
+
+## **11.Calibrating Spatial Interaction Models**
+
+### **Importing the modelling data**
+
+```{r}
+SIM_data <- read_rds("data/rds/SIM_data.rds")
+```
+
+### **Visualising the dependent variable**
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_histogram()
+```
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = dist,
+           y = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = log(dist),
+           y = log(WEEKDAY_AFTERNOON_PEAK))) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+### **Checking for Variables with Zero Values**
+
+```{r}
+summary(SIM_data)
+```
+
+```{r}
+SIM_data$business_count <- ifelse(
+  SIM_data$business_count == 0,
+  0.99, SIM_data$business_count)
+SIM_data$school_count <- ifelse(
+  SIM_data$school_count == 0,
+  0.99, SIM_data$school_count)
+SIM_data$finserv_count <- ifelse(
+  SIM_data$finserv_count == 0,
+  0.99, SIM_data$finserv_count)
+SIM_data$entertn_count <- ifelse(
+  SIM_data$entertn_count == 0,
+  0.99, SIM_data$entertn_count)
+SIM_data$FB_count <- ifelse(
+  SIM_data$FB_count == 0,
+  0.99, SIM_data$FB_count)
+SIM_data$lere_count <- ifelse(
+  SIM_data$lere_count == 0,
+  0.99, SIM_data$lere_count)
+SIM_data$retail_count <- ifelse(
+  SIM_data$retail_count == 0,
+  0.99, SIM_data$retail_count)
+SIM_data$trainexits_count <- ifelse(
+  SIM_data$trainexits_count == 0,
+  0.99, SIM_data$trainexits_count)
+SIM_data$residential_count <- ifelse(
+  SIM_data$residential_count == 0,
+  0.99, SIM_data$residential_count)
+```
+
+```{r}
+summary(SIM_data)
+```
+
+### **Unconstrained Spatial Interaction Model**
+
+```{r}
+uncSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~ 
+                log(bus_stop_count) + 
+                log(business_count) +
+                log(school_count) +
+                log(finserv_count) +
+                log(entertn_count) +
+                log(FB_count) +
+                log(lere_count) +
+                log(retail_count) +
+                log(trainexits_count) +
+                log(residential_count) +
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+uncSIM
+```
+
+### **R-squared Function**
+
+```{r}
+CalcRSquared <- function(observed,estimated){
+  r <- cor(observed,estimated)
+  R2 <- r^2
+  R2
+}
+```
+
+```{r}
+CalcRSquared(uncSIM$data$WEEKDAY_AFTERNOON_PEAK, uncSIM$fitted.values)
+```
+
+```{r}
+r2_mcfadden(uncSIM)
 ```
