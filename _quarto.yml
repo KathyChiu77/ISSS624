@@ -32,9 +32,11 @@ website:
           - text: "In-class Exercise 3: Calibrating Spatial Interaction Models with R"
             href: In-class Ex/In-class_Ex3/In-class_Ex3.html 
           - text: "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables"
-            href: In-class Ex/In-class_Ex4/In-class_Ex_4
+            href: In-class Ex/In-class_Ex4/In-class_Ex_4.html
           - text: "In-class Exercise 4: Calibrating Spatial Interaction Models with R"
-            href: In-class Ex/In-class_Ex4/In-class_Ex_4_SIMs
+            href: In-class Ex/In-class_Ex4/In-class_Ex_4_SIMs.html
+          - text: "In-class Exercise 5: Spatial Econometric Interaction Modelling"
+            href: In-class Ex/In-class_Ex5/In-class_Ex5.html
       - text: Take-home Exercises
         menu: 
           - text: Take-home Exercise 1
