@@ -2,8 +2,14 @@
 title: "ISSS624"
 ---
 
-Welcome to ISSS624 Geospatial Analytics Applications!
+**Welcome to ISSS624 Geospatial Analytics Applications -- my immersive journey into the dynamic and intricate world of geospatial analysis.**
 
-In this webpage, I am going to share with you my learning journey of geospatial analytics.
+![](images/Cover.png){fig-align="center"}
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Here, we unravel the profound implications of location and spatial relationships within data, transforming mere coordinates into actionable insights. Our exploration delves deep into the heart of **Geospatial Data Science and Visualization**, offering you the tools to bring data to life through compelling graphical representations.
+
+Venture further into the realms of both **Global and Local Measures of Spatial Autocorrelation**, where we uncover hidden patterns and dependencies that resonate across distances. We then navigate through the complexities of **Spatial Interaction Models**, interpreting the pulsating flows of movement and connections that bind points across spaces.
+
+With **Geographically Weighted Regression**, we tailor our approach to the unique contours of local variance, adapting models to the nuances of place and position. And as we embrace the advanced methodologies of **Spatial Econometric Interaction Models**, we refine our analytical prowess to interpret and forecast the economic interplay within geographic frameworks.
+
+As we embark on this analytical odyssey, we extend our heartfelt gratitude to **Prof. Kam**, whose expertise and guidance illuminate our path. Together, we'll embark on a transformative experience that transcends traditional data analysis and fosters a deeper understanding of the spatial dimensions that shape our world.
