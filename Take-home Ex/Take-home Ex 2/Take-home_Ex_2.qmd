@@ -852,6 +852,10 @@ FB <- st_read(dsn = "data/geospatial",
 hex_grid_sf$FB_count <- lengths(st_intersects(hex_grid_sf, FB))
 ```
 
+### 7.3Leisure & Recreation Distribution Integration
+
+Leisure and recreation spots are included in the study of weekday afternoon peak times because they are popular destinations that contribute to the flow of people and the overall demand for transportation services during these periods.
+
 ```{r}
 lere <- st_read(dsn = "data/geospatial",
                    layer = "Liesure&Recreation")
@@ -860,6 +864,10 @@ lere <- st_read(dsn = "data/geospatial",
 ```{r}
 hex_grid_sf$lere_count <- lengths(st_intersects(hex_grid_sf, lere))
 ```
+
+### 7.4Retail Distribution Integration
+
+Retail locations are included in the analysis because they are key destinations that attract shoppers, impacting people's movement and transit patterns, especially during peak times.
 
 ```{r}
 retail <- st_read(dsn = "data/geospatial",
@@ -870,15 +878,23 @@ retail <- st_read(dsn = "data/geospatial",
 hex_grid_sf$retail_count <- lengths(st_intersects(hex_grid_sf, retail))
 ```
 
+### 7.5Train Exits Distribution Integration
+
 ```{r}
 trainexits <- st_read(dsn = "data/geospatial",
                       layer = "Train_Station_Exit_Layer")
 ```
 
+The code transforms the coordinates of train exit locations to match the coordinate reference system of the hexagonal grid and then counts the number of train exits within each hexagon. This reflects the influence of proximity to train stations on bus ridership, as people often use buses to access MRT stations in Singapore.
+
 ```{r}
 trainexits <- st_transform(trainexits, st_crs(hex_grid_sf))
 hex_grid_sf$trainexits_count <- lengths(st_intersects(hex_grid_sf, trainexits))
 ```
+
+### 7.6Residence Distribution Integration
+
+The code reads a CSV file containing housing data (**hdb.csv**), filters for entries marked as residential (**Y**), selects columns for latitude, longitude, and total dwelling units, and removes any rows with missing data. This prepares a dataset of residential locations and their capacity, which is important for analyzing homebound travel patterns.
 
 ```{r}
 hdb <- read_csv("data/aspatial/hdb.csv")
@@ -911,7 +927,7 @@ rm(intersections)
 
 ## 8.Propulsive Factors
 
-### 8.1Data Integration
+### 8.1Business Distribution Integration
 
 ```{r}
 business <- st_read(dsn = "data/geospatial",
@@ -921,6 +937,8 @@ business <- st_read(dsn = "data/geospatial",
 ```{r}
 hex_grid_sf$business_count <- lengths(st_intersects(hex_grid_sf, business))
 ```
+
+### 8.2School Distribution Integration
 
 ```{r}
 url<-"https://www.onemap.gov.sg/api/common/elastic/search"
@@ -972,6 +990,8 @@ rm(csv, found, merged, not_found, query, res,
    postcode, postcodes, url)
 ```
 
+### 8.3Financial Service Distribution Integration
+
 ```{r}
 finserv <- st_read(dsn = "data/geospatial",
                       layer = "FinServ")
@@ -981,7 +1001,7 @@ finserv <- st_read(dsn = "data/geospatial",
 hex_grid_sf$finserv_count <- lengths(st_intersects(hex_grid_sf, finserv))
 ```
 
-### 8.2Final Check
+### 8.4Final Check of Integrated Data
 
 ```{r}
 datatable(hex_grid_sf)
@@ -996,7 +1016,7 @@ hex_grid_sp <- as(hex_grid_sf, "Spatial")
 hex_grid_sp
 ```
 
-### **9.2 Computing the distance matrix**
+### **9.2 Computing the Distance Matrix**
 
 ```{r}
 dist <- spDists(hex_grid_sp, 
@@ -1051,7 +1071,7 @@ distPair <- distPair %>%
 write_rds(distPair, "data/rds/distPair.rds") 
 ```
 
-## 10.Combining Passenger Volume Data with Distance Value
+## 10.Creating Complete Data for Spatial Interaction Modeling
 
 ```{r}
 weekday_afternoon_od1$ORIGIN_HEX <- as.factor(weekday_afternoon_od1$ORIGIN_HEX)
@@ -1111,13 +1131,13 @@ rm(business, busstop, busstop_hex, busstop_mpsz, destin_factors, dist, distPair,
 
 ## **11.Calibrating Spatial Interaction Models**
 
-### **Importing the modelling data**
+### **11.1Importing the modelling data**
 
 ```{r}
 SIM_data <- read_rds("data/rds/SIM_data.rds")
 ```
 
-### **Visualising the dependent variable**
+### **11.2Visualising the dependent variable**
 
 ```{r}
 ggplot(data = SIM_data,
@@ -1141,7 +1161,7 @@ ggplot(data = SIM_data,
   geom_smooth(method = lm)
 ```
 
-### **Checking for Variables with Zero Values**
+### **11.3Checking and Replacing Variables with Zero Values**
 
 ```{r}
 summary(SIM_data)
@@ -1181,9 +1201,9 @@ SIM_data$residential_count <- ifelse(
 summary(SIM_data)
 ```
 
-### **Unconstrained Spatial Interaction Model**
+### **11.4Unconstrained Spatial Interaction Model**
 
-```{r}
+```{r eval=FALSE}
 uncSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~ 
                 log(bus_stop_count) + 
                 log(business_count) +
@@ -1199,10 +1219,15 @@ uncSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~
               family = poisson(link = "log"),
               data = SIM_data,
               na.action = na.exclude)
+write_rds(uncSIM, "data/rds/uncSIM.rds")
+```
+
+```{r}
+uncSIM <- read_rds("data/rds/uncSIM.rds")
 uncSIM
 ```
 
-### **R-squared Function**
+### **11.5R-squared Function**
 
 ```{r}
 CalcRSquared <- function(observed,estimated){
@@ -1218,4 +1243,180 @@ CalcRSquared(uncSIM$data$WEEKDAY_AFTERNOON_PEAK, uncSIM$fitted.values)
 
 ```{r}
 r2_mcfadden(uncSIM)
+```
+
+### 11.6**Origin Constrained Spatial Interaction Model**
+
+```{r eval=FALSE}
+orcSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~
+                ORIGIN_HEX +
+                log(entertn_count) +
+                log(FB_count) +
+                log(lere_count) +
+                log(retail_count) +
+                log(trainexits_count) +
+                log(residential_count) +
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+write_rds(orcSIM, "data/rds/orcSIM.rds")
+```
+
+```{r}
+orcSIM <- read_rds("data/rds/orcSIM.rds")
+orcSIM
+```
+
+```{r}
+CalcRSquared(orcSIM$data$WEEKDAY_AFTERNOON_PEAK, orcSIM$fitted.values)
+```
+
+```{r}
+r2_mcfadden(orcSIM)
+```
+
+### **11.7Destination Constrained Spatial Interaction Model**
+
+```{r eval=FALSE}
+decSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~
+                DESTIN_HEX +
+                log(bus_stop_count) + 
+                log(business_count) +
+                log(school_count) +
+                log(finserv_count) +
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+write_rds(decSIM, "data/rds/decSIM.rds")
+```
+
+```{r}
+decSIM <- read_rds("data/rds/decSIM.rds")
+decSIM
+```
+
+```{r}
+CalcRSquared(decSIM$data$WEEKDAY_AFTERNOON_PEAK, decSIM$fitted.values)
+```
+
+```{r}
+r2_mcfadden(decSIM)
+```
+
+### 11.8Doubly Constrained Spatial Interaction Model
+
+```{r eval=FALSE}
+dbcSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~ 
+                ORIGIN_HEX + 
+                DESTIN_HEX + 
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+write_rds(dbcSIM, "data/rds/dbcSIM.rds")
+```
+
+```{r}
+dbcSIM <- read_rds("data/rds/dbcSIM.rds")
+dbcSIM
+```
+
+```{r}
+CalcRSquared(dbcSIM$data$WEEKDAY_AFTERNOON_PEAK, dbcSIM$fitted.values)
+```
+
+```{r}
+r2_mcfadden(dbcSIM)
+```
+
+### 11.9Model Comparison
+
+```{r}
+model_list <- list(unconstrained=uncSIM,
+                   originConstrained=orcSIM,
+                   destinationConstrained=decSIM,
+                   doublyConstrained=dbcSIM)
+```
+
+```{r}
+compare_performance(model_list,
+                    metrics = "RMSE")
+```
+
+### 11.11Visualizing Fitted
+
+```{r}
+df <- as.data.frame(uncSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(uncWEEKDAY_AFTERNOON_PEAK = "uncSIM$fitted.values")
+```
+
+```{r}
+df <- as.data.frame(orcSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(orcWEEKDAY_AFTERNOON_PEAK = "orcSIM$fitted.values")
+```
+
+```{r}
+df <- as.data.frame(decSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(decWEEKDAY_AFTERNOON_PEAK = "decSIM$fitted.values")
+```
+
+```{r}
+df <- as.data.frame(dbcSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(dbcWEEKDAY_AFTERNOON_PEAK = "dbcSIM$fitted.values")
+```
+
+```{r}
+unc_p <- ggplot(data = SIM_data,
+                aes(x = uncWEEKDAY_AFTERNOON_PEAK,
+                    y = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+orc_p <- ggplot(data = SIM_data,
+                aes(x = orcWEEKDAY_AFTERNOON_PEAK,
+                    y = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+dec_p <- ggplot(data = SIM_data,
+                aes(x = decWEEKDAY_AFTERNOON_PEAK,
+                    y = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+dbc_p <- ggplot(data = SIM_data,
+                aes(x = dbcWEEKDAY_AFTERNOON_PEAK,
+                    y = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+ggarrange(unc_p, orc_p, dec_p, dbc_p,
+          ncol = 2,
+          nrow = 2)
 ```
