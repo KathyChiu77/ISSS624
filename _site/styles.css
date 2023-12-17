@@ -1,1 +1,10 @@
 /* css styles */
+/* To change the header text color */
+header {
+    color: #8ea3c6; /* This is white */
+}
+
+/* To change the website background color */
+body {
+    background-color: #dce7c9; /* This is a light grey */
+}

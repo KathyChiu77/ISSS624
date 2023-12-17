@@ -907,12 +907,16 @@ residential <- hdb %>%
   na.omit()
 ```
 
+This step converts the **residential** dataframe into a spatial dataframe with longitude and latitude coordinates, sets its coordinate reference system (CRS) to WGS 84 (CRS 4326), and then transforms it to match the CRS of the **hex_grid_sf** for compatibility in subsequent spatial merging.
+
 ```{r}
 residential <- st_as_sf(residential, 
                            coords = c("lng", "lat"), 
                            crs = 4326) %>%
   st_transform(crs = st_crs(hex_grid_sf))
 ```
+
+This step calculates the total number of dwelling units from the **residential** data within each hexagon of the **hex_grid_sf** grid. It uses spatial intersection to identify which residential entries fall into each hexagon and then sums the **total_dwelling_units** for those entries, assigning this sum to a new **residential_count** column in the hex grid.
 
 ```{r}
 intersections <- st_intersects(hex_grid_sf, residential, sparse = TRUE)
@@ -927,6 +931,8 @@ rm(intersections)
 
 ## 8.Propulsive Factors
 
+*To understand the propulsive factors behind bus commute flow, we focus on several key factors. Firstly, the density of bus stops, as captured by **bus_stop_count**, indicates the convenience and accessibility of bus services. Secondly, the distribution of businesses and schools sheds light on major daily locations, as these are places where people work and study, often traveling from these places during weekday afternoons. Additionally, we include the distribution of financial services, recognizing that these often coincide with business hubs and can be significant in influencing commuting patterns.*
+
 ### 8.1Business Distribution Integration
 
 ```{r}
@@ -939,6 +945,8 @@ hex_grid_sf$business_count <- lengths(st_intersects(hex_grid_sf, business))
 ```
 
 ### 8.2School Distribution Integration
+
+This code snippet queries an API to gather information about schools in Singapore. It first reads a CSV file listing school postal codes, then iterates through these codes, sending a request to the **OneMap** API for each. For postal codes with found data, it appends relevant details to the **found** dataframe. If no data is found for a postal code, it adds that code to the **not_found** dataframe.
 
 ```{r}
 url<-"https://www.onemap.gov.sg/api/common/elastic/search"
@@ -961,11 +969,15 @@ for(postcode in postcodes){
 }
 ```
 
+The next step merges the original school information from the **csv** file with the data retrieved from the API (**found**), matching entries based on postal codes. The merged data, which now includes enhanced details for each school, is saved to a new CSV file **schools.csv**. Additionally, postal codes for which no data was found are saved in a separate file **not_found.csv**, allowing for further review or data acquisition efforts.
+
 ```{r}
 merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
 write.csv(merged, file = "data/aspatial/schools.csv")
 write.csv(not_found, file = "data/aspatial/not_found.csv")
 ```
+
+The code below initially reads the enhanced **schools.csv** file and renames latitude and longitude columns for clarity. It then selects specific columns, including postal code, school name, latitude, and longitude. Following this, it filters out any schools with missing latitude or longitude data. Finally, the filtered dataset is converted into a spatial dataframe with a coordinate reference system (CRS) of WGS 84 (CRS 4326) and then transformed to match Singapore's local CRS (3414) for spatial analysis compatibility.
 
 ```{r}
 schools <- read_csv("data/aspatial/schools.csv") %>%
@@ -1003,13 +1015,17 @@ hex_grid_sf$finserv_count <- lengths(st_intersects(hex_grid_sf, finserv))
 
 ### 8.4Final Check of Integrated Data
 
+Before moving to next section, we may kindly check the basic structure and content of integrated data **hex_grid_sf**.
+
 ```{r}
 datatable(hex_grid_sf)
 ```
 
 ## 9.Computing Distance Matrix
 
-### **9.1Converting from sf data.table to SpatialPolygonsDataFrame**
+### **9.1Converting from sf Data.table to Spatial Polygons Data.frame**
+
+This conversion is necessary for compatibility with spatial functions or methods that specifically require data in the **sp** format, rather than the **sf** format.
 
 ```{r}
 hex_grid_sp <- as(hex_grid_sf, "Spatial")
@@ -1018,13 +1034,17 @@ hex_grid_sp
 
 ### **9.2 Computing the Distance Matrix**
 
+The `spDists` function computes distances between each pair of hexagons in the grid. The parameter `longlat = FALSE` indicates that the distances are calculated in a planar manner, suitable for the coordinate system used. The final line displays the first 10 rows and columns of this distance matrix for a quick inspection of the calculated distances.
+
 ```{r}
 dist <- spDists(hex_grid_sp, 
                 longlat = FALSE)
 head(dist, n=c(10, 10))
 ```
 
-### **9.3Labeling Column and Row Headers of a Distance Matrix**
+### **9.3Labeling Column and Row Headers of the Distance Matrix**
+
+This code assigns the **hex_id** values from the **hex_grid_sf** dataframe as both column and row headers for the distance matrix **dist**. By doing so, each row and column in the matrix is clearly labeled with the corresponding hexagon's identifier, making it easier to interpret the distances between specific hexagons.
 
 ```{r}
 hex_names <- hex_grid_sf$hex_id
@@ -1037,6 +1057,8 @@ rownames(dist) <- paste0(hex_names)
 
 ### **9.4Pivoting Distance Value by HEX_ID**
 
+The code transforms the distance matrix **dist** into a long format data frame **distPair** using the `melt` function. Each row in **distPair** represents a pair of hexagons with their corresponding distance.
+
 ```{r}
 distPair <- melt(dist) %>%
   rename(dist = value)
@@ -1045,21 +1067,29 @@ head(distPair, 10)
 
 ### **9.5Updating Intra-zonal Distances**
 
+This code filters the **distPair** dataframe to exclude distances of zero (indicating the same hexagon), and then provides a statistical summary of the remaining non-zero distances.
+
 ```{r}
 distPair %>%
   filter(dist > 0) %>%
   summary()
 ```
 
+We then replace the distance of 0 by 200 which would not affect the minimum distance that is 433.
+
 ```{r}
 distPair$dist <- ifelse(distPair$dist == 0,
                         200, distPair$dist)
 ```
 
+Let's check the statistical summary of **distPair** again.
+
 ```{r}
 distPair %>%
   summary()
 ```
+
+Rename the **Var1** and **Var2** as **orig** and **dest** respectively which are short for origin and destination.
 
 ```{r}
 distPair <- distPair %>%
@@ -1067,11 +1097,15 @@ distPair <- distPair %>%
          dest = Var2)
 ```
 
+Export and save the **distPair** in rds format.
+
 ```{r}
 write_rds(distPair, "data/rds/distPair.rds") 
 ```
 
 ## 10.Creating Complete Data for Spatial Interaction Modeling
+
+This code converts the **ORIGIN_HEX** and **DESTIN_HEX** columns in the **weekday_afternoon_od1** dataframe, as well as the **orig** and **dest** columns in the **distPair** dataframe, into factors. This conversion is essential for spatial interaction modeling, as it ensures that these columns, representing hexagon identifiers, are treated as *categorical variables* rather than *numeric values*.
 
 ```{r}
 weekday_afternoon_od1$ORIGIN_HEX <- as.factor(weekday_afternoon_od1$ORIGIN_HEX)
@@ -1080,6 +1114,8 @@ distPair$orig <- as.factor(distPair$orig)
 distPair$dest <- as.factor(distPair$dest)
 ```
 
+The code below adds distance information to each origin-destination pair in the **weekday_afternoon_od1** data.
+
 ```{r}
 weekday_afternoon_od2 <- weekday_afternoon_od1 %>%
   left_join (distPair,
@@ -1087,12 +1123,16 @@ weekday_afternoon_od2 <- weekday_afternoon_od1 %>%
                     "DESTIN_HEX" = "dest"))
 ```
 
+The code converts the **hex_grid_sf** simple features (sf) object into a regular dataframe named **hex_grid_df**. It then selects specific columns related to various counts (like bus stops, businesses, schools, financial services, etc.) and the hexagon ID (**hex_id**).
+
 ```{r}
 hex_grid_df <- as.data.frame(hex_grid_sf) %>%
   select(hex_id, bus_stop_count, business_count, school_count, finserv_count, 
          entertn_count, FB_count, lere_count, retail_count, trainexits_count, residential_count) %>%
   mutate(hex_id = as.character(hex_id))
 ```
+
+**origin_factors** is created by selecting relevant columns from **hex_grid_df** that represent factors at the origin hexagons (like bus stop count, business count, etc.).
 
 ```{r}
 origin_factors <- hex_grid_df %>%
@@ -1102,15 +1142,21 @@ weekday_afternoon_od2 <- weekday_afternoon_od2 %>%
          DESTIN_HEX = as.character(DESTIN_HEX))
 ```
 
+This join adds the origin-specific factors to each row based on the origin hexagon ID, enriching the dataset with contextual information about the origin locations.
+
 ```{r}
 weekday_afternoon_od2_with_origin <- weekday_afternoon_od2 %>%
   left_join(origin_factors, by = c("ORIGIN_HEX" = "hex_id"))
 ```
 
+**destin_factors** is created by selecting columns from **hex_grid_df** that represent factors at destination hexagons, such as counts of entertainment venues, food and beverage outlets, leisure and recreation spots, retail locations, train exits, and residential units.
+
 ```{r}
 destin_factors <- hex_grid_df %>%
   select(hex_id, entertn_count, FB_count, lere_count, retail_count, trainexits_count, residential_count)
 ```
+
+This step adds destination-specific contextual information to each row in the dataset, based on the destination hexagon ID, thus completing the dataset with both origin and destination factors
 
 ```{r}
 weekday_afternoon_od2_complete <- weekday_afternoon_od2_with_origin %>%
@@ -1120,6 +1166,8 @@ weekday_afternoon_od2_complete <- weekday_afternoon_od2_with_origin %>%
 ```{r}
 glimpse(weekday_afternoon_od2_complete)
 ```
+
+Export the complete dataset and name it as SIM_data for later use.
 
 ```{r}
 write_rds(weekday_afternoon_od2_complete, "data/rds/SIM_data.rds")
@@ -1131,41 +1179,63 @@ rm(business, busstop, busstop_hex, busstop_mpsz, destin_factors, dist, distPair,
 
 ## **11.Calibrating Spatial Interaction Models**
 
-### **11.1Importing the modelling data**
+### **11.1Importing the Modelling Data**
+
+The first step to calibrate Spatial Interaction Models is importing the modelling data by using the code chunk below.
 
 ```{r}
 SIM_data <- read_rds("data/rds/SIM_data.rds")
 ```
 
-### **11.2Visualising the dependent variable**
+### **11.2Visualising the Dependent Variable**
+
+After plotting the distribution of dependent variable, the bus travel volume during weekday afternoon peak, it's obvious that the distribution is highly skewed and not resemble bell shape or also known as normal distribution.
 
 ```{r}
-ggplot(data = SIM_data,
-       aes(x = WEEKDAY_AFTERNOON_PEAK)) +
-  geom_histogram()
+ggplot(data = SIM_data, aes(x = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_histogram(binwidth = 100) +
+  xlab("Volume of Weekday Afternoon Peak") +
+  ylab("Count") +
+  ggtitle("Distribution of Weekday Afternoon Peak Volumes")
+
 ```
 
-```{r}
-ggplot(data = SIM_data,
-       aes(x = dist,
-           y = WEEKDAY_AFTERNOON_PEAK)) +
-  geom_point() +
-  geom_smooth(method = lm)
-```
+Next, let us visualise the relation between the dependent variable and one of the key independent variable in Spatial Interaction Model, namely distance.
 
 ```{r}
-ggplot(data = SIM_data,
-       aes(x = log(dist),
-           y = log(WEEKDAY_AFTERNOON_PEAK))) +
-  geom_point() +
-  geom_smooth(method = lm)
+ggplot(data = SIM_data, aes(x = dist, y = WEEKDAY_AFTERNOON_PEAK)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Distance Between Hexagons") +
+  ylab("Volume of Weekday Afternoon Peak") +
+  ggtitle("Relationship Between Distance and Weekday Afternoon Peak Volume")
+```
+
+Notice that their relationship hardly resemble linear relationship.
+
+On the other hand, if we plot the scatter plot by using the log transformed version of both variables, we can see that their relationship is more resemble linear relationship.
+
+```{r}
+ggplot(data = SIM_data, aes(x = log(dist), y = log(WEEKDAY_AFTERNOON_PEAK))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightblue") +
+  xlab("Log of Distance Between Hexagons") +
+  ylab("Log of Volume of Weekday Afternoon Peak") +
+  ggtitle("Log-Log Relationship Between Distance and Volume of Weekday Afternoon Peak") +
+  theme_minimal()
 ```
 
 ### **11.3Checking and Replacing Variables with Zero Values**
 
+Since Poisson Regression is based of log and log 0 is undefined, it is important for us to ensure that no 0 values in the explanatory variables.
+
+In the code chunk below, `summary()` is used to compute the summary statistics of all variables in **SIM_data** data frame.
+
 ```{r}
 summary(SIM_data)
 ```
+
+After knowing variables with 0 values, we should use the code below to replace all 0 values to 0.99.
 
 ```{r}
 SIM_data$business_count <- ifelse(
@@ -1197,11 +1267,19 @@ SIM_data$residential_count <- ifelse(
   0.99, SIM_data$residential_count)
 ```
 
+Let's run `summary()` again for double check.
+
 ```{r}
 summary(SIM_data)
 ```
 
 ### **11.4Unconstrained Spatial Interaction Model**
+
+![Figure 1. Definition of Unconstrained Model](images/unc.png)
+
+The model is "unconstrained" because it doesn't impose any limitations on the total outflow from an origin or the total inflow to a destination, allowing them to vary freely based on the underlying variables.
+
+The code chunk used to calibrate to model is shown as below. Specifically, we should export and save uncSIM to ensure reproducibility as it commonly takes long to run for large dataset.
 
 ```{r eval=FALSE}
 uncSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~ 
@@ -1227,7 +1305,10 @@ uncSIM <- read_rds("data/rds/uncSIM.rds")
 uncSIM
 ```
 
-### **11.5R-squared Function**
+**11.5R-squared Function\
+**The provided R function `CalcRSquared` calculates the coefficient of determination, commonly known as R-squared (R²), to assess the goodness of fit for a statistical model.
+
+Inside the function, it computes the correlation coefficient **r** between the observed and estimated values, then squares this value to obtain R².
 
 ```{r}
 CalcRSquared <- function(observed,estimated){
@@ -1237,15 +1318,25 @@ CalcRSquared <- function(observed,estimated){
 }
 ```
 
+Next, we will compute the R-squared of the unconstrained SIM by using the code chunk below.
+
 ```{r}
 CalcRSquared(uncSIM$data$WEEKDAY_AFTERNOON_PEAK, uncSIM$fitted.values)
 ```
+
+The function `r2_mcfadden` calculates McFadden's R-squared for the provided **uncSIM** model, which is the unconstrained model in this context. McFadden's R-squared is a measure of goodness of fit for logistic regression models and is interpreted as *the proportion of the log likelihood* explained by the model. Unlike the traditional R-squared, McFadden's R-squared typically provides smaller values; values between 0.2 to 0.4 can indicate a good fit.
 
 ```{r}
 r2_mcfadden(uncSIM)
 ```
 
 ### 11.6**Origin Constrained Spatial Interaction Model**
+
+![Figure 2. Definition of Origin Constrained Model](images/orc-01.png)
+
+The origin (production) constrained model predicts flows from origins to various destinations while ensuring that the sum of the flows from each origin matches the observed total outflows for that origin.
+
+The code chunk below is adjusted accordingly:
 
 ```{r eval=FALSE}
 orcSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~
@@ -1278,6 +1369,12 @@ r2_mcfadden(orcSIM)
 
 ### **11.7Destination Constrained Spatial Interaction Model**
 
+![Figure 3. Definition of Destination Constrained Model](images/dec.png)
+
+The destination (attraction) constrained model predicts flows to destinations by applying a balancing factor to ensure that the total predicted inflows to each destination match the observed inflows. Unlike the origin constrained model, this model accounts for the capacity or attractiveness of each destination to attract inflows.
+
+The code chunk is adjusted accordingly as below:
+
 ```{r eval=FALSE}
 decSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~
                 DESTIN_HEX +
@@ -1307,6 +1404,12 @@ r2_mcfadden(decSIM)
 
 ### 11.8Doubly Constrained Spatial Interaction Model
 
+![Figure 4. Definition of Doubly Constrained Model](images/dbc-02.png)
+
+The doubly constrained model ensures that the predicted flows both from origins (*Oi*) and to destinations (*Dj*) match observed totals by applying balancing factors (*Ai* for origins and *Bj* for destinations) along with the influence of distance (*dij*).
+
+The code chunk is changed correspondingly as below:
+
 ```{r eval=FALSE}
 dbcSIM <- glm(formula = WEEKDAY_AFTERNOON_PEAK ~ 
                 ORIGIN_HEX + 
@@ -1333,6 +1436,8 @@ r2_mcfadden(dbcSIM)
 
 ### 11.9Model Comparison
 
+Create a list called **model_list** by using the code chunk below.
+
 ```{r}
 model_list <- list(unconstrained=uncSIM,
                    originConstrained=orcSIM,
@@ -1340,23 +1445,33 @@ model_list <- list(unconstrained=uncSIM,
                    doublyConstrained=dbcSIM)
 ```
 
+Next, we will compute the RMSE of all the models in **model_list** file by using the code chunk below.
+
 ```{r}
 compare_performance(model_list,
                     metrics = "RMSE")
 ```
 
+The print above reveals that doubly constrained SIM is the best model among all the four SIMs because it has the smallest RMSE value of 576.958.
+
 ### 11.11Visualizing Fitted
+
+We are going to visualize the observed values and the fitted values of all models in this section. Firstly, we need to extract the fitted values from each model by using the code below.
 
 ```{r}
 df <- as.data.frame(uncSIM$fitted.values) %>%
   round(digits = 0)
 ```
 
+Next, we will join the fitted values to **SIM_data** data frame and name them appropriately.
+
 ```{r}
 SIM_data <- SIM_data %>%
   cbind(df) %>%
   rename(uncWEEKDAY_AFTERNOON_PEAK = "uncSIM$fitted.values")
 ```
+
+Repeat the process for orcSIM.
 
 ```{r}
 df <- as.data.frame(orcSIM$fitted.values) %>%
@@ -1369,6 +1484,8 @@ SIM_data <- SIM_data %>%
   rename(orcWEEKDAY_AFTERNOON_PEAK = "orcSIM$fitted.values")
 ```
 
+Repeat the process for decSIM.
+
 ```{r}
 df <- as.data.frame(decSIM$fitted.values) %>%
   round(digits = 0)
@@ -1379,6 +1496,8 @@ SIM_data <- SIM_data %>%
   cbind(df) %>%
   rename(decWEEKDAY_AFTERNOON_PEAK = "decSIM$fitted.values")
 ```
+
+Repeat the process for dbcSIM.
 
 ```{r}
 df <- as.data.frame(dbcSIM$fitted.values) %>%
@@ -1420,3 +1539,5 @@ ggarrange(unc_p, orc_p, dec_p, dbc_p,
           ncol = 2,
           nrow = 2)
 ```
+
+The trend line of **dbcSIM** indicates a stronger relationship with a steeper slope, suggesting this model may be capturing the variance in the observed data more effectively.
