@@ -1,1 +1,20 @@
 /* css styles */
+/* To change the header text color */
+header {
+    color: #425539; 
+}
+
+/* To change the website background color */
+body {
+    background-color: #dce7c9; 
+}
+
+/* Change background color of the drop-down menu */
+.navbar .dropdown-menu {
+    background-color: #809fb5; /* Replace with your desired color */
+}
+
+/* Change text color of items in the drop-down menu */
+.navbar .dropdown-menu .nav-link {
+    color: #FFFEF8; /* Replace with your desired text color */
+}
